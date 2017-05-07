@@ -39,9 +39,7 @@ in
 
   spacenavd = callPackage ./pkgs/spacenavd { };
 
-  freecad = (super.freecad.overrideAttrs (oldAttrs:
-    {
+  freecad = (super.freecad.overrideAttrs (oldAttrs: {
       buildInputs = oldAttrs.buildInputs ++ [ self.spnav ];
-    }));
-
+  }));
 }
