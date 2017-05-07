@@ -27,6 +27,7 @@ stdenv.mkDerivation rec {
   patches = [
     ./staging-command-line-0.98-pre.patch
     ./workdir-0.98-pre.patch
+    ./fuel-dir.patch
   ];
 
   buildInputs = with xorg; [ git rlwrap curl pkgconfig perl makeWrapper
@@ -99,6 +100,10 @@ stdenv.mkDerivation rec {
 
     # install fuel mode for emacs
     mkdir -p $out/share/emacs/site-lisp
+    # update default paths in factor-listener.el for fuel mode
+    substituteInPlace misc/fuel/fuel-listener.el \
+      --subst-var-by fuel_factor_root_dir $out/lib/factor \
+      --subst-var-by fuel_listener_factor_binary $out/bin/factor
     cp misc/fuel/*.el $out/share/emacs/site-lisp/
   '';
 
