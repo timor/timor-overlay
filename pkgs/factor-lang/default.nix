@@ -6,14 +6,13 @@
 stdenv.mkDerivation rec {
   name = "factor-lang-${version}";
   version = "0.98-pre";
-  rev = "30f73d63f4031b35b52ecb28652aebf1a8e430f1";
+  rev = "9e62a13185ae718434dc1eb2307b7bbcc318761d";
 
   src = fetchFromGitHub {
     owner = "factor";
     repo = "factor";
     rev = rev;
-    # sha256 = "0yn1sk2fp3bvw79r9lalpcxkcnj70prn56gr82hmkd2n0lq5lzi1";
-    sha256 = "1dw8zqz3k20xczwprc8jmjq6fh2gbi31jgfjdp3060bma43q5kpj";
+    sha256 = "07k5r6vy48dfwlfjqy7006l5j7nf023dydrgvbxhxk4lyc3b407f";
     fetchSubmodules = true;	# trick to cause following arg be passed to fetchgit
     leaveDotGit = true;
   };
@@ -28,7 +27,6 @@ stdenv.mkDerivation rec {
   patches = [
     ./staging-command-line-0.98-pre.patch
     ./workdir-0.98-pre.patch
-    ./emacsclient-args.patch
   ];
 
   buildInputs = with xorg; [ git rlwrap curl pkgconfig perl makeWrapper
