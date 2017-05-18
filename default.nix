@@ -42,4 +42,6 @@ in
     enabelParallelBuilding = true;
   });
   openafsClientLocal = callPackage ./pkgs/openafs { kernel = super.linuxPackages.kernel; } ;
+
+  unp = callPackage ./pkgs/unp { };
 }
