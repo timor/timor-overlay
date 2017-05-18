@@ -55,4 +55,13 @@ in
       sha256 = "02b75fyfmm9m2iz59d3xa97cas4f697a4pzdxn1i64kjd36iv3yq";
       };
   }));
+
+  networkmanagerOC = super.networkmanager.overrideAttrs (oldAttrs: {
+    patches = oldAttrs.patches ++ [ ./patches/openconnect_helper_path.patch ];
+    preConfigure = oldAttrs.preConfigure + ''
+    substituteInPlace clients/common/nm-vpn-helpers.c \
+      --subst-var-by openconnect ${super.openconnect}
+    '';
+    enabelParallelBuilding = true;
+  });
 }
