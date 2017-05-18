@@ -39,7 +39,7 @@ in
     substituteInPlace clients/common/nm-vpn-helpers.c \
       --subst-var-by openconnect ${super.openconnect}
     '';
-    enabelParallelBuilding = true;
+    enableParallelBuilding = true;
   });
   openafsClientLocal = callPackage ./pkgs/openafs { kernel = super.linuxPackages.kernel; } ;
   workcraft = callPackage ./pkgs/workcraft {};
