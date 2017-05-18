@@ -12,9 +12,7 @@ stdenv.mkDerivation rec {
     owner = "factor";
     repo = "factor";
     rev = rev;
-    sha256 = "07k5r6vy48dfwlfjqy7006l5j7nf023dydrgvbxhxk4lyc3b407f";
-    fetchSubmodules = true;	# trick to cause following arg be passed to fetchgit
-    leaveDotGit = true;
+    sha256 = "0j0pzcjqmnr5kv0qwkxhc5knhk0l0fk1kajy0xscpjacxxs3h6iv";
   };
 
   factorimage = fetchurl {
@@ -38,6 +36,7 @@ stdenv.mkDerivation rec {
   #   make $(bash ./build-support/factor.sh make-target) GIT_LABEL=heads/master-${rev}
   # '';
   buildPhase = ''
+    sed -ie '4i	GIT_LABEL = ${rev}' GNUmakefile
     make linux-x86-64
   '';
 
