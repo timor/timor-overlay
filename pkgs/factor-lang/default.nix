@@ -36,7 +36,7 @@ stdenv.mkDerivation rec {
   #   make $(bash ./build-support/factor.sh make-target) GIT_LABEL=heads/master-${rev}
   # '';
   buildPhase = ''
-    sed -ie '4i	GIT_LABEL = ${rev}' GNUmakefile
+    sed -ie '4i	GIT_LABEL = heads/master-${rev}' GNUmakefile
     make linux-x86-64
   '';
 
