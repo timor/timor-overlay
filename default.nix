@@ -46,4 +46,6 @@ in
   workcraft = callPackage ./pkgs/workcraft {};
 
   unp = callPackage ./pkgs/unp { };
+
+  esp32 = callPackage ./pkgs/esp32 { };
 }

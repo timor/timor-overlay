@@ -1,4 +1,4 @@
-{ stdenv, pkgs, lib, fetchurl, writeTextFile, buildFHSUserEnv, bash }:
+{ stdenv, pkgs, lib, fetchurl, ncurses5, python27 }:
 
 let toolchain = stdenv.mkDerivation rec {
   name = "xtensa-esp32-elf-linux64-${version}";
@@ -10,10 +10,16 @@ let toolchain = stdenv.mkDerivation rec {
 
   buildPhase = "true";
 
+  libPath = stdenv.lib.makeLibraryPath [ stdenv.cc.cc.lib ];
+  gdbLibPath = stdenv.lib.makeLibraryPath [ stdenv.cc.cc.lib ncurses5 python27];
+
+  dontStrip = true;
+
   installPhase = ''
   mkdir $out;
   cp -r * $out
-  
+  find $out -type f -executable -exec patchelf --set-interpreter $(cat $NIX_CC/nix-support/dynamic-linker) --set-rpath "$libPath" {} \;
+  patchelf --set-rpath "$gdbLibPath" $out/bin/xtensa-esp32-elf-gdb
   '';
   };
 
