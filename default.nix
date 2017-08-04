@@ -48,4 +48,8 @@ in
   unp = callPackage ./pkgs/unp { };
 
   esp32 = callPackage ./pkgs/esp32 { };
+
+  mfcl8650cdwlpr = callPackage ./pkgs/mfcl8650cdwlpr { };
+  mfcl8650cdwcupswrapper = callPackage ./pkgs/mfcl8650cdwcupswrapper {};
+
 }
