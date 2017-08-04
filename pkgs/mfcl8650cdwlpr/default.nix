@@ -67,7 +67,8 @@ stdenv.mkDerivation rec {
     chmod +x $out/opt/brother/Printers/${model}/lpd/br${model}filter
 
     # patch printconf for relative paths, replace and fix interpreter
-    bspatch $out/usr/bin/brprintconf_${model} $out/usr/bin/brprintconf_${model}_patched ${./brprintconf_patch.bsdiff}   chmod +x $out/usr/bin/brprintconf_${model}_patched
+    bspatch $out/usr/bin/brprintconf_${model} $out/usr/bin/brprintconf_${model}_patched ${./brprintconf_patch.bsdiff}
+    chmod +x $out/usr/bin/brprintconf_${model}_patched
     mv $out/usr/bin/brprintconf_${model}_patched $out/usr/bin/brprintconf_${model}
     patchelf --set-interpreter ${pkgsi686Linux.stdenv.cc.libc.out}/lib/ld-linux.so.2 $out/usr/bin/brprintconf_${model}
     mkdir -p $out/bin
