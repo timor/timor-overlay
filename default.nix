@@ -54,6 +54,7 @@ in
 
   vlc = super.vlc.overrideAttrs(oldAttrs: {
     buildInputs = oldAttrs.buildInputs ++ [ self.libnotify ];
+    configureFlags = oldAttrs.configureFlags ++ [ "--enable-notify" ];
   });
 
 }
