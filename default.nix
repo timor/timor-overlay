@@ -52,4 +52,8 @@ in
   mfcl8650cdwlpr = callPackage ./pkgs/mfcl8650cdwlpr { };
   mfcl8650cdwcupswrapper = callPackage ./pkgs/mfcl8650cdwcupswrapper {};
 
+  vlc = super.vlc.overrideAttrs(oldAttrs: {
+    buildInputs = oldAttrs.buildInputs ++ [ self.libnotify ];
+  };
+
 }
