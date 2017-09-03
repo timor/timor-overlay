@@ -57,4 +57,6 @@ in
     configureFlags = oldAttrs.configureFlags ++ [ "--enable-notify" ];
   });
 
+  exwm-ns = callPackage ./pkgs/exwm-ns { };
+
 }
