@@ -1,13 +1,13 @@
-{ stdenv, pkgs, fetchFromGithub }:
+{ stdenv, pkgs, fetchFromGitHub }:
 
-stdenv.mDerivation rec {
+stdenv.mkDerivation rec {
   name = "exwm-ns-${version}";
   version = "0.1";
-  src = fetchFromGithub {
+  src = fetchFromGitHub {
     owner = "timor";
     repo = "exwm-ns";
     rev = "v${version}";
-    sha256 = "2qv9lxqx7m18029lj8cw3k7jngvxs4iciwrypdy0gd2nnghc68sw";
+    sha256 = "0wcrf19q1fj635ric19a8qb4g7fvhgan3x6kz8ckvj73s88zfzva";
   };
 
   installPhase = ''
