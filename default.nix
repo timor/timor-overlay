@@ -88,19 +88,19 @@ in
 	})];
   });
 
-  # physlock = super.physlock.overrideAttrs(oldAttrs: rec {
-  #   version = "11-git";
-  #   name = "physlock-${version}";
-  #   src = self.fetchFromGitHub {
-  #   owner = "muennich";
-  #     repo = "physlock";
-  #     rev = "31cc383afc661d44b6adb13a7a5470169753608f";
-  #     sha256 = "0j6v8li3vw9y7vwh9q9mk1n1cnwlcy3bgr1jgw5gcv2am2yi4vx3";
-  #   };
-  #   buildInputs = [ self.pam self.systemd.dev ];
-  #   buildPhase = ''
-  #     make SESSION=systemd
-  #   '';
-  # });
+  physlock = super.physlock.overrideAttrs(oldAttrs: rec {
+    version = "11-git";
+    name = "physlock-${version}";
+    src = self.fetchFromGitHub {
+    owner = "muennich";
+      repo = "physlock";
+      rev = "31cc383afc661d44b6adb13a7a5470169753608f";
+      sha256 = "0j6v8li3vw9y7vwh9q9mk1n1cnwlcy3bgr1jgw5gcv2am2yi4vx3";
+    };
+    buildInputs = [ self.pam self.systemd.dev ];
+    buildPhase = ''
+      make SESSION=systemd
+    '';
+  });
 
 }
