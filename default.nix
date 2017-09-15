@@ -101,4 +101,9 @@ in
     makeFlags = "SESSION=systemd";
   });
 
+  spacemacs =
+    (writeScriptBin "spacemacs" ''
+    #!/bin/sh
+    HOME=~/.spacemacs ${emacs}/bin/emacs
+    '');
 }
