@@ -92,5 +92,17 @@ in
     (writeScriptBin "spacemacs" ''
     #!/bin/sh
     HOME=~/.spacemacs ${emacs}/bin/emacs
-    '');
+  '');
+
+  perlPackages = super.perlPackages // (with super.perlPackages;{
+    ExtUtilsCppGuess = buildPerlModule rec {
+    name = "ExtUtils-CppGuess-0.07";
+    src = self.fetchurl {
+      url = "mirror://cpan/modules/by-module/ExtUtils/${name}.tar.gz";
+      sha256 = "1a77hxf2pa8ia9na72rijv1yhpn2bjrdsybwk2dj2l938pl3xn0w";
+    };
+    propagatedBuildInputs = [ CaptureTiny ];
+    perlPreHook = "unset LD";
+  };});
+
 }
