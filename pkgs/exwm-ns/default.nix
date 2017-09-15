@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
   };
 
   installPhase = ''
-  mkdir -p $out/share/emacs
-  cp exwm-ns.el $out/share/emacs
+  mkdir -p $out/share/emacs/site-lisp
+  cp exwm-ns.el $out/share/emacs/site-lisp
   '';
 }
