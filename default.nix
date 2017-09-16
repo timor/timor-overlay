@@ -44,21 +44,21 @@ in
     configureFlags = oldAttrs.configureFlags ++ [ "--enable-notify" ];
   });
 
-  # emacsPackagesNg = super.emacsPackagesNg.override (superEpkgs: selfEpkgs: {
-  #   exwm = callPackage ({elpaBuild, fetchurl, lib, xelb}: elpaBuild {
-  #     pname = "exwm";
-  #     version = "0.15";
-  #     src = fetchurl {
-  #       url = "https://elpa.gnu.org/packages/exwm-0.15.tar";
-  #       sha256 = "1y7nqry9y0a99bsdqkk9f554vczfw4sz6raadw3138835qy697jg";
-  #     };
-  #     packageRequires = [ xelb ];
-  #     meta = {
-  #       homepage = "https://elpa.gnu.org/packages/exwm.html";
-  #       license = lib.licenses.free;
-  #     };
-  #   }) {elpaBuild = selfEpkgs.elpaBuild; xelb = selfEpkgs.xelb; };
-  # });
+  emacsPackagesNg = super.emacsPackagesNg.override (superEpkgs: selfEpkgs: {
+    exwm = callPackage ({elpaBuild, fetchurl, lib, xelb}: elpaBuild {
+      pname = "exwm";
+      version = "0.15";
+      src = fetchurl {
+        url = "https://elpa.gnu.org/packages/exwm-0.15.tar";
+        sha256 = "1y7nqry9y0a99bsdqkk9f554vczfw4sz6raadw3138835qy697jg";
+      };
+      packageRequires = [ xelb ];
+      meta = {
+        homepage = "https://elpa.gnu.org/packages/exwm.html";
+        license = lib.licenses.free;
+      };
+    }) {elpaBuild = selfEpkgs.elpaBuild; xelb = selfEpkgs.xelb; };
+  });
 
   exwm-ns = callPackage ./pkgs/exwm-ns { };
 
