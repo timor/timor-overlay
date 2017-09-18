@@ -16,16 +16,16 @@ in
           Expression that is used to start exwm.  Can be overridden
           with code that is defined in the spacemacs configuration.
         '';
-      }
+      };
     };
   };
 
   config = mkIf cfg.enable {
     services.xserver.windowManager.session = singleton {
-      name = "exwm";
+      name = "SpacemacsOS";
       start = ''
         ${pkgs.spacemacs}/bin/spacemacs --eval "${cfg.startExpression}"
       '';
-    }
-  }
+    };
+  };
 }
