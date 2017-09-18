@@ -27,7 +27,7 @@ in
         ${pkgs.spacemacs}/bin/spacemacs --eval "${cfg.startExpression}"
       '';
     };
-    environment.systemPackages = [
+    fonts.fonts = [
       pkgs.source-code-pro
     ];
   };
