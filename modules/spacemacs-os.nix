@@ -33,6 +33,6 @@ in
     environment.systemPackages = [
       pkgs.ag
       pkgs.git
-    ]
+    ];
   };
 }
