@@ -27,5 +27,8 @@ in
         ${pkgs.spacemacs}/bin/spacemacs --eval "${cfg.startExpression}"
       '';
     };
+    environment.systemPackages = [
+      pkgs.source-code-pro
+    ];
   };
 }
