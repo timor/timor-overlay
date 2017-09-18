@@ -30,5 +30,9 @@ in
     fonts.fonts = [
       pkgs.source-code-pro
     ];
+    environment.systemPackages = [
+      pkgs.ag
+      pkgs.git
+    ]
   };
 }
