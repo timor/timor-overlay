@@ -10,7 +10,7 @@ in
     services.xserver.windowManager.spacemacsOS = {
       enable = mkEnableOption "spacemacsOS";
       startExpression = mkOption {
-        default = "(exmw-enable)";
+        default = "(exwm-enable)";
         type = types.str;
         description = ''
           Expression that is used to start exwm.  Can be overridden
