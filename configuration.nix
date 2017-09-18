@@ -8,7 +8,7 @@
   ];
 
   # example for activating mpd user:
-  # mpdUser = {
+  # services.mpdUser = {
   #   enable = true;
   # };
   security.pam.services.physlock = { };
