@@ -1,7 +1,7 @@
 { stdenv, fetchurl, fetchFromGitHub, glib, glibc, git,
   rlwrap, curl, pkgconfig, perl, makeWrapper, tzdata, ncurses,
   pango, cairo, gtk2, gdk_pixbuf, gtkglext,
-  mesa, xorg }:
+  mesa, xorg, openssl }:
 
 stdenv.mkDerivation rec {
   name = "factor-lang-${version}";
@@ -30,7 +30,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = with xorg; [ git rlwrap curl pkgconfig perl makeWrapper
     libX11 pango cairo gtk2 gdk_pixbuf gtkglext
-    mesa libXmu libXt libICE libSM ];
+    mesa libXmu libXt libICE libSM openssl ];
 
   # buildPhase = ''
   #   make $(bash ./build-support/factor.sh make-target) GIT_LABEL=heads/master-${rev}
@@ -83,7 +83,7 @@ stdenv.mkDerivation rec {
     wrapProgram $out/bin/factor --prefix LD_LIBRARY_PATH : \
       "${stdenv.lib.makeLibraryPath (with xorg; [ glib
         libX11 pango cairo gtk2 gdk_pixbuf gtkglext
-        mesa libXmu libXt libICE libSM ])}"
+        mesa libXmu libXt libICE libSM openssl])}"
 
     sed -ie 's#/bin/.factor-wrapped#/lib/factor/factor#g' $out/bin/factor
     mv $out/bin/.factor-wrapped $out/lib/factor/factor
