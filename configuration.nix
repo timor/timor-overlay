@@ -11,5 +11,5 @@
   # services.mpdUser = {
   #   enable = true;
   # };
-  security.pam.services.physlock = { };
+  # security.pam.services.physlock = { };
 }
