@@ -20,15 +20,6 @@ in
       buildInputs = oldAttrs.buildInputs ++ [ self.spnav ];
   }));
 
-  networkmanagerOC = super.networkmanager.overrideAttrs (oldAttrs: {
-    name = "network-manager-ocpatch-${oldAttrs.version}";
-    patches = oldAttrs.patches ++ [ ./patches/openconnect_helper_path.patch ];
-    preConfigure = oldAttrs.preConfigure + ''
-    substituteInPlace clients/common/nm-vpn-helpers.c \
-      --subst-var-by openconnect ${super.openconnect}
-    '';
-    enableParallelBuilding = true;
-  });
   openafsClientLocal = callPackage ./pkgs/openafs { kernel = super.linuxPackages.kernel; } ;
   workcraft = callPackage ./pkgs/workcraft {};
 
