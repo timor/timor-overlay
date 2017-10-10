@@ -77,4 +77,13 @@ in
     perlPreHook = "unset LD";
   };});
 
+  notmuch = super.notmuch.overrideAttrs (oldAttrs: rec {
+    version = "0.24.2";
+    name = "notmuch-${version}";
+    src = self.fetchurl {
+      url = "http://notmuchmail.org/releases/${name}.tar.gz";
+      sha256 = "0lfchvapk11qazdgsxj42igp9mpp83zbd0h1jj6r3ifmhikajxma";
+    };
+    doCheck = false;
+  });
 }
