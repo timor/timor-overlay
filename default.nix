@@ -86,4 +86,6 @@ in
     };
     doCheck = false;
   });
+
+  zotero = callPackage ./pkgs/zotero { };
 }
