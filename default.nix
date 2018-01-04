@@ -79,13 +79,13 @@ in
   };});
 
   notmuch = super.notmuch.overrideAttrs (oldAttrs: rec {
-    version = "0.24.2";
+    version = "0.25.2";
     name = "notmuch-${version}";
     src = self.fetchurl {
       url = "http://notmuchmail.org/releases/${name}.tar.gz";
-      sha256 = "0lfchvapk11qazdgsxj42igp9mpp83zbd0h1jj6r3ifmhikajxma";
+      sha256 = "0ai6vbs9wzwfz7jcphgqsqpcbq137l34xhmcli4h5c8n82fvmdp4";
     };
-    doCheck = false;
+    # doCheck = false;
   });
 
   zotero = callPackage ./pkgs/zotero { };
