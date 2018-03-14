@@ -15,7 +15,7 @@ in
   config = mkIf cfg.enable {
     systemd.user.services = {
       dropbox = {
-        enable = true;
+        enable = cfg.enable;
         script = "${pkgs.dropbox}/bin/dropbox";
         wantedBy = [ "default.target" ];
         serviceConfig = {
