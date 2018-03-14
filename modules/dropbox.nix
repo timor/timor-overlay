@@ -17,6 +17,7 @@ in
       dropbox = {
         enable = cfg.enable;
         script = "${pkgs.dropbox}/bin/dropbox";
+        after = [ "local-fs.target" "network.target"];
         wantedBy = [ "default.target" ];
         serviceConfig = {
           RestartSec = 5;
