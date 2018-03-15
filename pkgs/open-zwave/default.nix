@@ -18,7 +18,8 @@ stdenv.mkDerivation rec {
       --replace '$(shell which pkg-config)' ${pkgconfig}/bin/pkg-config \
     '';
 
-  makeFlagsArray = [ "PREFIX=$out" ];
-  installFlags = [ "PREFIX=$(out)" ];
+  preInstall = ''
+    export PREFIX=$out
+    '';
 }
 
