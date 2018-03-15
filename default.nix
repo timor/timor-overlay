@@ -20,7 +20,6 @@ in
       buildInputs = oldAttrs.buildInputs ++ [ self.spnav ];
   }));
 
-  openafsClientLocal = callPackage ./pkgs/openafs { kernel = super.linuxPackages.kernel; } ;
   open-zwave = callPackage ./pkgs/open-zwave {};
   workcraft = callPackage ./pkgs/workcraft {};
 
