@@ -21,6 +21,7 @@ in
   }));
 
   openafsClientLocal = callPackage ./pkgs/openafs { kernel = super.linuxPackages.kernel; } ;
+  open-zwave = callPackage ./pkgs/open-zwave {};
   workcraft = callPackage ./pkgs/workcraft {};
 
   unp = callPackage ./pkgs/unp { };
