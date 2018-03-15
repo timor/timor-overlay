@@ -87,5 +87,7 @@ in
     # doCheck = false;
   });
 
+  # pijul = callPackage ./pkgs/pijul { }; will only work once rust stuff has been sorted out
+
   zotero = callPackage ./pkgs/zotero { };
 }
