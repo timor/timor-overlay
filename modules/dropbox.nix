@@ -13,6 +13,10 @@ in
   };
 
   config = mkIf cfg.enable {
+    environment.systemPackages = [
+      pkgs.dropbox-cli
+    ];
+
     systemd.user.services = {
       dropbox = {
         enable = cfg.enable;
