@@ -6,19 +6,18 @@
 stdenv.mkDerivation rec {
   name = "factor-lang-${version}";
   version = "0.98-pre";
-  rev = "9e62a13185ae718434dc1eb2307b7bbcc318761d";
+  rev = "b2de82042c5d14f80ba1fa54a6ce63344dd35daa";
 
   src = fetchFromGitHub {
     owner = "factor";
     repo = "factor";
     rev = rev;
-    sha256 = "0j0pzcjqmnr5kv0qwkxhc5knhk0l0fk1kajy0xscpjacxxs3h6iv";
+    sha256 = "092i366mwc3rpdrk571c4lwf3xzxkgn9i64q654yl416af40gvk6";
   };
 
   factorimage = fetchurl {
-    # url = http://downloads.factorcode.org/releases/0.97/factor-linux-x86-64-0.97.tar.gz;
-    url = http://downloads.factorcode.org/images/build/boot.unix-x86.64.image.b00aef99e29ff232fc8cdadfcbee77b082738090;
-    sha256 = "04zyk16f9vp3468033d3rdvrsmnhdvph4bchn65na8ca23fi3vp1";
+    url = http://downloads.factorcode.org/images/build/boot.unix-x86.64.image.52de821e1930b4c161d0a2f5df2d719bfc181221;
+    sha256 = "0gd4c60p3yp33pj09x15rg5klm3yn10xp960kg9imjjwfxal5s1d";
     name = "factorimage";
   };
 
@@ -50,11 +49,11 @@ stdenv.mkDerivation rec {
     # zcat ${factorimage} | (cd $out/lib && tar -xvpf - factor/factor.image )
     cp ${factorimage} $out/lib/factor/factor.image
 
-    cp -r basis core extra unmaintained $out/lib/factor
+    cp -r basis core extra $out/lib/factor
 
-    # Factor uses the home directory for cache during compilation.
-    # We cant have that. So set it to $TMPDIR/.home
-    export HOME=$TMPDIR/.home && mkdir -p $HOME
+    # Factor uses XDG_CACHE_HOME for cache during compilation.
+    # We can't have that. So set it to $TMPDIR/.cache
+    export XDG_CACHE_HOME=$TMPDIR/.cache && mkdir -p $XDG_CACHE_HOME
 
     # there is no ld.so.cache in NixOS so we construct one
     # out of known libraries. The side effect is that find-lib
