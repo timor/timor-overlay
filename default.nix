@@ -30,10 +30,10 @@ in
   mfcl8650cdwlpr = callPackage ./pkgs/mfcl8650cdwlpr { };
   mfcl8650cdwcupswrapper = callPackage ./pkgs/mfcl8650cdwcupswrapper {};
 
-  vlc = super.vlc.overrideAttrs(oldAttrs: {
-    buildInputs = oldAttrs.buildInputs ++ [ self.libnotify self.gtk2 ];
-    configureFlags = oldAttrs.configureFlags ++ [ "--enable-notify" ];
-  });
+  # vlc = super.vlc.overrideAttrs(oldAttrs: {
+  #   buildInputs = oldAttrs.buildInputs ++ [ self.libnotify self.gtk2 ];
+  #   configureFlags = oldAttrs.configureFlags ++ [ "--enable-notify" ];
+  # });
 
   exwm-ns = callPackage ./pkgs/exwm-ns { };
 
