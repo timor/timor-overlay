@@ -4,7 +4,32 @@ with lib;
 
 let
   cfg = config.services.skynet;
-nextcloud-drv = {stdenv, fetchurl, fetchpatch }: pkgs.stdenv.mkDerivation rec {
+  initial-nextcloud-config = pkgs.writeText "config.php" ''
+  <?php
+  $CONFIG = array (
+  'datadirectory' => '/var/db/nextcloud/data',
+  'apps_paths' => array (
+    0 => array (
+      "path"     => OC::$SERVERROOT."/apps",
+      "url"      => "/apps",
+      "writable" => false,
+    ),
+    1 => array (
+      "path"     => OC::$SERVERROOT."/apps2",
+      "url"      => "/apps2",
+      "writable" => true,
+    ),
+  ),
+  'dbtype' => 'pgsql',
+  'dbname' => 'nginx',
+  'dbhost' => 'localhost',
+  'dbuser' => 'nginx',
+  'dbpassword' => 'nginx',
+  'loglevel' => '0',
+  ${lib.optionalString (cfg.instanceId != null) "'instanceid' => '${cfg.instanceId}',"}
+  );
+  '';
+nextcloud-drv = {stdenv, fetchurl, fetchpatch, php }: pkgs.stdenv.mkDerivation rec {
   name= "nextcloud-${version}";
   version = "13.0.1";
 
@@ -13,11 +38,15 @@ nextcloud-drv = {stdenv, fetchurl, fetchpatch }: pkgs.stdenv.mkDerivation rec {
     sha256 = "048x3x6d11m75ghxjcjzm8amjm6ljirv6djbl53awwp9f5532hsp";
   };
 
+  buildInputs = [php];
+
   installPhase = ''
     mkdir -p $out/
     cp -R . $out/
     mkdir -p $out/data
-    mkdir -p $out/apps
+    mkdir -p $out/apps2
+    # chmod +x $out/occ
+    # patchShebangs $out/occ
   '';
 
   meta = {
@@ -33,6 +62,12 @@ in
 
   options.services.skynet = {
     enable = mkEnableOption "skynet";
+
+    instanceId = mkOption {
+      type = types.nullOr types.str;
+      default = null;
+      description = "Preconfigure nextcloud instanceid for installation.  Leave out for automatic generation.";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -40,33 +75,29 @@ in
 
   services.nginx.virtualHosts.skynet = {
     # serverName = "skynet.meterriblecrew.net";
-    serverName = "*";
+    serverName = "localhost";
     root = nextcloud.out;
     default = true;
     extraConfig = ''
+error_log stderr debug;
 location = /robots.txt {
-    allow all;
-    log_not_found off;
-    access_log off;
-}
+        allow all;
+        log_not_found off;
+        access_log off;
+    }
 
-# The following 2 rules are only needed for the user_webfinger app.
-# Uncomment it if you're planning to use this app.
-# rewrite ^/.well-known/host-meta /nextcloud/public.php?service=host-meta
-# last;
-#rewrite ^/.well-known/host-meta.json
-# /nextcloud/public.php?service=host-meta-json last;
+    # The following 2 rules are only needed for the user_webfinger app.
+    # Uncomment it if you're planning to use this app.
+    #rewrite ^/.well-known/host-meta /public.php?service=host-meta last;
+    #rewrite ^/.well-known/host-meta.json /public.php?service=host-meta-json
+    # last;
 
-location = /.well-known/carddav {
-    return 301 $scheme://$host/nextcloud/remote.php/dav;
-}
-location = /.well-known/caldav {
-    return 301 $scheme://$host/nextcloud/remote.php/dav;
-}
-
-location /.well-known/acme-challenge { }
-
-location ^~ /nextcloud {
+    location = /.well-known/carddav {
+      return 301 $scheme://$host/remote.php/dav;
+    }
+    location = /.well-known/caldav {
+      return 301 $scheme://$host/remote.php/dav;
+    }
 
     # set max upload size
     client_max_body_size 512M;
@@ -84,23 +115,23 @@ location ^~ /nextcloud {
     # This module is currently not supported.
     #pagespeed off;
 
-    location /nextcloud {
-        rewrite ^ /nextcloud/index.php$uri;
+    location / {
+        rewrite ^ /index.php$uri;
     }
 
-    location ~ ^/nextcloud/(?:build|tests|config|lib|3rdparty|templates|data)/ {
+    location ~ ^/(?:build|tests|config|lib|3rdparty|templates|data)/ {
         deny all;
     }
-    location ~ ^/nextcloud/(?:\.|autotest|occ|issue|indie|db_|console) {
+    location ~ ^/(?:\.|autotest|occ|issue|indie|db_|console) {
         deny all;
     }
 
-    location ~ ^/nextcloud/(?:index|remote|public|cron|core/ajax/update|status|ocs/v[12]|updater/.+|ocs-provider/.+)\.php(?:$|/) {
         # fastcgi_split_path_info ^(.+\.php)(/.*)$;
         # include fastcgi_params;
         # fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
         # fastcgi_param PATH_INFO $fastcgi_path_info;
         # fastcgi_param HTTPS on;
+    location ~ ^/(?:index|remote|public|cron|core/ajax/update|status|ocs/v[12]|updater/.+|ocs-provider/.+)\.php(?:$|/) {
         #Avoid sending the security headers twice
         # fastcgi_param modHeadersAvailable true;
         # fastcgi_param front_controller_active true;
@@ -116,7 +147,7 @@ location ^~ /nextcloud {
         uwsgi_pass unix:/run/uwsgi/nextcloud.sock;
     }
 
-    location ~ ^/nextcloud/(?:updater|ocs-provider)(?:$|/) {
+    location ~ ^/(?:updater|ocs-provider)(?:$|/) {
         try_files $uri/ =404;
         index index.php;
     }
@@ -124,14 +155,19 @@ location ^~ /nextcloud {
     # Adding the cache control header for js and css files
     # Make sure it is BELOW the PHP block
     location ~ \.(?:css|js|woff|svg|gif)$ {
-        try_files $uri /nextcloud/index.php$uri$is_args$args;
+        try_files $uri /index.php$uri$is_args$args;
         add_header Cache-Control "public, max-age=15778463";
-        # Add headers to serve security related headers  (It is intended
-        # to have those duplicated to the ones above)
-        # Before enabling Strict-Transport-Security headers please read
-        # into this topic first.
-        # add_header Strict-Transport-Security "max-age=15768000;
-        # includeSubDomains; preload;";
+        # Add headers to serve security related headers (It is intended to
+        # have those duplicated to the ones above)
+        # Before enabling Strict-Transport-Security headers please read into
+        # this topic first.
+        # add_header Strict-Transport-Security "max-age=15768000; includeSubDomains; preload;";
+        #
+        # WARNING: Only add the preload option once you read about
+        # the consequences in https://hstspreload.org/. This option
+        # will add the domain to a hardcoded list that is shipped
+        # in all major browsers and getting removed from this list
+        # could take several months.
         add_header X-Content-Type-Options nosniff;
         add_header X-XSS-Protection "1; mode=block";
         add_header X-Robots-Tag none;
@@ -142,11 +178,10 @@ location ^~ /nextcloud {
     }
 
     location ~ \.(?:png|html|ttf|ico|jpg|jpeg)$ {
-        try_files $uri /nextcloud/index.php$uri$is_args$args;
+        try_files $uri /index.php$uri$is_args$args;
         # Optional: Don't log access to other assets
         access_log off;
     }
-}
     '';
     # locations = {
     #   "/robots.txt" = {
@@ -214,6 +249,9 @@ location ^~ /nextcloud {
     # };
   };
 
+    nixpkgs.config.php.bz2 = true;
+    nixpkgs.config.php.xsl = true;
+
     services.uwsgi = {
       enable = true;
       user = "nginx";
@@ -230,11 +268,14 @@ location ^~ /nextcloud {
             socket = "/run/uwsgi/nextcloud.sock";
             cheaper = 1;
             processes = 4;
-            php-docroot = "${nextcloud}";
-            php-allowed-ext = ".php";
-            php-index = "index.php";
-            php-set = 
-            };
+            # php-docroot = "${nextcloud}";
+            # php-allowed-ext = ".php";
+            # php-index = "index.php";
+            php-set = [
+              "session.save_path=/var/db/nextcloud/sessions"
+              "session.auto_start=0"
+            ];
+          };
         };
       };
     };
@@ -248,6 +289,17 @@ location ^~ /nextcloud {
   '';
 
   };
+
+  system.activationScripts = {
+      skynet-session = {
+        text = ''
+          mkdir -p /var/db/nextcloud/sessions
+          chown nginx:nginx /var/db/nextcloud/sessions
+        '';
+        deps = [];
+      };
+    };
+
   systemd.services.fakeFucker = let
     ncroot = "/var/db/nextcloud";
     bindcmd = (path: ''
@@ -258,12 +310,17 @@ location ^~ /nextcloud {
     unbindcmd = (path: ''
       /run/current-system/sw/bin/umount ${nextcloud.out}/${path}
     '');
-    dirs = [ "config" "data" "apps"];
+    dirs = [ "config" "data" "apps2"];
+    nccfg = "${ncroot}/config/config.php";
     in
   {
     before = [ "nginx.service" ];
     requiredBy = [ "nginx.service" ];
-    script = lib.concatMapStrings bindcmd dirs;
+      script = (lib.concatMapStrings bindcmd dirs) + ''
+      [ -a ${nccfg} ] || cp ${initial-nextcloud-config} ${nccfg}
+      chown nginx:nginx ${nccfg}
+      chmod 644 ${nccfg}
+      '';
     preStop = lib.concatMapStrings unbindcmd dirs;
     unitConfig = {
       StopWhenUnneeded = true;
