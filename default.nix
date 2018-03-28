@@ -8,6 +8,26 @@ in
 
 {
 
+  # Usage:
+  # deployFactor "my-cool-factor-program" /factor/program/sources
+  #
+  # Output:
+  # Derivation whose build product has the following structure:
+  # /bin/<my-cool-factor-program> -> /lib/factor/<my-cool-factor-program>/<my-cool-factor-program>
+  # /lib/factor/<my-cool-factor-program>/ : Directory (may contain other used resources)
+  deployFactor = scriptName: scriptSource: super.runCommand scriptName {
+    factorCmd = "${self.factor-lang}/bin/factor " + ./pkgs/deployFactor/deploy-me.factor;
+    SRC = scriptSource;
+    NAME = scriptName;
+  } ''
+    mkdir -p $out/bin "$NAME" tmp-cache
+    export XDG_CACHE_HOME=$PWD/tmp-cache
+
+    cp -r $SRC/* "$NAME"
+    $factorCmd ./"$NAME" $out/lib/factor
+    ln -sf $out/lib/factor/"$NAME"/"$NAME" $out/bin/"$NAME"
+  '';
+
   factor-lang = callPackage ./pkgs/factor-lang {
     inherit (self.gnome2) gtkglext;
   };
