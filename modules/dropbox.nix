@@ -26,6 +26,7 @@ in
         serviceConfig = {
           RestartSec = 5;
           Restart = "on-failure";
+          TimeoutStartSec = "5min";
         };
       };
     };

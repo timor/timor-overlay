@@ -5,6 +5,7 @@
     [
     ./modules/spacemacs-os.nix
     ./modules/mpd-user.nix
+    ./modules/dropbox.nix
   ];
 
   # example for activating mpd user:
