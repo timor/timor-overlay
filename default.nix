@@ -57,18 +57,19 @@ in
 
   exwm-ns = callPackage ./pkgs/exwm-ns { };
 
-  slic3r = super.slic3r.overrideAttrs(oldAttrs: {
-    buildPhase = ''
-      export LD=g++
-    '' +
-    oldAttrs.buildPhase;
-    patches = [
-      (self.fetchpatch {
-        name = "fix-deserialize-return-values";
-        url = "https://github.com/alexrj/Slic3r/commit/6e5938c8330b5bdb6b85c3ca8dc188605ee56b98.diff";
-	sha256 = "1m125lajsm2yhacwvb3yxsz63jy9k2zzfaprnc4nkfcz0hs5vbpq";
-	})];
-  });
+  # slic3r = super.slic3r.overrideAttrs(oldAttrs: {
+  #   buildPhase = ''
+  #     export LD=g++
+  #   '' +
+  #   oldAttrs.buildPhase;
+  #   patches = [
+  #     (self.fetchpatch {
+  #       name = "fix-deserialize-return-values";
+  #       url = "https://github.com/alexrj/Slic3r/commit/6e5938c8330b5bdb6b85c3ca8dc188605ee56b98.diff";
+	#       sha256 = "1m125lajsm2yhacwvb3yxsz63jy9k2zzfaprnc4nkfcz0hs5vbpq";
+	# })];
+  # });
+  slic3r = callPackage ./pkgs/slic3r {};
 
   emacs-spacemacs = self.emacs.overrideAttrs(oldAttrs: rec {
     patches = oldAttrs.patches ++ [ ./patches/spacemacs.d.patch ];
