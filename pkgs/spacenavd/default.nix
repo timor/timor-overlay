@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, libX11 }:
+{ stdenv, fetchurl, xorg }:
 
 stdenv.mkDerivation rec {
   name = "spacenavd-${version}";
@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
    sha256 = "1ayhi06pv5lx36m5abwbib1wbs75svjkz92605cmkaf5jszh7ln2";
   };
 
-  buildInputs = [ libX11 ];
+  buildInputs = [ xorg.libX11 ];
 
   meta = with stdenv.lib; {
     description = "Open Source driver for 3DConnexion Space Navigator devices";
