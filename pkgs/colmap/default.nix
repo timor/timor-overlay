@@ -29,4 +29,6 @@ stdenv.mkDerivation rec {
   '';
 
   outputs = [ "out" "dev" "lib" ];
+
+  separateDebugInfo = true;
 }
