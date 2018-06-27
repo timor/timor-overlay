@@ -19,7 +19,9 @@ stdenv.mkDerivation rec {
 
   postPatch = ''
     substituteInPlace cmake/CMakeHelper.cmake \
-      --replace "DESTINATION lib/colmap/" "DESTINATION \''${CMAKE_INSTALL_LIBDIR}"
+      --replace "DESTINATION lib" "DESTINATION \''${CMAKE_INSTALL_LIBDIR}"
+    substituteInPlace CMakeLists.txt \
+      --replace "DESTINATION include" "DESTINATION \''${CMAKE_INSTALL_INCLUDEDIR}"
   '';
 
   checkPhase = ''
