@@ -8,6 +8,13 @@ in
 
 {
 
+  colmap-clang = self.libsForQt5.callPackage ./pkgs/colmap {
+    stdenv = self.clangStdenv;
+    inherit (self.llvmPackages) openmp;
+    };
+
+  colmap = self.libsForQt5.callPackage ./pkgs/colmap { };
+
   # Usage:
   # deployFactor "my-cool-factor-program" /factor/program/sources
   #
