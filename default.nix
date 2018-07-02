@@ -26,6 +26,7 @@ let
         name = oldAttrs.name +"-debug";
         separateDebugInfo = true;
         outputs = (oldAttrs.outputs or [ "out" ]) ++ [ "source" ];
+        hardeningDisable = (oldAttrs.hardeningDisable or []) ++ [ "fortify" ];
       } // (
         if (oldAttrs ? buildPhase) then {
           buildPhase = saveSource + oldAttrs.buildPhase;
@@ -52,6 +53,10 @@ in
   # 2. Install the set of relevant binaries for e.g. glxinfo and the corresponding gdb into user environment:
   # $ nix-build -E 'with import <nixpkgs> {}; (gdbForPackage glxinfo)'
   # $ nix-env -i ./result
+  #
+  # 3. Build above environment, enter afterwards
+  # $ nix-build -E 'with import <nixpkgs> {}; (gdbForPackage glxinfo)'
+  # $ nix-shell -p ./result
   gdbForPackages = (pkgs:
     let
     debugPkgs = map debugify pkgs;
@@ -77,7 +82,7 @@ in
     env = self.buildEnv {
       name = "${gdbWrapper.name}-env";
       paths =  debugPkgs ++ [ gdbWrapper ];
-      extraOutputsToInstall = [ "debug" ];
+      extraOutputsToInstall = [ "debug" "source" ];
     };
   in env.overrideAttrs (oldAttrs: {passthru = {
       debugPkgs = builtins.listToAttrs (map (p: { name = (builtins.parseDrvName p.name).name; value = p;}));
