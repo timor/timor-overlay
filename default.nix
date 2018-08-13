@@ -180,8 +180,8 @@ in
      #!/bin/sh
      dir=~/.spacemacs.d.d
      if [ ! -d "$dir" ]; then
-	      ${self.git}/bin/git clone -b develop https://github.com/syl20bnr/spacemacs.git "$dir"
-        ${self.git}/bin/git clone https://github.com/timor/spacemacsOS "$dir/private/exwm"
+       ${self.git}/bin/git clone -b develop https://github.com/syl20bnr/spacemacs.git "$dir"
+       ${self.git}/bin/git clone https://github.com/timor/spacemacsOS "$dir/private/exwm"
      fi
      ${self.emacs-spacemacs}/bin/emacs $@
      '');
