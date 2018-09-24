@@ -175,6 +175,8 @@ in
     name = "emacs-${oldAttrs.version}-${versionModifier}";
   });
 
+  frame3dd = callPackage ./pkgs/frame3dd {};
+
   spacemacs =
     (self.writeScriptBin "spacemacs" ''
      #!/bin/sh
