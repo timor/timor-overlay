@@ -5,6 +5,14 @@ self: super:
 let
   lib = self.lib;
   callPackage = super.lib.callPackageWith self;
+  callPackageIfNewer = (oldPackage: path: args:
+    let newPackage = callPackage path args;
+      in
+    if lib.versionOlder (lib.getVersion oldPackage) (lib.getVersion newPackage) then
+    newPackage
+    else
+    oldPackage
+  );
   debugify = let
     saveSource = ''
       savedSource="$(mktemp -d)"
@@ -126,8 +134,9 @@ in
     ln -sf $out/lib/factor/"$NAME"/"$NAME" $out/bin/"$NAME"
   '';
 
-  factor-lang = callPackage ./pkgs/factor-lang {
+  factor-lang = callPackageIfNewer super.factor-lang ./pkgs/factor-lang {
     inherit (self.gnome2) gtkglext;
+    mesa = self.mesa_noglu;
   };
 
   spnav = callPackage ./pkgs/spnav { };
