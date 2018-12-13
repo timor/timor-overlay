@@ -172,6 +172,8 @@ in
 
   frame3dd = callPackage ./pkgs/frame3dd {};
 
+  ocrfeeder = callPackage ./pkgs/ocrfeeder { automake = self.automake111x; };
+
   spacemacs =
     (self.writeScriptBin "spacemacs" ''
      #!/bin/sh
