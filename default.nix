@@ -164,26 +164,11 @@ in
 
   exwm-ns = callPackage ./pkgs/exwm-ns { };
 
-  emacs-spacemacs = self.emacs.overrideAttrs(oldAttrs: rec {
-    patches = oldAttrs.patches ++ [ ./patches/spacemacs.d.patch ];
-    versionModifier = "spacemacs";
-    name = "emacs-${oldAttrs.version}-${versionModifier}";
-  });
-
   frame3dd = callPackage ./pkgs/frame3dd {};
 
   ocrfeeder = callPackage ./pkgs/ocrfeeder { automake = self.automake111x; };
 
-  spacemacs =
-    (self.writeScriptBin "spacemacs" ''
-     #!/bin/sh
-     dir=~/.spacemacs.d.d
-     if [ ! -d "$dir" ]; then
-       ${self.git}/bin/git clone -b develop https://github.com/syl20bnr/spacemacs.git "$dir"
-       ${self.git}/bin/git clone https://github.com/timor/spacemacsOS "$dir/private/exwm"
-     fi
-     ${self.emacs-spacemacs}/bin/emacs $@
-     '');
+  spacemacs = callPackage ./pkgs/spacemacs { };
 
   perlPackages = super.perlPackages // (with super.perlPackages;{
     ExtUtilsCppGuess = buildPerlModule rec {

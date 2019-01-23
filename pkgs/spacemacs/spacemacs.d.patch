@@ -18,7 +18,7 @@ diff -Nru emacs-25.3/lisp/progmodes/js.el emacs-25.3-new/lisp/progmodes/js.el
  
  (defcustom js-js-tmpdir
 -  "~/.emacs.d/js/js"
-+  "~/.spacemacs.d.d/js/js"
++  "~/.spacemacs.d/js/js"
    "Temporary directory used by `js-mode' to communicate with Mozilla.
  This directory must be readable and writable by both Mozilla and Emacs."
    :type 'directory
@@ -33,7 +33,7 @@ diff -Nru emacs-25.3/lisp/startup.el emacs-25.3-new/lisp/startup.el
 +		      ;; (load user-init-file-1 t t) inhibit user init file loading completely!
  
 -		      (when (eq user-init-file t)
-+		      (when t           ;since we inhibited loading .emacs, always load ./spacemacs.d/init.el
++		      (when t           ;since we inhibited loading .emacs, always load ./spacemacs.d.d/init.el
  			;; If we did not find ~/.emacs, try
  			;; ~/.emacs.d/init.el.
  			(let ((otherfile
@@ -54,7 +54,7 @@ diff -Nru emacs-25.3/lisp/subr.el emacs-25.3-new/lisp/subr.el
        ;; MS-DOS cannot have initial dot.
 -      "~/_emacs.d/"
 -    "~/.emacs.d/")
-+      "~/_spacemacs.d/"
++      "~/_spacemacs.d.d/"
 +    "~/.spacemacs.d.d/")
    "Directory beneath which additional per-user Emacs-specific files are placed.
  Various programs in Emacs store information in this directory.
@@ -67,7 +67,7 @@ diff -Nru emacs-25.3/src/xterm.c emacs-25.3-new/src/xterm.c
          /* Load our own gtkrc if it exists.  */
          {
 -          const char *file = "~/.emacs.d/gtkrc";
-+          const char *file = "~/.spacemacs.d.d/gtkrc";
++          const char *file = "~/.spacemacs.d/gtkrc";
            Lisp_Object s, abs_file;
  
            s = build_string (file);
