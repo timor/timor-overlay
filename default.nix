@@ -168,7 +168,7 @@ in
 
   ocrfeeder = callPackage ./pkgs/ocrfeeder { automake = self.automake111x; };
 
-  spacemacs = callPackage ./pkgs/spacemacs { };
+  spacemacs = callPackage ./pkgs/spacemacs/default.nix { };
 
   perlPackages = super.perlPackages // (with super.perlPackages;{
     ExtUtilsCppGuess = buildPerlModule rec {

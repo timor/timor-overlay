@@ -1,0 +1,118 @@
+diff -ru emacs-26.1.orig/doc/emacs/cmdargs.texi emacs-26.1/doc/emacs/cmdargs.texi
+--- emacs-26.1.orig/doc/emacs/cmdargs.texi	2018-04-23 16:17:34.000000000 +0200
++++ emacs-26.1/doc/emacs/cmdargs.texi	2019-01-26 16:13:24.827605102 +0100
+@@ -357,7 +357,9 @@
+ @opindex --user
+ @cindex load init file of another user
+ Load @var{user}'s initialization file instead of your
+-own@footnote{This option has no effect on MS-Windows.}.
++own@footnote{This option has no effect on MS-Windows, nor when the
++@env{EMACS_USER_DIRECTORY} environment variable is set (@pxref{General
++Variables}).}.
+ 
+ @item --debug-init
+ @opindex --debug-init
+@@ -660,6 +662,11 @@
+ @vindex USER@r{, environment variable}
+ The user's login name.  See also @env{LOGNAME}.  On MS-DOS, this
+ defaults to @samp{root}.
++@item EMACS_USER_DIRECTORY
++This specifies a directory in which the initialization file will be
++looked for; @xref{Find Init}. This directory will also be used as the
++default place where user-specific configuration data will be stored;
++@xref{Standard File Names,,, elisp}.
+ @item VERSION_CONTROL
+ @vindex VERSION_CONTROL@r{, environment variable}
+ Used to initialize the @code{version-control} variable (@pxref{Backup
+Only in emacs-26.1/doc/emacs: cmdargs.texi.orig
+diff -ru emacs-26.1.orig/doc/emacs/custom.texi emacs-26.1/doc/emacs/custom.texi
+--- emacs-26.1.orig/doc/emacs/custom.texi	2018-05-25 10:53:30.000000000 +0200
++++ emacs-26.1/doc/emacs/custom.texi	2019-01-26 16:13:24.827605102 +0100
+@@ -2567,6 +2567,14 @@
+ name in the system's data base of users.
+ @c  LocalWords:  backtab
+ 
++  The whole mechanism described above is bypassed if the
++@env{EMACS_USER_DIRECTORY} environment variable is specified, in which
++case Emacs directly looks for @file{init.el} inside the directory
++specified by @env{EMACS_USER_DIRECTORY} (@pxref{General Variables}).
++This directory is also used to hold user-specific configuration
++(@pxref{Standard File Names,,, elisp}).
++
++
+ @node Init Non-ASCII
+ @subsection Non-@acronym{ASCII} Characters in Init Files
+ @cindex international characters in @file{.emacs}
+Only in emacs-26.1/doc/emacs: custom.texi.orig
+diff -ru emacs-26.1.orig/lisp/custom.el emacs-26.1/lisp/custom.el
+--- emacs-26.1.orig/lisp/custom.el	2018-04-23 16:17:43.000000000 +0200
++++ emacs-26.1/lisp/custom.el	2019-01-26 16:13:24.827605102 +0100
+@@ -1129,6 +1129,7 @@
+ directory first---see `custom-theme-load-path'."
+   :type 'string
+   :group 'customize
++  :initialize 'custom-initialize-delay
+   :version "22.1")
+ 
+ (defvar custom-theme-load-path (list 'custom-theme-directory t)
+Only in emacs-26.1/lisp: custom.el.orig
+diff -ru emacs-26.1.orig/lisp/startup.el emacs-26.1/lisp/startup.el
+--- emacs-26.1.orig/lisp/startup.el	2018-04-23 16:17:43.000000000 +0200
++++ emacs-26.1/lisp/startup.el	2019-01-26 16:13:24.828605101 +0100
+@@ -407,7 +407,8 @@
+ from being initialized."
+   :type '(choice (const :tag "Don't record a session's auto save list" nil)
+ 		 string)
+-  :group 'auto-save)
++  :group 'auto-save
++  :initialize 'custom-initialize-delay)
+ 
+ (defvar emacs-basic-display nil)
+ 
+@@ -890,6 +891,12 @@
+ 	  ((member vc '("never" "simple"))
+ 	   (setq version-control 'never))))
+ 
++  ;; Set `user-emacs-directory' early so that delayed init variables
++  ;; can be updated.
++  (let ((user-emacs-directory--from-env (getenv "EMACS_USER_DIRECTORY")))
++    (when user-emacs-directory--from-env
++      (setq user-emacs-directory (file-name-as-directory user-emacs-directory--from-env)))
++
+   ;;! This has been commented out; I currently find the behavior when
+   ;;! split-window-keep-point is nil disturbing, but if I can get used
+   ;;! to it, then it would be better to eliminate the option.
+@@ -1189,7 +1196,10 @@
+ 		      ;; This tells `load' to store the file name found
+ 		      ;; into user-init-file.
+ 		      (setq user-init-file t)
+-		      (load user-init-file-1 t t)
++
++                        ;; Don't load `~/.emacs' if EMACS_USER_DIRECTORY was set
++                        (unless user-emacs-directory--from-env
++                          (load user-init-file-1 t t))
+ 
+ 		      (when (eq user-init-file t)
+ 			;; If we did not find ~/.emacs, try
+@@ -1198,7 +1208,9 @@
+ 			       (expand-file-name
+ 				"init"
+ 				(file-name-as-directory
+-				 (concat "~" init-file-user "/.emacs.d")))))
++                                   (if user-emacs-directory--from-env
++                                       user-emacs-directory
++                                     (concat "~" init-file-user "/.emacs.d"))))))
+ 			  (load otherfile t t)
+ 
+ 			  ;; If we did not find the user's init file,
+@@ -1311,7 +1323,7 @@
+     ;; be realized.
+     (unless (and (eq scalable-fonts-allowed old-scalable-fonts-allowed)
+ 		 (eq face-ignored-fonts old-face-ignored-fonts))
+-      (clear-face-cache)))
++        (clear-face-cache))))
+ 
+   ;; If any package directory exists, initialize the package system.
+   (and user-init-file
+Only in emacs-26.1/lisp: startup.el.orig
+Only in emacs-26.1/src: Makefile.in.orig
