@@ -11,7 +11,7 @@ let
   name = "spacemacs-${version}";
   version = "0.300-rc1";
   startScript = writeScriptBin "start-spacemacs" ''
-    #!/bin/bash
+    #!/bin/sh
     export EMACS_USER_DIRECTORY="$HOME/.spacemacs.d/"
     ${lib.getBin spacemacs-emacs}/bin/emacs -q --load ${spacemacsSrc}/init.el $@
   '';
