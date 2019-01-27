@@ -1,22 +1,34 @@
-{lib, runCommandNoCC, fetchFromGitHub, writeScriptBin, callPackage }:
+{lib, stdenv, fetchFromGitHub, writeScriptBin, callPackage }:
 
 let
-  spacemacsSrc = fetchFromGitHub {
+  spacemacs-emacs = callPackage ./spacemacs-emacs.nix { };
+  name = "spacemacs-${version}";
+  version = "0.300-rc1";
+in
+stdenv.mkDerivation rec {
+  inherit name version;
+
+  src = fetchFromGitHub {
     owner = "timor";
     repo = "spacemacs";
     rev = "5a5b0a7940664ec79d5fd2b67665239f8fdab461";
     sha256 = "0z6pr065y462rasgrm74i6bbpl7g9zz4nbf66szn7xa35q847xl7";
   };
-  spacemacs-emacs = callPackage ./spacemacs-emacs.nix { };
-  name = "spacemacs-${version}";
-  version = "0.300-rc1";
+
   startScript = writeScriptBin "start-spacemacs" ''
     #!/bin/sh
     export EMACS_USER_DIRECTORY="$HOME/.spacemacs.d/"
-    ${lib.getBin spacemacs-emacs}/bin/emacs -q --load ${spacemacsSrc}/init.el $@
+    ${lib.getBin spacemacs-emacs}/bin/emacs -q --load ${src}/init.el $@
   '';
-in
-runCommandNoCC "spacemacs" {inherit name version;} ''
-  mkdir -p $out/bin
-  ln -s ${startScript}/bin/start-spacemacs $out/bin/spacemacs
-''
+
+  configurePhase = "true";
+  buildPhase = ''
+    mkdir -p $out/bin
+    cp -r $src/* $src/*.* $out/
+    chmod -R +w $out
+    ${lib.getBin spacemacs-emacs}/bin/emacs --batch --eval '(batch-byte-recompile-directory 0)' "$out/"
+  '';
+  installPhase = ''
+    ln -s ${startScript}/bin/start-spacemacs $out/bin/spacemacs
+  '';
+}
