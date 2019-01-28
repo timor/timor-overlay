@@ -1,9 +1,18 @@
-{lib, stdenv, fetchFromGitHub, writeScriptBin, callPackage }:
+{lib, stdenv, fetchFromGitHub, writeScriptBin, callPackage, makeDesktopItem }:
 
 let
   spacemacs-emacs = callPackage ./spacemacs-emacs.nix { };
   name = "spacemacs-${version}";
   version = "0.300-rc1";
+  desktopItem = makeDesktopItem {
+    name = "spacemacs";
+    genericName = "Text Editor";
+    exec = "spacemacs %F";
+    icon = "spacemacs";
+    comment = "A community-driven Emacs distribution - The best editor is neither Emacs nor Vim, it's Emacs *and* Vim!";
+    desktopName = "Spacemacs";
+    categories = "Development;TextEditor;";
+  };
 in
 stdenv.mkDerivation rec {
   inherit name version;
@@ -30,5 +39,11 @@ stdenv.mkDerivation rec {
   '';
   installPhase = ''
     ln -s ${startScript}/bin/start-spacemacs $out/bin/spacemacs
+
+    mkdir -p $out/share/icons/hicolor/scalable/apps
+    ln -s $out/assets/spacemacs.svg $out/share/icons/hicolor/scalable/apps/
+
+    mkdir -p $out/share/applications
+    ln -s ${desktopItem}/share/applications/* $out/share/applications/
   '';
 }
