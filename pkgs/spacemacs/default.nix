@@ -27,7 +27,7 @@ stdenv.mkDerivation rec {
   startScript = writeScriptBin "start-spacemacs" ''
     #!/bin/sh
     export EMACS_USER_DIRECTORY="$HOME/.spacemacs.d/"
-    ${lib.getBin spacemacs-emacs}/bin/emacs -q --load ${src}/init.el $@
+    ${lib.getBin spacemacs-emacs}/bin/emacs -q --eval '(setq user-init-file "${src}/init.el")' --load ${src}/init.el $@
   '';
 
   configurePhase = "true";
