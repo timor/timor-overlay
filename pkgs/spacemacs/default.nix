@@ -30,6 +30,12 @@ stdenv.mkDerivation rec {
     ${lib.getBin spacemacs-emacs}/bin/emacs -q --eval '(setq user-init-file "${src}/init.el")' --load ${src}/init.el $@
   '';
 
+  postPatch = ''
+    for i in core/info/release-notes/*; do
+      substituteInPlace $i --replace ".emacs.d" ".spacemacs.d"
+    done
+  '';
+
   configurePhase = "true";
 
   buildPhase = ''
