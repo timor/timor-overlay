@@ -31,13 +31,14 @@ stdenv.mkDerivation rec {
   '';
 
   configurePhase = "true";
+
   buildPhase = ''
-    mkdir -p $out/bin
-    cp -r $src/* $src/*.* $out/
-    chmod -R +w $out
-    ${lib.getBin spacemacs-emacs}/bin/emacs --batch --eval '(batch-byte-recompile-directory 0)' "$out/"
+    ${lib.getBin spacemacs-emacs}/bin/emacs --batch --eval '(batch-byte-recompile-directory 0)' "./"
   '';
   installPhase = ''
+    mkdir -p $out/bin
+    cp -r . $out
+    chmod -R +w $out
     ln -s ${startScript}/bin/start-spacemacs $out/bin/spacemacs
 
     mkdir -p $out/share/icons/hicolor/scalable/apps
