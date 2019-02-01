@@ -31,7 +31,8 @@ in
       pkgs.source-code-pro
     ];
     environment.systemPackages = [
-      pkgs.ag
+      pkgs.ripgrep
+      pkgs.silver-searcher
       pkgs.git
     ];
   };
