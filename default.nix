@@ -192,6 +192,8 @@ in
   # });
   notmuch = callPackage ./pkgs/notmuch { };
 
+  totala = callPackage ./pkgs/totala { };
+
   # pijul = callPackage ./pkgs/pijul { }; will only work once rust stuff has been sorted out
 
   xcircuit = callPackage ./pkgs/xcircuit { };
