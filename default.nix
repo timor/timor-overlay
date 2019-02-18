@@ -147,6 +147,8 @@ in
       buildInputs = oldAttrs.buildInputs ++ [ self.spnav ];
   }));
 
+  kerneldocs = callPackage ./pkgs/kerneldocs {};
+
   open-zwave = callPackage ./pkgs/open-zwave {};
   workcraft = callPackage ./pkgs/workcraft {};
 
