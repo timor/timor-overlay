@@ -86,6 +86,8 @@ in
 
   frame3dd = callPackage ./pkgs/frame3dd {};
 
+  nux = callPackage ./pkgs/nux {};
+
   ocrfeeder = callPackage ./pkgs/ocrfeeder { automake = self.automake111x; };
 
   spacemacs = callPackage ./pkgs/spacemacs/default.nix { };
