@@ -34,7 +34,7 @@ in
   # Derivation whose build product has the following structure:
   # /bin/<my-cool-factor-program> -> /lib/factor/<my-cool-factor-program>/<my-cool-factor-program>
   # /lib/factor/<my-cool-factor-program>/ : Directory (may contain other used resources)
-  deployFactor = scriptName: scriptSource: super.runCommand scriptName {
+  deployFactor = scriptName: scriptSource: self.runCommand scriptName {
     factorCmd = "${self.factor-lang}/bin/factor " + ./pkgs/deployFactor/deploy-me.factor;
     SRC = scriptSource;
     NAME = scriptName;
