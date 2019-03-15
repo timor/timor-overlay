@@ -34,18 +34,7 @@ in
   # Derivation whose build product has the following structure:
   # /bin/<my-cool-factor-program> -> /lib/factor/<my-cool-factor-program>/<my-cool-factor-program>
   # /lib/factor/<my-cool-factor-program>/ : Directory (may contain other used resources)
-  deployFactor = scriptName: scriptSource: self.runCommand scriptName {
-    factorCmd = "${self.factor-lang}/bin/factor " + ./pkgs/deployFactor/deploy-me.factor;
-    SRC = scriptSource;
-    NAME = scriptName;
-  } ''
-    mkdir -p $out/bin "$NAME" tmp-cache
-    export XDG_CACHE_HOME=$PWD/tmp-cache
-
-    cp -r $SRC/* "$NAME"
-    $factorCmd ./"$NAME" $out/lib/factor
-    ln -sf $out/lib/factor/"$NAME"/"$NAME" $out/bin/"$NAME"
-  '';
+  deployFactor = callPackage ./pkgs/deployFactor { };
 
   factor-lang = callPackageIfNewer super.factor-lang ./pkgs/factor-lang {
     inherit (self.gnome2) gtkglext;
