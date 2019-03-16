@@ -2,14 +2,14 @@
 
 stdenv.mkDerivation rec {
   name = "nux-${version}";
-  version = "1.1.0";
+  version = "1.2.0";
 
   src = fetchFromGitHub {
     owner = "timor";
     repo = "nux";
     name = "nux-src";
     rev = version;
-    sha256 = "0g80zqdarmw515xsi50kxkl1dcdc3p3cnqsky6bw10akjzn8mzj7";
+    sha256 = "0kh7n3m4mmndx2kc0mi7hcfv85c3lzazp5cvngrsdynmc18sg907";
   };
 
   buildCommand = ''
