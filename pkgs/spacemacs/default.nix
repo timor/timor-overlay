@@ -26,6 +26,10 @@ stdenv.mkDerivation rec {
 
   patches = [
     (fetchurl {
+      url = "https://patch-diff.githubusercontent.com/raw/syl20bnr/spacemacs/pull/12072.diff";
+      sha256 = "1g0zh4i2a4raxq3m0p3igm4qd35p964589dwck4glzp765abiqs2";
+    })
+    (fetchurl {
       url = "https://github.com/timor/spacemacs/commit/c18587b77f318ccb2fe198f23589e9c0826faa9f.diff";
       sha256 = "0ldsp0kx89iwjn5nymbr6yaj9lfyfsyizj6nlrkry852jll3hdyd";
     })
