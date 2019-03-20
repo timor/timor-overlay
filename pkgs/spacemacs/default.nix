@@ -1,4 +1,4 @@
-{lib, stdenv, fetchFromGitHub, writeScriptBin, callPackage, makeDesktopItem }:
+{lib, stdenv, fetchFromGitHub, writeScriptBin, callPackage, makeDesktopItem, fetchurl }:
 
 let
   spacemacs-emacs = callPackage ./spacemacs-emacs.nix { };
@@ -24,11 +24,12 @@ stdenv.mkDerivation rec {
     sha256 = "0z6pr065y462rasgrm74i6bbpl7g9zz4nbf66szn7xa35q847xl7";
   };
 
-  startScript = writeScriptBin "start-spacemacs" ''
-    #!/bin/sh
-    export EMACS_USER_DIRECTORY="$HOME/.spacemacs.d/"
-    ${lib.getBin spacemacs-emacs}/bin/emacs -q --eval '(setq user-init-file "${src}/init.el")' --load ${src}/init.el $@
-  '';
+  patches = [
+    (fetchurl {
+      url = "https://github.com/timor/spacemacs/commit/c18587b77f318ccb2fe198f23589e9c0826faa9f.diff";
+      sha256 = "0ldsp0kx89iwjn5nymbr6yaj9lfyfsyizj6nlrkry852jll3hdyd";
+    })
+  ];
 
   postPatch = ''
     for i in core/info/release-notes/*; do
@@ -40,12 +41,21 @@ stdenv.mkDerivation rec {
 
   buildPhase = ''
     ${lib.getBin spacemacs-emacs}/bin/emacs --batch --eval '(batch-byte-recompile-directory 0)' "./"
+    # some byte-compiled files don't work due to missing compile-time dependencies
+    rm core/core-spacemacs-buffer.elc
   '';
+
   installPhase = ''
     mkdir -p $out/bin
     cp -r . $out
     chmod -R +w $out
-    ln -s ${startScript}/bin/start-spacemacs $out/bin/spacemacs
+
+    cat > $out/bin/spacemacs <<EOF
+    #!/bin/sh
+    export EMACS_USER_DIRECTORY="\$HOME/.spacemacs.d/"
+    ${lib.getBin spacemacs-emacs}/bin/emacs -q --eval '(setq user-init-file "$out/init.el")' --load $out/init.el $@
+    EOF
+    chmod +x $out/bin/spacemacs
 
     mkdir -p $out/share/icons/hicolor/scalable/apps
     ln -s $out/assets/spacemacs.svg $out/share/icons/hicolor/scalable/apps/
