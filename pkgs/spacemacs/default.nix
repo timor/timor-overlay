@@ -20,8 +20,8 @@ stdenv.mkDerivation rec {
   src = fetchFromGitHub {
     owner = "timor";
     repo = "spacemacs";
-    rev = "5a5b0a7940664ec79d5fd2b67665239f8fdab461";
-    sha256 = "0z6pr065y462rasgrm74i6bbpl7g9zz4nbf66szn7xa35q847xl7";
+    rev = "f2fe8fe313b4dbf39516b404726d4195e3e39f0c";
+    sha256 = "02zachx65c6wkpsl89h8khpjjvcqg3mic26bzlpqi0c21429c34j";
   };
 
   patches = [
@@ -52,6 +52,7 @@ stdenv.mkDerivation rec {
   installPhase = ''
     mkdir -p $out/bin
     cp -r . $out
+    rm -rf $out/.circleci $out/.travisci
     chmod -R +w $out
 
     cat > $out/bin/spacemacs <<EOF
