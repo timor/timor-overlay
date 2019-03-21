@@ -1,4 +1,4 @@
-{lib, stdenv, fetchFromGitHub, writeScriptBin, callPackage, makeDesktopItem, fetchurl }:
+{lib, stdenv, fetchgit, writeScriptBin, callPackage, makeDesktopItem, fetchurl, git, supportCheckPhase ? true, runAllTests ? false }:
 
 let
   spacemacs-emacs = callPackage ./spacemacs-emacs.nix { };
@@ -17,11 +17,11 @@ in
 stdenv.mkDerivation rec {
   inherit name version;
 
-  src = fetchFromGitHub {
-    owner = "timor";
-    repo = "spacemacs";
-    rev = "f2fe8fe313b4dbf39516b404726d4195e3e39f0c";
-    sha256 = "02zachx65c6wkpsl89h8khpjjvcqg3mic26bzlpqi0c21429c34j";
+  src = fetchgit {
+    url = "https://github.com/timor/spacemacs.git";
+    rev = "3a265544d88cd07895ed00bec4b8e24782020e3b";
+    sha256 = "09mrpd8rqzh9my2ny9ly9mxivgvmhgfcan54gbdmk9if79qwp3h6";
+    leaveDotGit = true; # for checkPhase, and also for blaming in final store path...
   };
 
   patches = [
@@ -44,10 +44,47 @@ stdenv.mkDerivation rec {
   configurePhase = "true";
 
   buildPhase = ''
-    ${lib.getBin spacemacs-emacs}/bin/emacs --batch --eval '(batch-byte-recompile-directory 0)' "./"
+    loadArgs="-L $PWD/core -L $PWD/layers -l ./core/core-load-paths.el -l ./core/core-versions.el"
+    export EMACS_USER_DIRECTORY=$PWD
+    ${lib.getBin spacemacs-emacs}/bin/emacs --batch $loadArgs --eval '(batch-byte-recompile-directory 0)' "./core"
+
+    # ${lib.getBin spacemacs-emacs}/bin/emacs --batch --eval '(batch-byte-recompile-directory 0)' "./layers"
+    # ${lib.getBin spacemacs-emacs}/bin/emacs --batch --eval '(batch-byte-compile)' "./init.el"
     # some byte-compiled files don't work due to missing compile-time dependencies
-    rm core/core-spacemacs-buffer.elc
+    # rm -f core/core-spacemacs-buffer.elc
+    rm -f core/libs/mocker.elc
   '';
+
+  doCheck = supportCheckPhase;
+
+  checkInputs = [ git ];
+
+  checkPhase = let
+    testListCmd = if runAllTests then
+        "find ./tests -type f -name Makefile"
+      else
+        "echo ./tests/core/Makefile";
+    in
+    ''
+      (
+        set -e
+        export EMACS_USER_DIRECTORY=$PWD
+        export PATH=${lib.getBin spacemacs-emacs}/bin:$PATH
+        export HOME=$TMPDIR/fakehome
+        mkdir -p $HOME/.spacemacs/private
+        cp core/templates/.spacemacs.template $HOME/.spacemacs
+
+        # ensure that remote points to origin for testing
+        set +e
+        git remote remove origin
+        set -e
+        git remote add origin https://github.com/syl20bnr/spacemacs.git
+        for p in $(${testListCmd}); do
+          ( cd $(dirname $p); make; )
+        done
+        rm -rf $HOME/.spacemacs
+      )
+      '';
 
   installPhase = ''
     mkdir -p $out/bin
@@ -58,7 +95,7 @@ stdenv.mkDerivation rec {
     cat > $out/bin/spacemacs <<EOF
     #!/bin/sh
     export EMACS_USER_DIRECTORY="\$HOME/.spacemacs.d/"
-    ${lib.getBin spacemacs-emacs}/bin/emacs -q --eval '(setq user-init-file "$out/init.el")' --load $out/init.el $@
+    ${lib.getBin spacemacs-emacs}/bin/emacs -q --eval '(setq user-init-file "$out/init.el")' "\$@" --load $out/init.el
     EOF
     chmod +x $out/bin/spacemacs
 
