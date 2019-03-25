@@ -109,5 +109,5 @@ in
 
   xcircuit = callPackage ./pkgs/xcircuit { };
 
-  zotero = callPackage ./pkgs/zotero { };
+  # zotero = callPackage ./pkgs/zotero { };
 }
