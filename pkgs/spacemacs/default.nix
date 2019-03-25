@@ -107,4 +107,8 @@ stdenv.mkDerivation rec {
     mkdir -p $out/share/applications
     ln -s ${desktopItem}/share/applications/* $out/share/applications/
   '';
+
+  postFixup = ''
+    ln -s $out/share/doc $out/doc
+  '';
 }
