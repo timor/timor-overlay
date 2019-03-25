@@ -43,6 +43,8 @@ stdenv.mkDerivation rec {
 
   configurePhase = "true";
 
+  dontBuild = true;
+
   buildPhase = ''
     loadArgs="-L $PWD/core -L $PWD/layers -l ./core/core-load-paths.el -l ./core/core-versions.el"
     export EMACS_USER_DIRECTORY=$PWD
