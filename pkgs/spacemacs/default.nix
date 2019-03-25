@@ -89,8 +89,8 @@ stdenv.mkDerivation rec {
       '';
 
   installPhase = ''
-    mkdir -p $out/bin
     cp -r . $out
+    mkdir -p $out/bin
     rm -rf $out/.circleci $out/.travisci
     chmod -R +w $out
 
