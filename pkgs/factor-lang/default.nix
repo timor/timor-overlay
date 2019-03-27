@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
 
   patches = [
     ./staging-command-line-0.98-pre.patch
-    ./workdir-0.98-pre.patch
+    ./0001-pathnames-redirect-work-prefix-to-.local-share-facto.patch
     ./fuel-dir.patch
   ];
 
