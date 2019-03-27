@@ -36,10 +36,14 @@ in
   # /lib/factor/<my-cool-factor-program>/ : Directory (may contain other used resources)
   deployFactor = callPackage ./pkgs/deployFactor { };
 
-  factor-lang = callPackageIfNewer super.factor-lang ./pkgs/factor-lang {
-    inherit (self.gnome2) gtkglext;
-    mesa = self.mesa_noglu;
-  };
+  factor-lang = (super.factor-lang.overrideAttrs (oldAttrs:
+  {
+    patches = [
+      ./pkgs/factor-lang/staging-command-line-0.98-pre.patch
+      ./pkgs/factor-lang/0001-pathnames-redirect-work-prefix-to-.local-share-facto.patch
+      ./pkgs/factor-lang/fuel-dir.patch
+    ];
+  }));
 
   inherit (callPackage (self.fetchurl {
     url = https://raw.githubusercontent.com/timor/nixpkgs/libdwarf-dwarfdump-zlib/pkgs/development/libraries/libdwarf/default.nix;
