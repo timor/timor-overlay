@@ -25,6 +25,11 @@ stdenv.mkDerivation rec {
     ./staging-command-line-0.98-pre.patch
     ./0001-pathnames-redirect-work-prefix-to-.local-share-facto.patch
     ./fuel-dir.patch
+    # don't MEMO xdg-*...
+    (fetchurl {
+      url = "https://github.com/factor/factor/commit/f3d1d785cd2c369615989757d3301f7b4548696a.diff";
+      sha256 = "0ylx8qhplzqimdqwza2w96za09xah4mgg7bs1gmi1iacx92230p6";
+      })
   ];
 
   buildInputs = with xorg; [ git rlwrap curl pkgconfig perl makeWrapper
