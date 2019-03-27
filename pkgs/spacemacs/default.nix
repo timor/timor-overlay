@@ -37,8 +37,8 @@ stdenv.mkDerivation rec {
     # include factor-mode fixes until upstream does:
 
     (fetchurl {
-      url = "https://github.com/timor/spacemacs/compare/nixos-adjustments...timor:dev/test-factor-fuel-package-name.diff";
-      sha256 = "0fqnpsp72z2gxfpzzfgbxsz1ymd56r8s7sz8f55c5wgw64pg4h6n";
+      url = "https://patch-diff.githubusercontent.com/raw/syl20bnr/spacemacs/pull/12042.diff";
+      sha256 = "11m8zrhr668wp1rrg0yczhchwq045lhakiapnajdil6bk9ffrjqm";
     })
 
   ];
