@@ -1,4 +1,4 @@
-{lib, stdenv, fetchgit, writeScriptBin, callPackage, makeDesktopItem, fetchurl, git, supportCheckPhase ? true, runAllTests ? false }:
+{lib, stdenv, fetchgit, writeScriptBin, callPackage, makeDesktopItem, fetchurl, git, supportCheckPhase ? false, runAllTests ? false }:
 
 let
   spacemacs-emacs = callPackage ./spacemacs-emacs.nix { };
@@ -20,8 +20,9 @@ stdenv.mkDerivation rec {
   src = fetchgit {
     url = "https://github.com/timor/spacemacs.git";
     rev = "3a265544d88cd07895ed00bec4b8e24782020e3b";
-    sha256 = "09mrpd8rqzh9my2ny9ly9mxivgvmhgfcan54gbdmk9if79qwp3h6";
-    leaveDotGit = true; # for checkPhase, and also for blaming in final store path...
+    sha256 = if supportCheckPhase then "00w6x9rg36sxviyr5na1q2q6drbh4lkq3sr6rjrzi8n4zpldlmsy"
+      else "02yd37rlc4wbj9hz9la16zbv81ybjmaz9gmzqrvx2md3f6bqlb46";
+    leaveDotGit = supportCheckPhase; # for checkPhase, and also for blaming in final store path...
   };
 
   patches = [
@@ -37,8 +38,9 @@ stdenv.mkDerivation rec {
     # include factor-mode fixes until upstream does:
 
     (fetchurl {
-      url = "https://patch-diff.githubusercontent.com/raw/syl20bnr/spacemacs/pull/12042.diff";
-      sha256 = "11m8zrhr668wp1rrg0yczhchwq045lhakiapnajdil6bk9ffrjqm";
+      url = "https://github.com/timor/spacemacs/compare/nixos-adjustments...timor:factor-0.98-deprecated-command.diff";
+      sha256 = "1jgisjh9wmlamdd680rziqn7b9wb5mz1v54vdvhpjznpaj9azjcg";
+      name = "factor-mode-patches";
     })
 
   ];
