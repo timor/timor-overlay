@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
     # don't MEMO xdg-*...
     (fetchurl {
       url = "https://github.com/factor/factor/commit/f3d1d785cd2c369615989757d3301f7b4548696a.diff";
-      sha256 = "0ylx8qhplzqimdqwza2w96za09xah4mgg7bs1gmi1iacx92230p6";
+      sha256 = "05plv6p4xc47r3blm59msqyml3v3h49cyycizfb8z88qhyf32vd2";
       })
   ];
 
