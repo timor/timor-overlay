@@ -127,4 +127,8 @@ stdenv.mkDerivation rec {
   postFixup = ''
     ln -s $out/share/doc $out/doc
   '';
+
+  passthru = {
+    inherit spacemacs-emacs;
+  };
 }
