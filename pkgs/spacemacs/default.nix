@@ -113,7 +113,7 @@ stdenv.mkDerivation rec {
     cat > $out/bin/spacemacs <<EOF
     #!/bin/sh
     export EMACS_USER_DIRECTORY="\$HOME/.spacemacs.d/"
-    ${lib.getBin spacemacs-emacs}/bin/emacs -q --eval '(setq user-init-file "$out/init.el")' "\$@" --load $out/init.el
+    ${lib.getBin spacemacs-emacs}/bin/emacs -q --eval '(setq user-init-file "$out/init.el")' --load $out/init.el "\$@"
     EOF
     chmod +x $out/bin/spacemacs
 
