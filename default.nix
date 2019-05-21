@@ -41,6 +41,18 @@ in
     mesa = self.mesa_noglu;
   };
 
+  git-rebase-all = self.runCommand "git-rebase-all" rec {
+    src = self.fetchurl {
+      url = https://raw.githubusercontent.com/nornagon/git-rebase-all/febe9888a62c6901793353107776c49a42d5fc1e/git-rebase-all ;
+      sha256 = "0hlifc1kkk8243jz3igacyj959xwsc4fz9pp5lbpakzflmbw9yw4";
+    };
+  } ''
+    mkdir -p $out/bin
+    cp  $src $out/bin/git-rebase-all
+    chmod +x $out/bin/git-rebase-all
+    patchShebangs $out/bin/git-rebase-all
+    '';
+
   inherit (callPackage (self.fetchurl {
     url = https://raw.githubusercontent.com/timor/nixpkgs/libdwarf-dwarfdump-zlib/pkgs/development/libraries/libdwarf/default.nix;
     sha256 = "043b55psin4wllz0vriwhm7p74w270312141zkk3radbnzfr38xf";
@@ -106,6 +118,8 @@ in
   totala = callPackage ./pkgs/totala { };
 
   # pijul = callPackage ./pkgs/pijul { }; will only work once rust stuff has been sorted out
+
+  udis86 = callPackage ./pkgs/udis86 { };
 
   xcircuit = callPackage ./pkgs/xcircuit { };
 
