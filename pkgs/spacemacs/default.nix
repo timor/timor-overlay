@@ -29,8 +29,10 @@ stdenv.mkDerivation rec {
 
     # preempt outshine/outorg layer PR
     (fetchurl {
+      # url = "https://patch-diff.githubusercontent.com/raw/syl20bnr/spacemacs/pull/11958.diff";
+      # sha256 = "03whw92f5ds3jbgiia750h5h8dfqfggilllyiwgkv9pvd2d50k2j";
       url = "https://patch-diff.githubusercontent.com/raw/syl20bnr/spacemacs/pull/11958.diff";
-      sha256 = "03whw92f5ds3jbgiia750h5h8dfqfggilllyiwgkv9pvd2d50k2j";
+      sha256 = "0710ixa3z58nsk6pb7lxf3nzy535nawkla052bpn0dmb20d73zqc";
     })
 
   ];
