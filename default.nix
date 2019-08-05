@@ -40,6 +40,27 @@ in
     inherit (self.gnome2) gtkglext;
   };
 
+  factor-lang-live = (self.factor-lang.overrideAttrs (oldAttrs:
+  rec {
+    version = "0.99-pre1";
+    name = "factor-lang-${version}";
+    bootImage = self.fetchurl {
+      url = http://downloads.factorcode.org/images/build/boot.unix-x86.64.image.b3bcf537cc360d0ba892391e48b50c704ec6b101;
+      sha256 = "0vdmlrv26jyfhrvizjpg3f7v6rjai8n2zaamlg7iry2n5vqisxqm";
+    };
+
+    src = self.fetchFromGitHub {
+      owner = "factor";
+      repo = "factor";
+      rev = "66652c490389a6fcb59e22879df91991b19d2a4b";
+      sha256 = "1n73rn3mydmh6vgygg8hpjzlkxsh344dg88ag6zjrw7wmyqcgywa";
+    };
+
+    postUnpack = ''
+      cp ${bootImage} $sourceRoot/boot.unix-x86.64.image
+    '';
+  }));
+
   git-rebase-all = self.runCommand "git-rebase-all" rec {
     src = self.fetchurl {
       url = https://raw.githubusercontent.com/nornagon/git-rebase-all/febe9888a62c6901793353107776c49a42d5fc1e/git-rebase-all ;
