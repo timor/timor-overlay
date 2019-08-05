@@ -21,3 +21,13 @@ index d1aed3ad82..6104a0c94b 100644
  
  HOOK: home io-backend ( -- dir )
  
+@@ -219,4 +220,4 @@ C: <pathname> pathname
+ 
+ M: pathname absolute-path string>> absolute-path ;
+ 
+-M: pathname <=> [ string>> ] compare ;
+\ No newline at end of file
++M: pathname <=> [ string>> ] compare ;
+-- 
+2.18.1
+

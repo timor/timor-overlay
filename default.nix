@@ -38,7 +38,6 @@ in
 
   factor-lang = callPackageIfNewer super.factor-lang ./pkgs/factor-lang {
     inherit (self.gnome2) gtkglext;
-    mesa = self.mesa_noglu;
   };
 
   git-rebase-all = self.runCommand "git-rebase-all" rec {

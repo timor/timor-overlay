@@ -1,82 +1,71 @@
-{ stdenv, fetchurl, fetchFromGitHub, glib, glibc, git,
+{ stdenv, fetchurl, glib, git,
   rlwrap, curl, pkgconfig, perl, makeWrapper, tzdata, ncurses,
-  pango, cairo, gtk2, gdk_pixbuf, gtkglext,
-  mesa, xorg, openssl }:
+  pango, cairo, gtk2, gdk_pixbuf, gtkglext, pcre,
+  mesa_glu, xorg, openssl, unzip, udis86 }:
 
-stdenv.mkDerivation rec {
+let
+  inherit (stdenv.lib) optional;
+
+in stdenv.mkDerivation rec {
   name = "factor-lang-${version}";
-  version = "0.98-pre";
-  rev = "b2de82042c5d14f80ba1fa54a6ce63344dd35daa";
+  version = "0.98";
+  rev = "7999e72aecc3c5bc4019d43dc4697f49678cc3b4";
 
-  src = fetchFromGitHub {
-    owner = "factor";
-    repo = "factor";
-    rev = rev;
-    sha256 = "092i366mwc3rpdrk571c4lwf3xzxkgn9i64q654yl416af40gvk6";
-  };
-
-  factorimage = fetchurl {
-    url = http://downloads.factorcode.org/images/build/boot.unix-x86.64.image.52de821e1930b4c161d0a2f5df2d719bfc181221;
-    sha256 = "0gd4c60p3yp33pj09x15rg5klm3yn10xp960kg9imjjwfxal5s1d";
-    name = "factorimage";
+  src = fetchurl {
+    url = http://downloads.factorcode.org/releases/0.98/factor-src-0.98.zip;
+    sha256 = "01ip9mbnar4sv60d2wcwfz62qaamdvbykxw3gbhzqa25z36vi3ri";
   };
 
   patches = [
     ./staging-command-line-0.98-pre.patch
     ./0001-pathnames-redirect-work-prefix-to-.local-share-facto.patch
     ./fuel-dir.patch
-    # don't MEMO xdg-*...
-    (fetchurl {
-      url = "https://github.com/factor/factor/commit/f3d1d785cd2c369615989757d3301f7b4548696a.diff";
-      sha256 = "05plv6p4xc47r3blm59msqyml3v3h49cyycizfb8z88qhyf32vd2";
-      })
+    # preempt https://github.com/factor/factor/pull/2139
+    ./fuel-dont-jump-to-using.patch
   ];
 
-  buildInputs = with xorg; [ git rlwrap curl pkgconfig perl makeWrapper
-    libX11 pango cairo gtk2 gdk_pixbuf gtkglext
-    mesa libXmu libXt libICE libSM openssl ];
+  runtimeLibs =  with xorg; [
+    stdenv.glibc.out
+    glib
+    libX11 pango cairo gtk2 gdk_pixbuf gtkglext pcre
+    mesa_glu libXmu libXt libICE libSM openssl udis86
+  ];
 
-  # buildPhase = ''
-  #   make $(bash ./build-support/factor.sh make-target) GIT_LABEL=heads/master-${rev}
-  # '';
+  buildInputs = with xorg; [
+    git rlwrap curl pkgconfig perl makeWrapper
+    unzip
+  ] ++ runtimeLibs;
+
+  runtimeLibPath = stdenv.lib.makeLibraryPath runtimeLibs;
+
   buildPhase = ''
-    sed -ie '4i	GIT_LABEL = heads/master-${rev}' GNUmakefile
+    sed -ie '4i GIT_LABEL = heads/master-${rev}' GNUmakefile
     make linux-x86-64
+    # De-memoize xdg-* functions, otherwise they break the image.
+    sed -ie 's/^MEMO:/:/' basis/xdg/xdg.factor
   '';
 
   installPhase = ''
     mkdir -p $out/bin $out/lib/factor
-    # First, get a workable image. Unfortunately, no boot-image
-    # is available with release info. So fetch a released image.
     # The released image has library path info embedded, so we
-    # have to first recreate the boot image with Nix paths, and
+    # first have to recreate the boot image with Nix paths, and
     # then use it to build the Nix release image.
-    # zcat ${factorimage} | (cd $out/lib && tar -xvpf - factor/factor.image )
-    cp ${factorimage} $out/lib/factor/factor.image
+    cp boot.unix-x86.64.image $out/lib/factor/factor.image
 
-    cp -r basis core extra $out/lib/factor
+    cp -r basis core extra misc $out/lib/factor
 
     # Factor uses XDG_CACHE_HOME for cache during compilation.
     # We can't have that. So set it to $TMPDIR/.cache
     export XDG_CACHE_HOME=$TMPDIR/.cache && mkdir -p $XDG_CACHE_HOME
 
-    # there is no ld.so.cache in NixOS so we construct one
-    # out of known libraries. The side effect is that find-lib
-    # will work only on the known libraries. There does not seem
-    # to be a generic solution here.
-    find $(echo ${stdenv.lib.makeLibraryPath (with xorg; [
-        glib libX11 pango cairo gtk2 gdk_pixbuf gtkglext
-        mesa libXmu libXt libICE libSM ])} | sed -e 's#:# #g') -name \*.so.\* > $TMPDIR/so.lst
+    # There is no ld.so.cache in NixOS so we patch out calls to that completely.
+    # This should work as long as no application code relies on `find-library*`
+    # to return a match, which currently is the case and also a justified assumption.
 
-    (echo $(cat $TMPDIR/so.lst | wc -l) "libs found in cache \`/etc/ld.so.cache'";
-    for l in $(<$TMPDIR/so.lst);
-    do
-      echo "	$(basename $l) (libc6,x86-64) => $l";
-    done)> $out/lib/factor/ld.so.cache
-
-    sed -ie "s#/sbin/ldconfig -p#cat $out/lib/factor/ld.so.cache#g" \
+    sed -ie 's#"lib" prepend load-ldconfig-cache#{ }#' \
       $out/lib/factor/basis/alien/libraries/finder/linux/linux.factor
 
+    # Some other hard-coded paths to fix:
     sed -ie 's#/usr/share/zoneinfo/#${tzdata}/share/zoneinfo/#g' \
       $out/lib/factor/extra/tzinfo/tzinfo.factor
 
@@ -85,19 +74,21 @@ stdenv.mkDerivation rec {
 
     cp ./factor $out/bin
     wrapProgram $out/bin/factor --prefix LD_LIBRARY_PATH : \
-      "${stdenv.lib.makeLibraryPath (with xorg; [ glib
-        libX11 pango cairo gtk2 gdk_pixbuf gtkglext
-        mesa libXmu libXt libICE libSM openssl])}"
+      "${runtimeLibPath}"
 
     sed -ie 's#/bin/.factor-wrapped#/lib/factor/factor#g' $out/bin/factor
     mv $out/bin/.factor-wrapped $out/lib/factor/factor
 
+    echo "Building first full image from boot image..."
+
     # build full factor image from boot image
     (cd $out/bin && ./factor  -script -e='"unix-x86.64" USING: system bootstrap.image memory ; make-image save 0 exit' )
 
+    echo "Building new boot image..."
     # make a new bootstrap image
     (cd $out/bin && ./factor  -script -e='"unix-x86.64" USING: system tools.deploy.backend ; make-boot-image 0 exit' )
 
+    echo "Building final full image..."
     # rebuild final full factor image to include all patched sources
     (cd $out/lib/factor && ./factor -i=boot.unix-x86.64.image)
 
@@ -115,7 +106,7 @@ stdenv.mkDerivation rec {
     license = licenses.bsd2;
     description = "A concatenative, stack-based programming language";
 
-    maintainers = [ maintainers.vrthra ];
+    maintainers = [ maintainers.vrthra maintainers.spacefrogg ];
     platforms = [ "x86_64-linux" ];
   };
 }
