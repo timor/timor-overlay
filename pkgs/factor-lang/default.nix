@@ -1,12 +1,19 @@
-{ stdenv, fetchurl, glib, git,
+{ stdenv, lib, fetchurl, glib, git,
   rlwrap, curl, pkgconfig, perl, makeWrapper, tzdata, ncurses,
-  pango, cairo, gtk2, gdk_pixbuf, gtkglext, pcre,
-  mesa_glu, xorg, openssl, unzip, udis86 }:
+  pango, cairo, gtk2, gdk_pixbuf, gtkglext, pcre, openal,
+  mesa_glu, xorg, openssl, unzip, udis86, runCommand, interpreter }:
 
 let
   inherit (stdenv.lib) optional;
-
-in stdenv.mkDerivation rec {
+  wrapFactor = runtimeLibs:
+    runCommand (lib.appendToName "with-libs" interpreter).name {
+      buildInputs = [ makeWrapper ];} ''
+        mkdir -p $out/bin
+        makeWrapper ${interpreter}/bin/factor $out/bin/factor \
+        --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath runtimeLibs}
+      '';
+in
+stdenv.mkDerivation rec {
   name = "factor-lang-${version}";
   version = "0.98";
   rev = "7999e72aecc3c5bc4019d43dc4697f49678cc3b4";
@@ -19,16 +26,40 @@ in stdenv.mkDerivation rec {
   patches = [
     ./staging-command-line-0.98-pre.patch
     ./0001-pathnames-redirect-work-prefix-to-.local-share-facto.patch
+    ./0002-adjust-unit-test-for-finding-executables-in-path-for.patch
     ./fuel-dir.patch
     # preempt https://github.com/factor/factor/pull/2139
     ./fuel-dont-jump-to-using.patch
   ];
+
+  postPatch = ''
+    # There is no ld.so.cache in NixOS so we patch out calls to that completely.
+    # This should work as long as no application code relies on `find-library*`
+    # to return a match, which currently is the case and also a justified assumption.
+    # TODO: put stuff below into patches like above
+
+    sed -i 's#"lib" prepend load-ldconfig-cache#"lib" prepend { }#' \
+      basis/alien/libraries/finder/linux/linux.factor
+
+    # Some other hard-coded paths to fix:
+    sed -i 's#/usr/share/zoneinfo/#${tzdata}/share/zoneinfo/#g' \
+      extra/tzinfo/tzinfo.factor
+
+    sed -i 's#/usr/share/terminfo#${ncurses.out}/share/terminfo#g' \
+      extra/terminfo/terminfo.factor
+
+    # De-memoize xdg-* functions, otherwise they break the image.
+    sed -i 's/^MEMO:/:/' basis/xdg/xdg.factor
+
+    sed -i '4i GIT_LABEL = heads/master-${rev}' GNUmakefile
+    '';
 
   runtimeLibs =  with xorg; [
     stdenv.glibc.out
     glib
     libX11 pango cairo gtk2 gdk_pixbuf gtkglext pcre
     mesa_glu libXmu libXt libICE libSM openssl udis86
+    openal
   ];
 
   buildInputs = with xorg; [
@@ -38,59 +69,53 @@ in stdenv.mkDerivation rec {
 
   runtimeLibPath = stdenv.lib.makeLibraryPath runtimeLibs;
 
+  configurePhase = "true";
+
   buildPhase = ''
-    sed -ie '4i GIT_LABEL = heads/master-${rev}' GNUmakefile
     make linux-x86-64
-    # De-memoize xdg-* functions, otherwise they break the image.
-    sed -ie 's/^MEMO:/:/' basis/xdg/xdg.factor
-  '';
-
-  installPhase = ''
-    mkdir -p $out/bin $out/lib/factor
-    # The released image has library path info embedded, so we
-    # first have to recreate the boot image with Nix paths, and
-    # then use it to build the Nix release image.
-    cp boot.unix-x86.64.image $out/lib/factor/factor.image
-
-    cp -r basis core extra misc $out/lib/factor
 
     # Factor uses XDG_CACHE_HOME for cache during compilation.
     # We can't have that. So set it to $TMPDIR/.cache
     export XDG_CACHE_HOME=$TMPDIR/.cache && mkdir -p $XDG_CACHE_HOME
 
-    # There is no ld.so.cache in NixOS so we patch out calls to that completely.
-    # This should work as long as no application code relies on `find-library*`
-    # to return a match, which currently is the case and also a justified assumption.
+    # The released image has library path info embedded, so we
+    # first have to recreate the boot image with Nix paths, and
+    # then use it to build the Nix release image.
+    cp boot.unix-x86.64.image factor.image
 
-    sed -ie 's#"lib" prepend load-ldconfig-cache#{ }#' \
-      $out/lib/factor/basis/alien/libraries/finder/linux/linux.factor
+    # Expose libraries in LD_LIBRARY_PATH for factor
+    export LD_LIBRARY_PATH=${lib.makeLibraryPath runtimeLibs}:$LD_LIBRARY_PATH
 
-    # Some other hard-coded paths to fix:
-    sed -ie 's#/usr/share/zoneinfo/#${tzdata}/share/zoneinfo/#g' \
-      $out/lib/factor/extra/tzinfo/tzinfo.factor
+    echo "=== Building first full image from boot image..."
 
-    sed -ie 's#/usr/share/terminfo#${ncurses.out}/share/terminfo#g' \
-      $out/lib/factor/extra/terminfo/terminfo.factor
+    # build full factor image from boot image, saving the state for the next call
+    ./factor  -script -e='"unix-x86.64" USING: system bootstrap.image memory ; make-image save 0 exit'
 
-    cp ./factor $out/bin
-    wrapProgram $out/bin/factor --prefix LD_LIBRARY_PATH : \
-      "${runtimeLibPath}"
-
-    sed -ie 's#/bin/.factor-wrapped#/lib/factor/factor#g' $out/bin/factor
-    mv $out/bin/.factor-wrapped $out/lib/factor/factor
-
-    echo "Building first full image from boot image..."
-
-    # build full factor image from boot image
-    (cd $out/bin && ./factor  -script -e='"unix-x86.64" USING: system bootstrap.image memory ; make-image save 0 exit' )
-
-    echo "Building new boot image..."
+    echo "=== Building new boot image..."
     # make a new bootstrap image
-    (cd $out/bin && ./factor  -script -e='"unix-x86.64" USING: system tools.deploy.backend ; make-boot-image 0 exit' )
+    ./factor  -script -e='"unix-x86.64" USING: system bootstrap.image ; make-image 0 exit'
 
-    echo "Building final full image..."
+    echo "=== Building final full image..."
     # rebuild final full factor image to include all patched sources
-    (cd $out/lib/factor && ./factor -i=boot.unix-x86.64.image)
+    ./factor -i=boot.unix-x86.64.image
+
+  '';
+
+  doCheck = true;
+
+  # For now, the check phase runs, but should always return 0.  This way the
+  # logs contain the test failures until all unit tests are fixed.  Then, it
+  # should return 1 if any test failures have occured.
+  checkPhase = ''
+    ./factor -e='USING: tools.test zealot.factor sequences ; zealot-core-vocabs "compiler" suffix [ test ] each :test-failures';
+  '';
+
+  installPhase = ''
+    mkdir -p $out/bin $out/lib/factor
+    cp -r factor factor.image LICENSE.txt README.md basis core extra misc $out/lib/factor
+
+    makeWrapper $out/lib/factor/factor $out/bin/factor --prefix LD_LIBRARY_PATH : \
+      "${runtimeLibPath}"
 
     # install fuel mode for emacs
     mkdir -p $out/share/emacs/site-lisp
@@ -109,4 +134,6 @@ in stdenv.mkDerivation rec {
     maintainers = [ maintainers.vrthra maintainers.spacefrogg ];
     platforms = [ "x86_64-linux" ];
   };
+
+  passthru.withLibs = wrapFactor;
 }
