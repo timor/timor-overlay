@@ -107,7 +107,10 @@ stdenv.mkDerivation rec {
   # logs contain the test failures until all unit tests are fixed.  Then, it
   # should return 1 if any test failures have occured.
   checkPhase = ''
-    ./factor -e='USING: tools.test zealot.factor sequences ; zealot-core-vocabs "compiler" suffix [ test ] each :test-failures';
+    ./factor -e='USING: tools.test zealot.factor sequences namespaces formatting
+    ;
+    zealot-core-vocabs "compiler" suffix [ test ] each :test-failures
+    test-failures get length "Number of failed Tests: %d\n" printf'
   '';
 
   installPhase = ''
