@@ -5,12 +5,20 @@
 
 let
   inherit (stdenv.lib) optional;
+  runtimeLibs =  with xorg; [
+    stdenv.glibc.out
+    glib
+    libX11 pango cairo gtk2 gdk_pixbuf gtkglext pcre
+    mesa_glu libXmu libXt libICE libSM openssl udis86
+    openal
+  ];
+  runtimeLibPath = stdenv.lib.makeLibraryPath runtimeLibs;
   wrapFactor = runtimeLibs:
     runCommand (lib.appendToName "with-libs" interpreter).name {
       buildInputs = [ makeWrapper ];} ''
         mkdir -p $out/bin
         makeWrapper ${interpreter}/bin/factor $out/bin/factor \
-        --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath runtimeLibs}
+        --prefix LD_LIBRARY_PATH : ${runtimeLibPath}
       '';
 in
 stdenv.mkDerivation rec {
@@ -54,20 +62,10 @@ stdenv.mkDerivation rec {
     sed -i '4i GIT_LABEL = heads/master-${rev}' GNUmakefile
     '';
 
-  runtimeLibs =  with xorg; [
-    stdenv.glibc.out
-    glib
-    libX11 pango cairo gtk2 gdk_pixbuf gtkglext pcre
-    mesa_glu libXmu libXt libICE libSM openssl udis86
-    openal
-  ];
-
   buildInputs = with xorg; [
     git rlwrap curl pkgconfig perl makeWrapper
     unzip
   ] ++ runtimeLibs;
-
-  runtimeLibPath = stdenv.lib.makeLibraryPath runtimeLibs;
 
   configurePhase = "true";
 
@@ -84,7 +82,7 @@ stdenv.mkDerivation rec {
     cp boot.unix-x86.64.image factor.image
 
     # Expose libraries in LD_LIBRARY_PATH for factor
-    export LD_LIBRARY_PATH=${lib.makeLibraryPath runtimeLibs}:$LD_LIBRARY_PATH
+    export LD_LIBRARY_PATH=${runtimeLibPath}:$LD_LIBRARY_PATH
 
     echo "=== Building first full image from boot image..."
 
@@ -117,7 +115,13 @@ stdenv.mkDerivation rec {
     mkdir -p $out/bin $out/lib/factor
     cp -r factor factor.image LICENSE.txt README.md basis core extra misc $out/lib/factor
 
-    makeWrapper $out/lib/factor/factor $out/bin/factor --prefix LD_LIBRARY_PATH : \
+    # Create a wrapper in lib/factor, and one in bin/
+    wrapProgram $out/lib/factor/factor --prefix LD_LIBRARY_PATH : \
+      "${runtimeLibPath}"
+    ln -s $out/lib/factor/factor.image $out/lib/factor/.factor-wrapped.image
+    mv $out/lib/factor/factor $out/bin/
+
+    makeWrapper $out/lib/factor/.factor-wrapped $out/lib/factor/factor --prefix LD_LIBRARY_PATH : \
       "${runtimeLibPath}"
 
     # install fuel mode for emacs

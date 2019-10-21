@@ -36,30 +36,32 @@ in
   # /lib/factor/<my-cool-factor-program>/ : Directory (may contain other used resources)
   deployFactor = callPackage ./pkgs/deployFactor { };
 
-  factor-lang = callPackageIfNewer super.factor-lang ./pkgs/factor-lang {
-    inherit (self.gnome2) gtkglext;
-  };
-
-  factor-lang-live = (self.factor-lang.overrideAttrs (oldAttrs:
+  factor-lang-live = (self.factor-lang.extend (self': super': {interpreter = super'.interpreter.overrideAttrs (oldAttrs:
   rec {
-    version = "0.99-pre1";
+    version = "0.99-pre3";
     name = "factor-lang-${version}";
     bootImage = self.fetchurl {
-      url = http://downloads.factorcode.org/images/build/boot.unix-x86.64.image.b3bcf537cc360d0ba892391e48b50c704ec6b101;
-      sha256 = "0vdmlrv26jyfhrvizjpg3f7v6rjai8n2zaamlg7iry2n5vqisxqm";
+      url = http://downloads.factorcode.org/images/build/boot.unix-x86.64.image.f7e4774d3f591b8b3f548cdd44cf0df1978f7f10;
+      sha256 = "1k74w2zla8ryk1r6gwqc82ndj13mk0xsnxfy4q1ch601hvx1cgv2";
     };
 
     src = self.fetchFromGitHub {
       owner = "factor";
       repo = "factor";
-      rev = "66652c490389a6fcb59e22879df91991b19d2a4b";
-      sha256 = "1n73rn3mydmh6vgygg8hpjzlkxsh344dg88ag6zjrw7wmyqcgywa";
+      rev = "c00f5ef214bde681f07dd00a5ff595bf88f8337e";
+      sha256 = "04zrmncgrn6b7xjhw0v4l78jwbn5i2a2yaiqn049c62sqmkj5g25";
     };
+
+    # patches = lib.init oldAttrs.patches;
+    patches = [
+      ./pkgs/factor-lang/staging-command-line-0.98-pre.patch
+      ./pkgs/factor-lang/fuel-dir.patch
+    ] ;
 
     postUnpack = ''
       cp ${bootImage} $sourceRoot/boot.unix-x86.64.image
-    '';
-  }));
+      chmod 644 $sourceRoot/boot.unix-x86.64.image
+    '';});}));
 
   git-rebase-all = self.runCommand "git-rebase-all" rec {
     src = self.fetchurl {
