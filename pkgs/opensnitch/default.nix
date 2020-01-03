@@ -4,7 +4,7 @@
 }:
 
 let
-  version = "1.0.0.b-2019-10-9";
+  version = "1.0.0.b-2019-10-09";
   src = fetchFromGitHub {
     owner = "evilsocket";
     repo = "opensnitch";
@@ -35,7 +35,7 @@ let
 in
 
 {
-  daemon = buildGoPackage rec {
+  opensnitchd = buildGoPackage rec {
     pname = "opensnitch-daemon";
     inherit src version meta;
     goPackagePath = "github.com/evilsocket/opensnitch";
@@ -45,7 +45,7 @@ in
     postInstall = "mv $bin/bin/daemon $bin/bin/opensnitchd";
   };
 
-  ui = python3Packages.buildPythonApplication rec {
+  opensnitch-ui = python3Packages.buildPythonApplication rec {
     pname = "opensnitch-ui";
     inherit src version meta;
     sourceRoot = "source/ui";

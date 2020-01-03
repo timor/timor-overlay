@@ -113,7 +113,8 @@ in
 
   ocrfeeder = callPackage ./pkgs/ocrfeeder { automake = self.automake111x; };
 
-  opensnitch = callPackage ./pkgs/opensnitch {};
+  inherit (callPackage ./pkgs/opensnitch {})
+    opensnitchd opensnitch-ui;
 
   spacemacs = callPackage ./pkgs/spacemacs/default.nix { };
 

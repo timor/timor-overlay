@@ -3,7 +3,7 @@
 
 let
   cfg = config.services.opensnitch;
-  inherit (pkgs) opensnitch writeText iptables;
+  inherit (pkgs) opensnitchd opensnitch-ui writeText iptables;
   inherit (lib) nameValuePair mapAttrsToList;
   inherit (builtins) listToAttrs replaceStrings concatMap;
   escapeRuleName = name:
@@ -132,7 +132,7 @@ in
         ++ mapAttrsToList (makeAlwaysRuleFile "opensnitchd/rules") cfg.extraRules
       );
 
-      environment.systemPackages = if cfg.startUserService then [] else [ opensnitch.ui ];
+      environment.systemPackages = if cfg.startUserService then [] else [ opensnitch-ui ];
 
       systemd.services.opensnitchd = {
         description = "opensnitch firewall daemon";
@@ -148,7 +148,7 @@ in
         path = [ iptables ];
         # For some reason there is a problem with specifying /run for the socket file...
         # script = "${lib.getBin opensnitch.daemon}/bin/opensnitchd -log-file /var/log/opensnitchd.log -rules-path /etc/opensnitchd/rules -ui-socket unix:///run/opensnitch/osui.sock -debug";
-        script = "${lib.getBin opensnitch.daemon}/bin/opensnitchd -log-file /var/log/opensnitchd.log -rules-path /etc/opensnitchd/rules -ui-socket unix:///tmp/osui.sock";
+        script = "${lib.getBin opensnitchd}/bin/opensnitchd -log-file /var/log/opensnitchd.log -rules-path /etc/opensnitchd/rules -ui-socket unix:///tmp/osui.sock";
         serviceConfig = {
           Type = "simple";
           Restart = "always";
@@ -161,7 +161,7 @@ in
         description = "opensnitch firewall UI process";
         wantedBy = [ "graphical-session.target" ];
         partOf = [ "graphical-session.target" ];
-        script = "${lib.getBin opensnitch.ui}/bin/opensnitch-ui --config ${uiConfig} --socket unix:///tmp/osui.sock";
+        script = "${lib.getBin opensnitch-ui}/bin/opensnitch-ui --config ${uiConfig} --socket unix:///tmp/osui.sock";
         unitConfig.ConditionUser = "!@system";
         enable = cfg.startUserService;
       };
