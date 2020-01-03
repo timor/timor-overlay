@@ -8,26 +8,30 @@ let
   inherit (builtins) listToAttrs replaceStrings concatMap;
   escapeRuleName = name:
     replaceStrings [ "*" "." "/" ] [ "all" "-" "-" ] name;
-  makeAlwaysRuleFile = rulePath: name': operator: let name = escapeRuleName name'; in
+
+  makeAlwaysRuleFile =  rulePath: name': rule: let name = escapeRuleName name'; in
     nameValuePair (rulePath + "/${name}.json") {
-      source = writeText name (builtins.toJSON {
-      inherit name;
-      enabled = true;
-      action = "allow";
-      duration = "always";
-      inherit operator;
-      });
+      source = writeText name (builtins.toJSON ({
+        inherit name;
+        enabled = true;
+        duration = "always";
+      } // rule));
     };
+
+  makeAlwaysOperatorFile = rulePath: name: operator:
+    makeAlwaysRuleFile rulePath name {action = "allow"; inherit operator; };
+
   makePackageRuleFile = rulePath: pkg: let
     name = "nixos-allow-pkg-${lib.strings.getName pkg}";
-    in makeAlwaysRuleFile rulePath name {
+    in makeAlwaysOperatorFile rulePath name {
           type = "regexp";
           operand = "process.path";
-          data = "${pkg}/*";
+          data = "${pkg}/.*";
     };
+
   makeHostRuleFile = rulePath: type: value: let
     name = "nixos-allow-${type}-${value}";
-    in makeAlwaysRuleFile rulePath name {
+    in makeAlwaysOperatorFile rulePath name {
       type = "regexp";
       operand = "dest.${type}";
       data = replaceStrings [ "." "*" ] [ "\\." ".*" ] value;
@@ -60,6 +64,7 @@ in
         '';
         default = true;
       };
+
       whitelistPackages = mkOption {
         type = types.listOf types.package;
         description = ''
@@ -77,6 +82,16 @@ in
         default = [];
         example = ''[ { host = "*.nixos.org" } { ip = "127.0.0.1" } ]'';
       };
+
+      extraRules = mkOption {
+        type = types.attrsOf types.attrs;
+        description = ''
+          Set of { myRule = { action = allow/deny; operand = {...};};} attribute sets
+          describing default opensnitch rules that are written to
+          /etc/opensnitch/rules
+        '';
+        default = [];
+      };
     };
   };
 
@@ -89,6 +104,7 @@ in
       environment.etc = listToAttrs (
         (map (makePackageRuleFile "opensnitchd/rules") cfg.whitelistPackages)
         ++ concatMap (x: mapAttrsToList (n: v: makeHostRuleFile "opensnitchd/rules" n v) x) cfg.whitelistHosts
+        ++ mapAttrsToList (makeAlwaysRuleFile "opensnitchd/rules") cfg.extraRules
       );
 
       environment.systemPackages = if cfg.startUserService then [] else [
