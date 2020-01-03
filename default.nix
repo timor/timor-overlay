@@ -113,6 +113,8 @@ in
 
   ocrfeeder = callPackage ./pkgs/ocrfeeder { automake = self.automake111x; };
 
+  opensnitch = callPackage ./pkgs/opensnitch {};
+
   spacemacs = callPackage ./pkgs/spacemacs/default.nix { };
 
   perlPackages = super.perlPackages // (with super.perlPackages;{
