@@ -3,7 +3,27 @@
 
 let
   cfg = config.services.opensnitch;
-  inherit (pkgs) opensnitch writeText iptables ;
+  inherit (pkgs) opensnitch writeText iptables;
+  inherit (lib) nameValuePair;
+  inherit (builtins) listToAttrs;
+  makeAlwaysRuleFile = rulePath: name: operator:
+    nameValuePair (rulePath + "/${name}.json") {
+      source = writeText name (builtins.toJSON {
+      inherit name;
+      enabled = true;
+      action = "allow";
+      duration = "always";
+      inherit operator;
+      });
+    };
+
+  makePackageRuleFile = rulePath: pkg: let
+    name = "nixos-allow-${lib.strings.getName pkg}";
+    in makeAlwaysRuleFile rulePath name {
+          type = "regexp";
+          operand = "process.path";
+          data = "${pkg}/*";
+    };
 
 in
 
@@ -32,6 +52,15 @@ in
         '';
         default = true;
       };
+      whitelistPackages = mkOption {
+        type = types.listOf types.package;
+        description = ''
+          List of packages for which to generate rules to allow connections from all processes that are located below
+          a package's store path.  Intended for process rules which should survive NixOS updates.
+        '';
+        default = with pkgs; [ nix ];
+      };
+
     };
   };
 
@@ -40,6 +69,8 @@ in
       uiConfig = writeText "ui-config.json" (builtins.toJSON cfg.uiConfig);
     in
     lib.mkIf cfg.enable {
+
+      environment.etc = listToAttrs (map (makePackageRuleFile "opensnitchd/rules") cfg.whitelistPackages);
 
       environment.systemPackages = if cfg.startUserService then [] else [
         opensnitch.ui
@@ -51,8 +82,8 @@ in
         wantedBy = [ "multi-user.target" ];
         preStart = ''
           mkdir -p /etc/opensnitchd/rules
-          # chown root:root /etc/opensnitchd
-          # chmod 700 /etc/opensnitchd
+          chown root:root /etc/opensnitchd
+          chmod 700 /etc/opensnitchd
           # mkdir -p /run/opensnitch
         '';
         path = [ iptables ];
