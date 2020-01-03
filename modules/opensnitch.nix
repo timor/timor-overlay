@@ -4,9 +4,11 @@
 let
   cfg = config.services.opensnitch;
   inherit (pkgs) opensnitch writeText iptables;
-  inherit (lib) nameValuePair;
-  inherit (builtins) listToAttrs;
-  makeAlwaysRuleFile = rulePath: name: operator:
+  inherit (lib) nameValuePair mapAttrsToList;
+  inherit (builtins) listToAttrs replaceStrings concatMap;
+  escapeRuleName = name:
+    replaceStrings [ "*" "." "/" ] [ "all" "-" "-" ] name;
+  makeAlwaysRuleFile = rulePath: name': operator: let name = escapeRuleName name'; in
     nameValuePair (rulePath + "/${name}.json") {
       source = writeText name (builtins.toJSON {
       inherit name;
@@ -16,13 +18,19 @@ let
       inherit operator;
       });
     };
-
   makePackageRuleFile = rulePath: pkg: let
-    name = "nixos-allow-${lib.strings.getName pkg}";
+    name = "nixos-allow-pkg-${lib.strings.getName pkg}";
     in makeAlwaysRuleFile rulePath name {
           type = "regexp";
           operand = "process.path";
           data = "${pkg}/*";
+    };
+  makeHostRuleFile = rulePath: type: value: let
+    name = "nixos-allow-${type}-${value}";
+    in makeAlwaysRuleFile rulePath name {
+      type = "regexp";
+      operand = "dest.${type}";
+      data = replaceStrings [ "." "*" ] [ "\\." ".*" ] value;
     };
 
 in
@@ -61,6 +69,14 @@ in
         default = with pkgs; [ nix ];
       };
 
+      whitelistHosts = mkOption {
+        type = types.listOf types.attrs;
+        description = ''
+          List of destination hosts for which to create default (regexp) allow rules, regardless of other connection properties.
+        '';
+        default = [];
+        example = ''[ { host = "*.nixos.org" } { ip = "127.0.0.1" } ]'';
+      };
     };
   };
 
@@ -70,7 +86,10 @@ in
     in
     lib.mkIf cfg.enable {
 
-      environment.etc = listToAttrs (map (makePackageRuleFile "opensnitchd/rules") cfg.whitelistPackages);
+      environment.etc = listToAttrs (
+        (map (makePackageRuleFile "opensnitchd/rules") cfg.whitelistPackages)
+        ++ concatMap (x: mapAttrsToList (n: v: makeHostRuleFile "opensnitchd/rules" n v) x) cfg.whitelistHosts
+      );
 
       environment.systemPackages = if cfg.startUserService then [] else [
         opensnitch.ui
