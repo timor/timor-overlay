@@ -59,8 +59,9 @@ in
         type = types.bool;
         description = ''
           If enabled, run the opensnitch-ui process as a user
-          service in the graphical session.  If this is disabled,
-          opensnitch-ui must be run by other means.  This means that all users share the same rules
+          service in the graphical session.  All users' ui processes
+          share the config specified in uiConfig.  If this is disabled,
+          opensnitch-ui must be run by some other means.
         '';
         default = true;
       };
@@ -68,8 +69,10 @@ in
       whitelistPackages = mkOption {
         type = types.listOf types.package;
         description = ''
-          List of packages for which to generate rules to allow connections from all processes that are located below
-          a package's store path.  Intended for process rules which should survive NixOS updates.
+          List of packages for which to generate rules to allow connections
+          from all processes that are located below
+          a package's store path.  Intended for process rules
+          which should survive NixOS updates.
         '';
         default = with pkgs; [ nix ];
       };
@@ -77,7 +80,8 @@ in
       whitelistHosts = mkOption {
         type = types.listOf types.attrs;
         description = ''
-          List of destination hosts for which to create default (regexp) allow rules, regardless of other connection properties.
+          List of destination hosts for which to create default (regexp) allow rules,
+          regardless of other connection properties.
         '';
         default = [];
         example = ''[ { host = "*.nixos.org" } { ip = "127.0.0.1" } ]'';
@@ -86,11 +90,32 @@ in
       extraRules = mkOption {
         type = types.attrsOf types.attrs;
         description = ''
-          Set of { myRule = { action = allow/deny; operand = {...};};} attribute sets
-          describing default opensnitch rules that are written to
-          /etc/opensnitch/rules
+          Set of JSON attribute sets describing default opensnitch rules that are written to
+          /etc/opensnitch/rules.
         '';
         default = [];
+        example = ''
+          {
+            kerberos = {
+              action = "allow";
+              operator = {
+                type = "list";
+                list = [
+                  {
+                    type = "simple";
+                    operand = "dest.host";
+                    data = "kerberos.example.domain";
+                  }
+                  {
+                    type = "simple";
+                    operand = "dest.port";
+                    data = "631";
+                  }
+                ];
+              };
+            };
+          }
+        '';
       };
     };
   };
@@ -107,11 +132,10 @@ in
         ++ mapAttrsToList (makeAlwaysRuleFile "opensnitchd/rules") cfg.extraRules
       );
 
-      environment.systemPackages = if cfg.startUserService then [] else [
-        opensnitch.ui
-      ];
+      environment.systemPackages = if cfg.startUserService then [] else [ opensnitch.ui ];
 
       systemd.services.opensnitchd = {
+        description = "opensnitch firewall daemon";
         after = [ "network.target" ];
         wants = [ "network.target" ];
         wantedBy = [ "multi-user.target" ];
@@ -122,7 +146,7 @@ in
           # mkdir -p /run/opensnitch
         '';
         path = [ iptables ];
-        # For some reason there is a problem with not using /tmp for socket file...
+        # For some reason there is a problem with specifying /run for the socket file...
         # script = "${lib.getBin opensnitch.daemon}/bin/opensnitchd -log-file /var/log/opensnitchd.log -rules-path /etc/opensnitchd/rules -ui-socket unix:///run/opensnitch/osui.sock -debug";
         script = "${lib.getBin opensnitch.daemon}/bin/opensnitchd -log-file /var/log/opensnitchd.log -rules-path /etc/opensnitchd/rules -ui-socket unix:///tmp/osui.sock";
         serviceConfig = {
