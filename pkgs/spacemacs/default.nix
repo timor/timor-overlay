@@ -19,9 +19,9 @@ stdenv.mkDerivation rec {
 
   src = fetchgit {
     url = "https://github.com/timor/spacemacs.git";
-    rev = "e3f26b3a094568a3b6add1c6833caf7f1b310c41";
+    rev = "b4c3c2a0b9f868c8ee5c73b49fb4d3ee84422f1a";
     sha256 = if supportCheckPhase then "00w6x9rg36sxviyr4na1q2q6drbh4lkq3sr6rjrzi8n4zpldlmsy"
-      else "10by0phsh69rxf6zq6ybai1ghvd18xpx4kpmk89rm7jzrqyk5vbq";
+      else "1bwnlmymchkn307n6vx1974qpj2ai8k9wz5147kc24jmhis7bqmk";
     leaveDotGit = supportCheckPhase; # for checkPhase, and also for blaming in final store path...
   };
 
@@ -32,7 +32,7 @@ stdenv.mkDerivation rec {
       # url = "https://patch-diff.githubusercontent.com/raw/syl20bnr/spacemacs/pull/11958.diff";
       # sha256 = "03whw92f5ds3jbgiia750h5h8dfqfggilllyiwgkv9pvd2d50k2j";
       url = "https://patch-diff.githubusercontent.com/raw/syl20bnr/spacemacs/pull/11958.diff";
-      sha256 = "1v88frxc5xd02k0dzi019vqpc2dd3chmf0j4nawajsdm02bhm5y1";
+      sha256 = "0wjvzayrm645dcslkcqy9p6cskvqjrvzlww9cm5in8z5rrq503fl";
     })
 
   ];
