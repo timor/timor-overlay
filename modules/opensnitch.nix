@@ -26,7 +26,7 @@ let
     in makeAlwaysOperatorFile rulePath name {
           type = "regexp";
           operand = "process.path";
-          data = "${pkg}/.*";
+          data = "/nix/store/.*${pkg.name}/.*";
     };
 
   makeHostRuleFile = rulePath: type: value: let
