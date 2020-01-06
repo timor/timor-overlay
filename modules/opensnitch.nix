@@ -132,7 +132,7 @@ in
         ++ mapAttrsToList (makeAlwaysRuleFile "opensnitchd/rules") cfg.extraRules
       );
 
-      environment.systemPackages = if cfg.startUserService then [] else [ opensnitch-ui ];
+      environment.systemPackages = [ opensnitch-ui ];
 
       systemd.services.opensnitchd = {
         description = "opensnitch firewall daemon";
