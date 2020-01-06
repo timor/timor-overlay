@@ -55,17 +55,6 @@ in
         };
       };
 
-      startUserService = mkOption {
-        type = types.bool;
-        description = ''
-          If enabled, run the opensnitch-ui process as a user
-          service in the graphical session.  All users' ui processes
-          share the config specified in uiConfig.  If this is disabled,
-          opensnitch-ui must be run by some other means.
-        '';
-        default = true;
-      };
-
       whitelistPackages = mkOption {
         type = types.listOf types.package;
         description = ''
@@ -154,16 +143,6 @@ in
           Restart = "always";
           RestartSec = "30";
         };
-      };
-
-
-      systemd.user.services.opensnitch-ui = {
-        description = "opensnitch firewall UI process";
-        wantedBy = [ "graphical-session.target" ];
-        partOf = [ "graphical-session.target" ];
-        script = "${lib.getBin opensnitch-ui}/bin/opensnitch-ui --config ${uiConfig} --socket unix:///tmp/osui.sock";
-        unitConfig.ConditionUser = "!@system";
-        enable = cfg.startUserService;
       };
     };
 }
