@@ -4,12 +4,12 @@
 }:
 
 let
-  version = "1.0.0.b-2019-10-09";
+  version = "0.4";
   src = fetchFromGitHub {
-    owner = "evilsocket";
+    owner = "Thermicorp";
     repo = "opensnitch";
-    rev = "2b49871a2d1b8346eba169343b29d099a9e5c355";
-    sha256 = "00zgy40crlcx2h42wibg5m6pxjyfaxpkhxyq523i70q7dh4aj2jm";
+    rev = "0.4";
+    sha256 = "12dncwmvgdx9j8sqwpd7gvhjnxfi6g8fsl0abp28m3lwc71kbzxr";
   };
   unicode-slugify = python3Packages.buildPythonPackage {
     name = "unicode-slugify-0.1.3";
@@ -38,7 +38,7 @@ in
   opensnitchd = buildGoPackage rec {
     pname = "opensnitch-daemon";
     inherit src version meta;
-    goPackagePath = "github.com/evilsocket/opensnitch";
+    goPackagePath = "github.com/Thermicorp/opensnitch";
     subPackages = [ "./daemon" ];
     goDeps = ./deps.nix;
     buildInputs = [ pkg-config libnetfilter_queue libnfnetlink libpcap protobuf ];

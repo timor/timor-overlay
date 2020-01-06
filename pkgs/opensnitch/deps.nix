@@ -37,6 +37,24 @@
     };
   }
   {
+    goPackagePath  = "github.com/vishvananda/netlink";
+    fetch = {
+      type = "git";
+      url = "https://github.com/vishvananda/netlink";
+      rev =  "a2ad57a690f3caf3015351d2d6e1c0b95c349752";
+      sha256 = "0hpzghf1a4cwawzhkiwdzin80h6hd09fskl77d5ppgc084yvj8x0";
+    };
+  }
+  {
+    goPackagePath  = "github.com/vishvananda/netns";
+    fetch = {
+      type = "git";
+      url = "https://github.com/vishvananda/netns";
+      rev =  "0a2b9b5464df8343199164a0321edf3313202f7e";
+      sha256 = "1k1zb7pzc4r4wicq7ncspf6zsvq298lvpsq963ibj813shg657xw";
+    };
+  }
+  {
     goPackagePath  = "golang.org/x/net";
     fetch = {
       type = "git";
