@@ -1,15 +1,15 @@
 { lib, stdenv, pkgs, python3Packages, fetchFromGitHub, libnetfilter_queue
 , libnfnetlink, libpcap, protobuf, buildGoPackage, pkg-config
-, qt5
+, qt5, makeDesktopItem
 }:
 
 let
-  version = "0.4";
+  version = "0.4-2020-01-07";
   src = fetchFromGitHub {
-    owner = "Thermicorp";
+    owner = "timor";
     repo = "opensnitch";
-    rev = "0.4";
-    sha256 = "12dncwmvgdx9j8sqwpd7gvhjnxfi6g8fsl0abp28m3lwc71kbzxr";
+    rev = "c956d91601278752776841a17473bbf6387275b2";
+    sha256 = "0xa9rydxsvvrvng9f0rrr03jgbpv4karca5czj20l0ygr3kj4z3x";
   };
   unicode-slugify = python3Packages.buildPythonPackage {
     name = "unicode-slugify-0.1.3";
@@ -31,6 +31,14 @@ let
     license = lib.licenses.gpl3;
     homepage = "https://github.com/evilsocket/opensnitch";
     platforms = lib.platforms.unix;
+  };
+  desktopItem = makeDesktopItem {
+    name = "OpenSnitch";
+    exec = "opensnitch-ui";
+    desktopName = "OpenSnitch";
+    icon = "preferences-system-firewall";
+    genericName = "OpenSnitch Firewall";
+    categories = "System;Filesystem;Network;";
   };
 in
 
@@ -64,6 +72,7 @@ in
     ] ;
     doCheck = false;
     postInstall = ''
+      ${desktopItem.buildCommand}
       for program in $out/bin/*; do
       wrapQtApp $program --prefix PYTHONPATH : $PYTHONPATH
       done
