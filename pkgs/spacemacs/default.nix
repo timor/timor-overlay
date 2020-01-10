@@ -19,9 +19,9 @@ stdenv.mkDerivation rec {
 
   src = fetchgit {
     url = "https://github.com/timor/spacemacs.git";
-    rev = "b4c3c2a0b9f868c8ee5c73b49fb4d3ee84422f1a";
+    rev = "2b3a85d3f66dde246901293df656f20f6a996397";
     sha256 = if supportCheckPhase then "00w6x9rg36sxviyr4na1q2q6drbh4lkq3sr6rjrzi8n4zpldlmsy"
-      else "1bwnlmymchkn307n6vx1974qpj2ai8k9wz5147kc24jmhis7bqmk";
+      else "0xzyv74c3arycs8cn1009ir38ahkcfsbssxix8zdw1wq91jvj5wp";
     leaveDotGit = supportCheckPhase; # for checkPhase, and also for blaming in final store path...
   };
 
