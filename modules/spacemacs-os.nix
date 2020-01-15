@@ -24,9 +24,23 @@ in
     services.xserver.windowManager.session = singleton {
       name = "SpacemacsOS";
       start = ''
+        systemctl --user start exwm.target
         ${pkgs.spacemacs}/bin/spacemacs --eval "${cfg.startExpression}"
       '';
     };
+
+    programs.xss-lock.enable = true;
+
+    systemd.user.services.xss-lock.wantedBy = lib.mkForce [ "exwm.target" ];
+    systemd.user.services.xss-lock.partOf = lib.mkForce [ "exwm.target" ];
+
+    systemd.user.targets.exwm = {
+      enable = true;
+      description = ''
+        Session Target which is started when EXWM is started
+        '';
+    };
+
     fonts.fonts = [
       pkgs.source-code-pro
     ];
