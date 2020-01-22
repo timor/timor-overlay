@@ -24,8 +24,10 @@ in
     services.xserver.windowManager.session = singleton {
       name = "SpacemacsOS";
       start = ''
+        export _JAVA_AWT_WM_NONREPARENTING=1
         systemctl --user start exwm.target
         ${pkgs.spacemacs}/bin/spacemacs --eval "${cfg.startExpression}"
+        systemctl --user stop exwm.target
       '';
     };
 
