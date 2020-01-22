@@ -26,6 +26,7 @@ in
       start = ''
         systemctl --user start exwm.target
         ${pkgs.spacemacs}/bin/spacemacs --eval "${cfg.startExpression}"
+        systemctl --user stop exwm.target
       '';
     };
 
