@@ -75,11 +75,6 @@ in
     patchShebangs $out/bin/git-rebase-all
     '';
 
-  inherit (callPackage (self.fetchurl {
-    url = https://raw.githubusercontent.com/timor/nixpkgs/libdwarf-dwarfdump-zlib/pkgs/development/libraries/libdwarf/default.nix;
-    sha256 = "043b55psin4wllz0vriwhm7p74w270312141zkk3radbnzfr38xf";
-  }) {}) libdwarf dwarfdump;
-
   spnav = callPackage ./pkgs/spnav { };
 
   spacenavd = callPackage ./pkgs/spacenavd { };
