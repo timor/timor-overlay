@@ -88,6 +88,8 @@ in
       buildInputs = oldAttrs.buildInputs ++ [ self.spnav ];
   }));
 
+  hachoir = callPackage ./pkgs/hachoir {};
+
   kerneldocs = callPackage ./pkgs/kerneldocs {};
 
   open-zwave = callPackage ./pkgs/open-zwave {};
