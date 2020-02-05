@@ -16,6 +16,7 @@ let
 in
 
 {
+  bgrep = callPackage ./pkgs/bgrep { };
 
   gdbForPackages = callPackage ./pkgs/gdbForPackages {pkgs = self;};
   gdbForPackage = (pkg: self.gdbForPackages [pkg]);
