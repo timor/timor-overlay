@@ -16,6 +16,7 @@ let
 in
 
 {
+  bgrep = callPackage ./pkgs/bgrep { };
 
   gdbForPackages = callPackage ./pkgs/gdbForPackages {pkgs = self;};
   gdbForPackage = (pkg: self.gdbForPackages [pkg]);
@@ -83,6 +84,8 @@ in
       buildInputs = oldAttrs.buildInputs ++ [ self.spnav ];
   }));
 
+  hachoir = callPackage ./pkgs/hachoir {};
+
   kerneldocs = callPackage ./pkgs/kerneldocs {};
 
   open-zwave = callPackage ./pkgs/open-zwave {};
@@ -107,6 +110,9 @@ in
   nux = callPackage ./pkgs/nux {};
 
   ocrfeeder = callPackage ./pkgs/ocrfeeder { automake = self.automake111x; };
+
+  inherit (callPackage ./pkgs/opensnitch {})
+    opensnitchd opensnitch-ui;
 
   spacemacs = callPackage ./pkgs/spacemacs/default.nix { };
 
