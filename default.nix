@@ -89,19 +89,11 @@ in
   kerneldocs = callPackage ./pkgs/kerneldocs {};
 
   open-zwave = callPackage ./pkgs/open-zwave {};
-  workcraft = callPackage ./pkgs/workcraft {};
-
-  unp = callPackage ./pkgs/unp { };
 
   esp32 = callPackage ./pkgs/esp32 { };
 
   mfcl8650cdwlpr = callPackage ./pkgs/mfcl8650cdwlpr { };
   mfcl8650cdwcupswrapper = callPackage ./pkgs/mfcl8650cdwcupswrapper {};
-
-  # vlc = super.vlc.overrideAttrs(oldAttrs: {
-  #   buildInputs = oldAttrs.buildInputs ++ [ self.libnotify self.gtk2 ];
-  #   configureFlags = oldAttrs.configureFlags ++ [ "--enable-notify" ];
-  # });
 
   exwm-ns = callPackage ./pkgs/exwm-ns { };
 
@@ -116,35 +108,5 @@ in
 
   spacemacs = callPackage ./pkgs/spacemacs/default.nix { };
 
-  perlPackages = super.perlPackages // (with super.perlPackages;{
-    ExtUtilsCppGuess = buildPerlModule rec {
-    name = "ExtUtils-CppGuess-0.07";
-    src = self.fetchurl {
-      url = "mirror://cpan/modules/by-module/ExtUtils/${name}.tar.gz";
-      sha256 = "1a77hxf2pa8ia9na72rijv1yhpn2bjrdsybwk2dj2l938pl3xn0w";
-    };
-    propagatedBuildInputs = [ CaptureTiny ];
-    perlPreHook = "unset LD";
-  };});
-
-  # notmuch = super.notmuch.overrideAttrs (oldAttrs: rec {
-  #   version = "0.24.2";
-  #   name = "notmuch-${version}";
-  #   src = self.fetchurl {
-  #     url = "http://notmuchmail.org/releases/${name}.tar.gz";
-  #     sha256 = "0lfchvapk11qazdgsxj42igp9mpp83zbd0h1jj6r3ifmhikajxma";
-  #   };
-  #   doCheck = false;
-  # });
-  notmuch = callPackage ./pkgs/notmuch { };
-
   totala = callPackage ./pkgs/totala { };
-
-  # pijul = callPackage ./pkgs/pijul { }; will only work once rust stuff has been sorted out
-
-  udis86 = callPackage ./pkgs/udis86 { };
-
-  xcircuit = callPackage ./pkgs/xcircuit { };
-
-  # zotero = callPackage ./pkgs/zotero { };
 }
