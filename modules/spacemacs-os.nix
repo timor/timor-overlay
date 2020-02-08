@@ -26,7 +26,7 @@ in
       start = ''
         export _JAVA_AWT_WM_NONREPARENTING=1
         systemctl --user start exwm.target
-        ${pkgs.spacemacs}/bin/spacemacs --eval "${cfg.startExpression}"
+        ${pkgs.spacemacs}/bin/spacemacs -fs --eval "${cfg.startExpression}"
         systemctl --user stop exwm.target
       '';
     };
