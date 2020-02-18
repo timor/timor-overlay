@@ -37,9 +37,10 @@ in
   # /lib/factor/<my-cool-factor-program>/ : Directory (may contain other used resources)
   deployFactor = callPackage ./pkgs/deployFactor { };
 
+  # FIXME Depends on pdconfig definition at the moment
   factor-lang-live = (self.factor-lang.extend (self': super': {interpreter = super'.interpreter.overrideAttrs (oldAttrs:
   rec {
-    version = "0.99-pre3";
+    version = "0.99-pre4";
     name = "factor-lang-${version}";
     bootImage = self.fetchurl {
       url = http://downloads.factorcode.org/images/build/boot.unix-x86.64.image.f7e4774d3f591b8b3f548cdd44cf0df1978f7f10;
@@ -49,8 +50,8 @@ in
     src = self.fetchFromGitHub {
       owner = "factor";
       repo = "factor";
-      rev = "c00f5ef214bde681f07dd00a5ff595bf88f8337e";
-      sha256 = "04zrmncgrn6b7xjhw0v4l78jwbn5i2a2yaiqn049c62sqmkj5g25";
+      rev = "3aa71bcb848caf4ea2a9187ab3aab19f4c39fd24";
+      sha256 = "1jfz2kz1j33lgjifxsryfp6q9ka3ppbcfnxfsyjcvkfmr00pb83f";
     };
 
     # patches = lib.init oldAttrs.patches;
