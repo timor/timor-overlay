@@ -9,6 +9,7 @@ let
     mkdir -p $out/bin
     substituteAll ${./files/nvidia-sleep.sh} $out/bin/nvidia-sleep.sh
     chmod +x $out/bin/nvidia-sleep.sh
+    patchShebangs $out/bin/nvidia-sleep.sh
   '';
   sleep = "${sleepPkg}/bin/nvidia-sleep.sh";
 in
@@ -21,11 +22,16 @@ in
 
   config = mkIf cfg.enable {
 
+    boot.extraModprobeConfig = ''
+      options nvidia NVreg_PreserveVideoMemoryAllocations=1
+    '';
+
     environment.systemPackages = [
       (pkgs.runCommand "system-sleep-nvidia" {inherit sleep;} ''
         mkdir -p $out/lib/systemd/system-sleep
         substituteAll ${./files/nvidia} $out/lib/systemd/system-sleep/nvidia
         chmod +x $out/lib/systemd/system-sleep/nvidia
+        patchShebangs $out/lib/systemd/system-sleep/nvidia
         '')
     ];
 
