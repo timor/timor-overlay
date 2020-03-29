@@ -7,6 +7,7 @@
     ./modules/mpd-user.nix
     ./modules/opensnitch.nix
     ./modules/nvidia-suspend.nix
+    ./modules/xboxdrv.nix
   ];
 
   # example for activating mpd user:
