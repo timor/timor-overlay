@@ -1,0 +1,42 @@
+--- plasma-workspace-5.17.5/lookandfeel/contents/lockscreen/LockScreenUi.qml
++++ #<buffer LockScreenUi.qml<lockscreen>>
+@@ -36,6 +36,18 @@
+     readonly property bool softwareRendering: GraphicsInfo.api === GraphicsInfo.Software
+     readonly property bool lightBackground: Math.max(PlasmaCore.ColorScope.backgroundColor.r, PlasmaCore.ColorScope.backgroundColor.g, PlasmaCore.ColorScope.backgroundColor.b) > 0.5
+ 
++    function performOperation(what) {
++        var service = dataEngine.serviceForSource("PowerDevil");
++        var operation = service.operationDescription(what);
++        service.startOperationCall(operation);
++    }
++
++    PlasmaCore.DataSource {
++      id: dataEngine
++      engine: "powermanagement"
++      connectedSources: ["PowerDevil"]
++    }
++
+     colorGroup: PlasmaCore.Theme.ComplementaryColorGroup
+ 
+     Connections {
+@@ -114,6 +126,7 @@
+             }
+         }
+         Keys.onPressed: {
++            if (event.key == 16908292) performOperation("suspendToRam")
+             uiVisible = true;
+             event.accepted = false;
+         }
+@@ -268,6 +281,11 @@
+                         anchors{
+                             verticalCenter: parent.top
+                         }
++                    },
++                    ActionButton {
++                      text: i18nd("plasma_lookandfeel_org.kde.lookandfeel", "Standby")
++                      iconSource: "system-suspend"
++                      onClicked: performOperation("suspendToRam")
+                     }
+                 ]
+ 
+

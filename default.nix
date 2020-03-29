@@ -107,6 +107,12 @@ in
   inherit (callPackage ./pkgs/opensnitch {})
     opensnitchd opensnitch-ui;
 
+  plasma5 = super.plasma5 // {
+    plasma-workspace = super.plasma5.plasma-workspace.overrideAttrs (oldAttrs: {
+      patches = oldAttrs.patches ++ [ ./patches/plasma-lockscreen-suspend-20.03.patch ];
+    });
+  };
+
   spacemacs = callPackage ./pkgs/spacemacs/default.nix { };
 
   totala = callPackage ./pkgs/totala { };
