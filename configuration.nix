@@ -7,7 +7,7 @@
     ./modules/mpd-user.nix
     ./modules/opensnitch.nix
     ./modules/nvidia-suspend.nix
-    ./modules/xboxdrv.nix
+    ./modules/xbox360-wireless.nix
   ];
 
   # example for activating mpd user:
