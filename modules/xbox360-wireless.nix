@@ -68,6 +68,11 @@ in
       '';
     };
 
+    # Restart the service on resume
+    powerManagement.resumeCommands = ''
+      systemctl --no-block restart xboxdrv
+    '';
+
     services.udev.extraRules = ''
       SUBSYSTEMS=="usb", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="0719", TAG+="uaccess", MODE="0660"
     '';
