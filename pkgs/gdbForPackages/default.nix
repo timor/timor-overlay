@@ -13,50 +13,20 @@
 # 3. Build above environment, enter afterwards
 # $ nix-build -E 'with import <nixpkgs> {}; (gdbForPackage glxinfo)'
 # $ nix-shell -p ./result
-{ gdb, pkgs, buildEnv, writeText, lib, runCommand, stdenv }:
+{ gdb, buildEnv, writeText, lib, runCommand, stdenv }:
 
 let
-  debugify = let
-    saveSource = ''
-      savedSource="$(mktemp -d)"
-      echo debugify: saving source from $NIX_BUILD_TOP/$sourceRoot to $savedSource
-      cp -r $NIX_BUILD_TOP/$sourceRoot $savedSource/
-      '';
-    installSource = ''
-      echo debugify: moving saved source to store
-      if [ -z "$savedSource" ]; then
-        echo debugify: unable to find saved source; exit 1
-      fi
-      mkdir -p $source
-      echo mv $savedSource/* $source/
-      mv $savedSource/* $source/
-      '';
-  in
-    (pkg: pkg.overrideAttrs (oldAttrs:
-      {
-        name = oldAttrs.name +"-debug";
-        separateDebugInfo = true;
-        outputs = (oldAttrs.outputs or [ "out" ]) ++ [ "source" ];
-        hardeningDisable = (oldAttrs.hardeningDisable or []) ++ [ "fortify" ];
-      } // (
-        if (oldAttrs ? buildPhase) then {
-          buildPhase = saveSource + oldAttrs.buildPhase;
-        } else {
-          preBuild = (oldAttrs.preBuild or "") + saveSource;
-        }) // (
-        if (oldAttrs ? installPhase) then {
-          installPhase = installSource + oldAttrs.installPhase;
-        } else {
-          preInstall = installSource + (oldAttrs.preInstall or "");
-        })));
+  debugify = import ./debugify.nix;
 in
 
 pkgs:
 let
-  debugPkgs = map debugify pkgs;
+  debugPkgs = map (p: lib.appendToName "debug" (debugify p)) pkgs;
   debugFileStore = buildEnv {
     name = "gdb-env-debug-files";
     paths = debugPkgs;
+    # This will create problems if actually important files for debugging clash for different packages
+    ignoreCollisions = true;
     extraOutputsToInstall = [ "debug" "source" ];
   };
   gdbInit = writeText "gdb-env-init" ''
@@ -74,9 +44,11 @@ let
     chmod +x $out/bin/gdb
   '';
   env = buildEnv {
+    ignoreCollisions = true ;
     name = "${gdbWrapper.name}-env";
     paths =  debugPkgs ++ [ gdbWrapper ];
     extraOutputsToInstall = [ "debug" "source" ];
+
   };
 in env.overrideAttrs (oldAttrs: {passthru = {
   debugPkgs = builtins.listToAttrs (map (p: { name = (builtins.parseDrvName p.name).name; value = p;}));

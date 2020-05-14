@@ -18,7 +18,8 @@ in
 {
   bgrep = callPackage ./pkgs/bgrep { };
 
-  gdbForPackages = callPackage ./pkgs/gdbForPackages {pkgs = self;};
+  debugify = import ./pkgs/gdbForPackages/debugify.nix;
+  gdbForPackages = callPackage ./pkgs/gdbForPackages { };
   gdbForPackage = (pkg: self.gdbForPackages [pkg]);
 
   colmap-clang = self.libsForQt5.callPackage ./pkgs/colmap {
