@@ -21,20 +21,14 @@ stdenv.mkDerivation rec {
     url = "https://github.com/timor/spacemacs.git";
     rev = "2b3a85d3f66dde246901293df656f20f6a996397";
     sha256 = if supportCheckPhase then "00w6x9rg36sxviyr4na1q2q6drbh4lkq3sr6rjrzi8n4zpldlmsy"
-      else "0xzyv74c3arycs8cn1009ir38ahkcfsbssxix8zdw1wq91jvj5wp";
+      else "a414609e706cb6885e7f762fb987a9daa2df653c";
     leaveDotGit = supportCheckPhase; # for checkPhase, and also for blaming in final store path...
   };
 
   patches = [
 
     # preempt outshine/outorg layer PR
-    (fetchurl {
-      # url = "https://patch-diff.githubusercontent.com/raw/syl20bnr/spacemacs/pull/11958.diff";
-      # sha256 = "03whw92f5ds3jbgiia750h5h8dfqfggilllyiwgkv9pvd2d50k2j";
-      url = "https://patch-diff.githubusercontent.com/raw/syl20bnr/spacemacs/pull/11958.diff";
-      sha256 = "0wjvzayrm645dcslkcqy9p6cskvqjrvzlww9cm5in8z5rrq503fl";
-    })
-
+    ../../patches/spacemacs-outorg.diff
   ];
 
   postPatch = ''
