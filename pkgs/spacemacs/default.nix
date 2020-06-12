@@ -3,7 +3,7 @@
 let
   spacemacs-emacs = callPackage ./spacemacs-emacs.nix { };
   name = "spacemacs-${version}";
-  version = "0.300-rc3";
+  version = "0.300-rc4";
   desktopItem = makeDesktopItem {
     name = "spacemacs";
     genericName = "Text Editor";
@@ -19,9 +19,9 @@ stdenv.mkDerivation rec {
 
   src = fetchgit {
     url = "https://github.com/timor/spacemacs.git";
-    rev = "2b3a85d3f66dde246901293df656f20f6a996397";
+    rev = "a414609e706cb6885e7f762fb987a9daa2df653c";
     sha256 = if supportCheckPhase then "00w6x9rg36sxviyr4na1q2q6drbh4lkq3sr6rjrzi8n4zpldlmsy"
-      else "a414609e706cb6885e7f762fb987a9daa2df653c";
+      else "1clmsbswji0qg4qr3innsksdzldbk54bg98bw2w6q42rjalm441d";
     leaveDotGit = supportCheckPhase; # for checkPhase, and also for blaming in final store path...
   };
 
