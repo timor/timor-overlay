@@ -5,6 +5,7 @@ let
   inside = (self:
   let callPackage = pkgs.newScope self ;
   in rec {
+    recurseForDerivations = true;
     interpreter = callPackage ./default.nix { inherit (gnome2) gtkglext; };
 
     # Convenience access for using the returned attribute the same way as the interpreter derivation

@@ -1,24 +1,17 @@
 { stdenv, lib, fetchurl, glib, git,
   rlwrap, curl, pkgconfig, perl, makeWrapper, tzdata, ncurses,
   pango, cairo, gtk2, gdk_pixbuf, gtkglext, pcre, openal,
-  mesa_glu, xorg, openssl, unzip, udis86, runCommand, interpreter }:
+  mesa_glu, xorg, openssl, unzip, udis86, runCommand, interpreter,
+  blas }:
 
 let
   inherit (stdenv.lib) optional;
-  runtimeLibs =  with xorg; [
-    stdenv.glibc.out
-    glib
-    libX11 pango cairo gtk2 gdk_pixbuf gtkglext pcre
-    mesa_glu libXmu libXt libICE libSM openssl udis86
-    openal
-  ];
-  runtimeLibPath = stdenv.lib.makeLibraryPath runtimeLibs;
   wrapFactor = runtimeLibs:
     runCommand (lib.appendToName "with-libs" interpreter).name {
       buildInputs = [ makeWrapper ];} ''
         mkdir -p $out/bin
         makeWrapper ${interpreter}/bin/factor $out/bin/factor \
-        --prefix LD_LIBRARY_PATH : ${runtimeLibPath}
+        --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath runtimeLibs}
       '';
 in
 stdenv.mkDerivation rec {
@@ -35,7 +28,6 @@ stdenv.mkDerivation rec {
     ./staging-command-line-0.98-pre.patch
     ./0001-pathnames-redirect-work-prefix-to-.local-share-facto.patch
     ./0002-adjust-unit-test-for-finding-executables-in-path-for.patch
-    ./fuel-dir.patch
     # preempt https://github.com/factor/factor/pull/2139
     ./fuel-dont-jump-to-using.patch
   ];
@@ -60,12 +52,26 @@ stdenv.mkDerivation rec {
     sed -i 's/^MEMO:/:/' basis/xdg/xdg.factor
 
     sed -i '4i GIT_LABEL = heads/master-${rev}' GNUmakefile
+
+    # update default paths in factor-listener.el for fuel mode
+    substituteInPlace misc/fuel/fuel-listener.el \
+      --replace '(defcustom fuel-factor-root-dir nil' "(defcustom fuel-factor-root-dir \"$out/lib/factor\""
     '';
+
+  runtimeLibs =  with xorg; [
+    stdenv.glibc.out
+    glib
+    libX11 pango cairo gtk2 gdk_pixbuf gtkglext pcre
+    mesa_glu libXmu libXt libICE libSM openssl udis86
+    openal blas
+  ];
 
   buildInputs = with xorg; [
     git rlwrap curl pkgconfig perl makeWrapper
     unzip
   ] ++ runtimeLibs;
+
+  runtimeLibPath = stdenv.lib.makeLibraryPath runtimeLibs;
 
   configurePhase = "true";
 
@@ -82,7 +88,7 @@ stdenv.mkDerivation rec {
     cp boot.unix-x86.64.image factor.image
 
     # Expose libraries in LD_LIBRARY_PATH for factor
-    export LD_LIBRARY_PATH=${runtimeLibPath}:$LD_LIBRARY_PATH
+    export LD_LIBRARY_PATH=${lib.makeLibraryPath runtimeLibs}:$LD_LIBRARY_PATH
 
     echo "=== Building first full image from boot image..."
 
@@ -115,22 +121,22 @@ stdenv.mkDerivation rec {
     mkdir -p $out/bin $out/lib/factor
     cp -r factor factor.image LICENSE.txt README.md basis core extra misc $out/lib/factor
 
-    # Create a wrapper in lib/factor, and one in bin/
+    # Create a wrapper in bin/
     wrapProgram $out/lib/factor/factor --prefix LD_LIBRARY_PATH : \
       "${runtimeLibPath}"
-    ln -s $out/lib/factor/factor.image $out/lib/factor/.factor-wrapped.image
+    mv $out/lib/factor/factor.image $out/lib/factor/.factor-wrapped.image
     mv $out/lib/factor/factor $out/bin/
 
+    # Emacs fuel expects the image being named `factor.image` in the factor base dir
+    ln -s $out/lib/factor/.factor-wrapped.image $out/lib/factor/factor.image
+
+    # Create a wrapper in lib/factor
     makeWrapper $out/lib/factor/.factor-wrapped $out/lib/factor/factor --prefix LD_LIBRARY_PATH : \
       "${runtimeLibPath}"
 
     # install fuel mode for emacs
     mkdir -p $out/share/emacs/site-lisp
-    # update default paths in factor-listener.el for fuel mode
-    substituteInPlace misc/fuel/fuel-listener.el \
-      --subst-var-by fuel_factor_root_dir $out/lib/factor \
-      --subst-var-by fuel_listener_factor_binary $out/bin/factor
-    cp misc/fuel/*.el $out/share/emacs/site-lisp/
+    ln -s $out/lib/factor/misc/fuel/*.el $out/share/emacs/site-lisp/
   '';
 
   meta = with stdenv.lib; {
