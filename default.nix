@@ -4,6 +4,7 @@ self: super:
 # super: immediate predecessor pkgs
 let
   lib = self.lib;
+  callPackage' = super.lib.callPackageWith self;
   callPackage = super.lib.callPackageWith self;
   callPackageIfNewer = (oldPackage: path: args:
     let newPackage = callPackage path args;
@@ -13,10 +14,20 @@ let
     else
     oldPackage
   );
+  # Use this to provide package until attribute is present in super
+  replaceUnlessProvided = (attribute: newPackage:
+    let attrExists = super ? "${attribute}"; in
+    if attrExists then
+      let existingPackage = super."${attribute}"; in
+      abort "Overlay attribute for '${newPackage.name}' may not override existing definition: '${existingPackage.name}'"
+    else
+      newPackage
+  );
+  callPackageUnlessProvided = (attribute: path: args: replaceUnlessProvided attribute (callPackage' path args));
 in
 
 {
-  bgrep = callPackage ./pkgs/bgrep { };
+  bgrep = callPackageUnlessProvided "bgrep" ./pkgs/bgrep { };
 
   debugify = import ./pkgs/gdbForPackages/debugify.nix;
   gdbForPackages = callPackage ./pkgs/gdbForPackages { };

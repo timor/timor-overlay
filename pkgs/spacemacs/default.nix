@@ -1,4 +1,4 @@
-{lib, stdenv, fetchgit, writeScriptBin, callPackage, makeDesktopItem, fetchurl, git, supportCheckPhase ? false, runAllTests ? false }:
+{lib, stdenv, fetchgit, writeScriptBin, callPackage, makeDesktopItem, fetchurl, git}:
 
 let
   spacemacs-emacs = callPackage ./spacemacs-emacs.nix { };
@@ -20,9 +20,7 @@ stdenv.mkDerivation rec {
   src = fetchgit {
     url = "https://github.com/timor/spacemacs.git";
     rev = "a414609e706cb6885e7f762fb987a9daa2df653c";
-    sha256 = if supportCheckPhase then "00w6x9rg36sxviyr4na1q2q6drbh4lkq3sr6rjrzi8n4zpldlmsy"
-      else "1clmsbswji0qg4qr3innsksdzldbk54bg98bw2w6q42rjalm441d";
-    leaveDotGit = supportCheckPhase; # for checkPhase, and also for blaming in final store path...
+    sha256 = "1clmsbswji0qg4qr3innsksdzldbk54bg98bw2w6q42rjalm441d";
   };
 
   patches = [
@@ -52,37 +50,6 @@ stdenv.mkDerivation rec {
     # rm -f core/core-spacemacs-buffer.elc
     rm -f core/libs/mocker.elc
   '';
-
-  doCheck = supportCheckPhase;
-
-  checkInputs = [ git ];
-
-  checkPhase = let
-    testListCmd = if runAllTests then
-        "find ./tests -type f -name Makefile"
-      else
-        "echo ./tests/core/Makefile";
-    in
-    ''
-      (
-        set -e
-        export EMACS_USER_DIRECTORY=$PWD
-        export PATH=${lib.getBin spacemacs-emacs}/bin:$PATH
-        export HOME=$TMPDIR/fakehome
-        mkdir -p $HOME/.spacemacs/private
-        cp core/templates/.spacemacs.template $HOME/.spacemacs
-
-        # ensure that remote points to origin for testing
-        set +e
-        git remote remove origin
-        set -e
-        git remote add origin https://github.com/syl20bnr/spacemacs.git
-        for p in $(${testListCmd}); do
-          ( cd $(dirname $p); make; )
-        done
-        rm -rf $HOME/.spacemacs
-      )
-      '';
 
   installPhase = ''
     cp -r . $out
