@@ -1,4 +1,5 @@
-{emacs, emacsPackagesNgGen, lib, fetchFromGitHub, fetchurl, texinfo }:
+{emacs, emacsPackagesNgGen, lib, fetchFromGitHub, fetchurl, texinfo
+, extraPackages ? (p: [])}:
 let patched-emacs = emacs.overrideAttrs(oldAttrs: rec {
       # patches = oldAttrs.patches ++ [ ./spacemacs.d.patch ];
       buildInputs = oldAttrs.buildInputs ++ [ texinfo ];
@@ -15,4 +16,4 @@ spacemacsPackages.emacsWithPackages (epkgs: [
   epkgs.s                       #  not bundled with spacemacs
   epkgs.f                       #  not bundled with spacemacs
   epkgs.toc-org                       #  not bundled with spacemacs
-])
+] ++ (extraPackages epkgs))

@@ -1,9 +1,16 @@
-{lib, stdenv, fetchgit, writeScriptBin, callPackage, makeDesktopItem, fetchurl, git}:
+{lib, stdenv, fetchFromGitHub, writeScriptBin, callPackage, makeDesktopItem
+, fetchurl, git, writeText, extraPackages ? null, dotfile ? null }:
+
 
 let
-  spacemacs-emacs = callPackage ./spacemacs-emacs.nix { };
+  haveDotfile = (dotfile != null);
+  customized = (extraPackages != null);
+  extraPackages' = if customized then extraPackages else p: [];
+  dotfilePath = if haveDotfile then
+    writeText "imported-dotfile" (builtins.readFile dotfile)
+  else null;
   name = "spacemacs-${version}";
-  version = "0.300-rc4";
+  version = "0.300-rc5";
   desktopItem = makeDesktopItem {
     name = "spacemacs";
     genericName = "Text Editor";
@@ -14,13 +21,15 @@ let
     categories = "Development;TextEditor;";
   };
 in
-stdenv.mkDerivation rec {
+
+stdenv.mkDerivation rec{
   inherit name version;
 
-  src = fetchgit {
-    url = "https://github.com/timor/spacemacs.git";
-    rev = "a414609e706cb6885e7f762fb987a9daa2df653c";
-    sha256 = "1clmsbswji0qg4qr3innsksdzldbk54bg98bw2w6q42rjalm441d";
+  src = fetchFromGitHub {
+    owner = "timor";
+    repo = "spacemacs";
+    rev = "nix-adjustments-${version}";
+    sha256 = "1ncwq7cpay2g38i4k25fq040alc67z16w76n0k6bsgkj488hmdvv";
   };
 
   patches = [
@@ -35,6 +44,9 @@ stdenv.mkDerivation rec {
     done
   '';
 
+  spacemacs-emacs = callPackage ./spacemacs-emacs.nix {
+    extraPackages = extraPackages';
+  };
   configurePhase = "true";
 
   dontBuild = true;
@@ -60,10 +72,14 @@ stdenv.mkDerivation rec {
     cat > $out/bin/spacemacs <<EOF
     #!/bin/sh
     export EMACS_USER_DIRECTORY="\$HOME/.spacemacs.d/"
+    ${lib.optionalString haveDotfile ''
+      export NIX_DOTSPACEMACS="${dotfilePath}"
+    ''}
     ${lib.getBin spacemacs-emacs}/bin/emacs -q \
       --eval '(setq invocation-name "spacemacs")' \
       --eval '(setq invocation-directory "$out/bin")' \
       --eval '(setq user-init-file "$out/init.el")' \
+      -l '${./elisp/nix-spacemacs.el}' \
       --load $out/init.el "\$@"
     EOF
     chmod +x $out/bin/spacemacs
@@ -73,6 +89,12 @@ stdenv.mkDerivation rec {
 
     mkdir -p $out/share/applications
     ln -s ${desktopItem}/share/applications/* $out/share/applications/
+    ${lib.optionalString customized ''
+      cat >> $out/.lock <<EOF
+      (defconst nix-spacemacs-storepath "$out")
+      (setq configuration-layer-elpa-subdirectory (substring nix-spacemacs-storepath 1))
+      EOF
+    ''}
   '';
 
   postFixup = ''
@@ -81,5 +103,6 @@ stdenv.mkDerivation rec {
 
   passthru = {
     inherit spacemacs-emacs;
+    packagesFromDotfile = callPackage ./packages-from-dotfile.nix {};
   };
 }

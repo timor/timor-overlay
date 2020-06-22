@@ -127,5 +127,13 @@ in
 
   spacemacs = callPackage ./pkgs/spacemacs/default.nix { };
 
+  spacemacs-default = let
+    extraPackagesFile = self.spacemacs.packagesFromDotfile "${self.spacemacs}/core/templates/.spacemacs.template";
+    in
+    self.spacemacs.override {
+      extraPackages = (import "${extraPackagesFile}");
+    };
+
+
   totala = callPackage ./pkgs/totala { };
 }
