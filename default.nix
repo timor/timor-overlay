@@ -27,6 +27,8 @@ let
 in
 
 {
+  amidicat = callPackage ./pkgs/amidicat { };
+
   bgrep = callPackageUnlessProvided "bgrep" ./pkgs/bgrep { };
 
   debugify = import ./pkgs/gdbForPackages/debugify.nix;
