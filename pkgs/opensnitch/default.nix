@@ -4,12 +4,12 @@
 }:
 
 let
-  version = "0.4-2020-01-07";
+  version = "1.0.1";
   src = fetchFromGitHub {
-    owner = "timor";
+    owner = "gustavo-iniguez-goya";
     repo = "opensnitch";
-    rev = "c956d91601278752776841a17473bbf6387275b2";
-    sha256 = "0xa9rydxsvvrvng9f0rrr03jgbpv4karca5czj20l0ygr3kj4z3x";
+    rev = "v${version}";
+    sha256 = "03xlzj2mwh5vckvi0fq33x60p9g28aplilk8r44q65ia88g1dwkf";
   };
   unicode-slugify = python3Packages.buildPythonPackage {
     name = "unicode-slugify-0.1.3";
@@ -46,7 +46,7 @@ in
   opensnitchd = buildGoPackage rec {
     pname = "opensnitch-daemon";
     inherit src version meta;
-    goPackagePath = "github.com/Thermicorp/opensnitch";
+    goPackagePath = "github.com/gustavo-iniguez-goya/opensnitch";
     subPackages = [ "./daemon" ];
     goDeps = ./deps.nix;
     buildInputs = [ pkg-config libnetfilter_queue libnfnetlink libpcap protobuf ];
@@ -66,7 +66,6 @@ in
       grpcio
       grpcio-tools
       pyinotify
-      configparser
       pyqt5
       unicode-slugify
     ] ;

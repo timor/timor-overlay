@@ -82,7 +82,7 @@ in
           Set of JSON attribute sets describing default opensnitch rules that are written to
           /etc/opensnitch/rules.
         '';
-        default = [];
+        default = {};
         example = ''
           {
             kerberos = {
