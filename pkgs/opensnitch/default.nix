@@ -1,5 +1,5 @@
 { lib, stdenv, pkgs, python3Packages, fetchFromGitHub, libnetfilter_queue
-, libnfnetlink, libpcap, protobuf, buildGoPackage, pkg-config
+, libnfnetlink, libpcap, protobuf, buildGoModule, pkg-config
 , qt5, makeDesktopItem
 }:
 
@@ -29,7 +29,7 @@ let
   meta = {
     description = "GNU/Linux port of the Little Snitch application firewall";
     license = lib.licenses.gpl3;
-    homepage = "https://github.com/evilsocket/opensnitch";
+    homepage = "https://github.com/gustavo-iniguez-goya/opensnitch";
     platforms = lib.platforms.unix;
   };
   desktopItem = makeDesktopItem {
@@ -43,14 +43,14 @@ let
 in
 
 {
-  opensnitchd = buildGoPackage rec {
-    pname = "opensnitch-daemon";
+  opensnitchd = buildGoModule rec {
+    pname = "opensnitchd";
     inherit src version meta;
-    goPackagePath = "github.com/gustavo-iniguez-goya/opensnitch";
-    subPackages = [ "./daemon" ];
-    goDeps = ./deps.nix;
-    buildInputs = [ pkg-config libnetfilter_queue libnfnetlink libpcap protobuf ];
-    postInstall = "mv $bin/bin/daemon $bin/bin/opensnitchd";
+    sourceRoot="source/daemon";
+    vendorSha256 = "1b2cil95mcdkwk47n7624nain1bhv3rxn254g5n6pk1rxg6n1j4n";
+    nativeBuildInputs = [ pkg-config ] ;
+    buildInputs = [ libnetfilter_queue libnfnetlink libpcap protobuf ];
+    postInstall = "mv $out/bin/daemon $out/bin/opensnitchd";
   };
 
   opensnitch-ui = python3Packages.buildPythonApplication rec {
