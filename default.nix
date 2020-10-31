@@ -127,7 +127,7 @@ in
     });
   };
 
-  spacemacs = callPackage ./pkgs/spacemacs/default.nix { };
+  spacemacs = callPackage ./pkgs/spacemacs/default.nix { emacs = self.emacs26; };
 
   spacemacs-default = let
     extraPackagesFile = self.spacemacs.packagesFromDotfile "${self.spacemacs}/core/templates/.spacemacs.template";

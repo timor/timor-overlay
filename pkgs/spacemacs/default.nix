@@ -1,5 +1,5 @@
 {lib, stdenv, fetchFromGitHub, writeScriptBin, callPackage, makeDesktopItem
-, fetchurl, git, writeText, extraPackages ? null, dotfile ? null }:
+, fetchurl, git, writeText, emacs, extraPackages ? null, dotfile ? null }:
 
 
 let
@@ -20,6 +20,11 @@ let
     desktopName = "Spacemacs";
     categories = "Development;TextEditor;";
   };
+  spacemacs-emacs = callPackage ./spacemacs-emacs.nix {
+    inherit emacs;
+    extraPackages = extraPackages';
+  };
+  spacemacs-emacs-bin = "${lib.getBin spacemacs-emacs}/bin";
 in
 
 stdenv.mkDerivation rec{
@@ -44,9 +49,6 @@ stdenv.mkDerivation rec{
     done
   '';
 
-  spacemacs-emacs = callPackage ./spacemacs-emacs.nix {
-    extraPackages = extraPackages';
-  };
   configurePhase = "true";
 
   dontBuild = true;
@@ -54,10 +56,10 @@ stdenv.mkDerivation rec{
   buildPhase = ''
     loadArgs="-L $PWD/core -L $PWD/layers -l ./core/core-load-paths.el -l ./core/core-versions.el"
     export EMACS_USER_DIRECTORY=$PWD
-    ${lib.getBin spacemacs-emacs}/bin/emacs --batch $loadArgs --eval '(batch-byte-recompile-directory 0)' "./core"
+    ${spacemacs-emacs-bin}/emacs --batch $loadArgs --eval '(batch-byte-recompile-directory 0)' "./core"
 
-    # ${lib.getBin spacemacs-emacs}/bin/emacs --batch --eval '(batch-byte-recompile-directory 0)' "./layers"
-    # ${lib.getBin spacemacs-emacs}/bin/emacs --batch --eval '(batch-byte-compile)' "./init.el"
+    # ${spacemacs-emacs-bin}/emacs --batch --eval '(batch-byte-recompile-directory 0)' "./layers"
+    # ${spacemacs-emacs-bin}/emacs --batch --eval '(batch-byte-compile)' "./init.el"
     # some byte-compiled files don't work due to missing compile-time dependencies
     # rm -f core/core-spacemacs-buffer.elc
     rm -f core/libs/mocker.elc
@@ -75,7 +77,7 @@ stdenv.mkDerivation rec{
     ${lib.optionalString haveDotfile ''
       export NIX_DOTSPACEMACS="${dotfilePath}"
     ''}
-    ${lib.getBin spacemacs-emacs}/bin/emacs -q \
+    ${spacemacs-emacs-bin}/emacs -q \
       --eval '(setq invocation-name "spacemacs")' \
       --eval '(setq invocation-directory "$out/bin")' \
       --eval '(setq user-init-file "$out/init.el")' \
@@ -86,6 +88,8 @@ stdenv.mkDerivation rec{
 
     mkdir -p $out/share/icons/hicolor/scalable/apps
     ln -s $out/assets/spacemacs.svg $out/share/icons/hicolor/scalable/apps/
+
+    ln -s ${spacemacs-emacs-bin}/emacsclient $out/bin/
 
     mkdir -p $out/share/applications
     ln -s ${desktopItem}/share/applications/* $out/share/applications/
