@@ -70,11 +70,17 @@ in
       unicode-slugify
     ] ;
     doCheck = false;
+    preInstall = ''
+      substituteInPlace setup.py --replace /usr/share/ share/
+      ${python3Packages.python.interpreter} setup.py install_data --install-dir=$out --root=$out
+    '';
     postInstall = ''
-      ${desktopItem.buildCommand}
       for program in $out/bin/*; do
       wrapQtApp $program --prefix PYTHONPATH : $PYTHONPATH
       done
+
+      mkdir -p $out/etc/xdg/autostart
+      ln -s $out/share/applications/opensnitch_ui.desktop $out/etc/xdg/autostart/
     '';
   };
 }

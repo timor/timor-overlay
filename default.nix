@@ -47,7 +47,7 @@ in
 {
   amidicat = callPackage ./pkgs/amidicat { };
 
-  bgrep = callPackageUnlessProvided "bgrep" ./pkgs/bgrep { };
+  # bgrep = callPackageUnlessProvided "bgrep" ./pkgs/bgrep { };
 
   debugify = import ./pkgs/gdbForPackages/debugify.nix;
   gdbForPackages = callPackage ./pkgs/gdbForPackages { };
