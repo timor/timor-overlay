@@ -137,12 +137,15 @@ in
         path = [ iptables ];
         # For some reason there is a problem with specifying /run for the socket file...
         # script = "${lib.getBin opensnitch.daemon}/bin/opensnitchd -log-file /var/log/opensnitchd.log -rules-path /etc/opensnitchd/rules -ui-socket unix:///run/opensnitch/osui.sock -debug";
-        script = "${lib.getBin opensnitchd}/bin/opensnitchd -log-file /var/log/opensnitchd.log -rules-path /etc/opensnitchd/rules -ui-socket unix:///tmp/osui.sock";
+        # script = "${lib.getBin opensnitchd}/bin/opensnitchd -log-file /var/log/opensnitchd.log -rules-path /etc/opensnitchd/rules -ui-socket unix:///tmp/osui.sock";
+
         serviceConfig = {
           Type = "simple";
           Restart = "always";
           RestartSec = "30";
+          ExecStart = "${lib.getBin opensnitchd}/bin/opensnitchd -rules-path /etc/opensnitchd/rules -ui-socket unix:///tmp/osui.sock";
         };
+        # restartTriggers = cfg.whitelistPackages;
       };
     };
 }
