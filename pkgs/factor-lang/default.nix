@@ -1,8 +1,8 @@
 { stdenv, lib, fetchurl, glib, git,
   rlwrap, curl, pkgconfig, perl, makeWrapper, tzdata, ncurses,
-  pango, cairo, gtk2, gdk_pixbuf, gtkglext, pcre, openal,
-  mesa_glu, xorg, openssl, unzip, udis86, runCommand, interpreter,
-  blas }:
+  pango, cairo, gtk2, gtk2-x11, gdk_pixbuf, gtkglext, pcre, openal,
+  xorg, openssl, unzip, gnome2, libGL, libGLU, udis86, runCommand, interpreter,
+  blas, zlib, freealut, libogg, libvorbis }:
 
 let
   inherit (stdenv.lib) optional;
@@ -59,11 +59,21 @@ stdenv.mkDerivation rec {
     '';
 
   runtimeLibs =  with xorg; [
-    stdenv.glibc.out
     glib
-    libX11 pango cairo gtk2 gdk_pixbuf gtkglext pcre
-    mesa_glu libXmu libXt libICE libSM openssl udis86
-    openal blas
+    pango cairo
+    gtk2-x11
+    gdk_pixbuf
+    gnome2.gtkglext
+    pcre
+    libGL
+    libGLU
+    freealut
+    openssl
+    udis86 # available since NixOS 19.09
+    openal
+    libogg
+    libvorbis
+    zlib
   ];
 
   buildInputs = with xorg; [
@@ -71,38 +81,18 @@ stdenv.mkDerivation rec {
     unzip
   ] ++ runtimeLibs;
 
-  runtimeLibPath = stdenv.lib.makeLibraryPath runtimeLibs;
+  runtimeLibPath = "/run/opengl-driver/lib:" + stdenv.lib.makeLibraryPath runtimeLibs;
 
   configurePhase = "true";
 
+  LD_LIBRARY_PATH = "${runtimeLibPath}";
   buildPhase = ''
-    make linux-x86-64
-
+    patchShebangs ./build.sh
     # Factor uses XDG_CACHE_HOME for cache during compilation.
-    # We can't have that. So set it to $TMPDIR/.cache
+    # We can't have that. So, set it to $TMPDIR/.cache
     export XDG_CACHE_HOME=$TMPDIR/.cache && mkdir -p $XDG_CACHE_HOME
-
-    # The released image has library path info embedded, so we
-    # first have to recreate the boot image with Nix paths, and
-    # then use it to build the Nix release image.
-    cp boot.unix-x86.64.image factor.image
-
-    # Expose libraries in LD_LIBRARY_PATH for factor
-    export LD_LIBRARY_PATH=${lib.makeLibraryPath runtimeLibs}:$LD_LIBRARY_PATH
-
-    echo "=== Building first full image from boot image..."
-
-    # build full factor image from boot image, saving the state for the next call
-    ./factor  -script -e='"unix-x86.64" USING: system bootstrap.image memory ; make-image save 0 exit'
-
-    echo "=== Building new boot image..."
-    # make a new bootstrap image
-    ./factor  -script -e='"unix-x86.64" USING: system bootstrap.image ; make-image 0 exit'
-
-    echo "=== Building final full image..."
-    # rebuild final full factor image to include all patched sources
-    ./factor -i=boot.unix-x86.64.image
-
+    ./build.sh compile
+    ./build.sh bootstrap
   '';
 
   doCheck = true;

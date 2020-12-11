@@ -50,28 +50,30 @@ in
   # /bin/<my-cool-factor-program> -> /lib/factor/<my-cool-factor-program>/<my-cool-factor-program>
   # /lib/factor/<my-cool-factor-program>/ : Directory (may contain other used resources)
   deployFactor = callPackage ./pkgs/deployFactor { };
+  factor-lang = callPackage ./pkgs/factor-lang/scope.nix { stdenv = self.clangStdenv; };
 
   # FIXME Depends on pdconfig definition at the moment
   factor-lang-live = (self.factor-lang.extend (self': super': {interpreter = super'.interpreter.overrideAttrs (oldAttrs:
   rec {
-    version = "0.99-pre4";
+    version = "0.99-pre5";
     name = "factor-lang-${version}";
     bootImage = self.fetchurl {
-      url = http://downloads.factorcode.org/images/build/boot.unix-x86.64.image.f7e4774d3f591b8b3f548cdd44cf0df1978f7f10;
-      sha256 = "1k74w2zla8ryk1r6gwqc82ndj13mk0xsnxfy4q1ch601hvx1cgv2";
+      url = "https://downloads.factorcode.org/images/build/boot.unix-x86.64.image.e511080c91c884c117edc585e61a9979e11731a8";
+      # url = http://downloads.factorcode.org/images/build/boot.unix-x86.64.image.f7e4774d3f591b8b3f548cdd44cf0df1978f7f10;
+      sha256 = "0q8y869x4mkkk876bwkl3n4rq96q2hm7jmk0x9v0qr7749f0h6g7";
     };
 
     src = self.fetchFromGitHub {
       owner = "factor";
       repo = "factor";
-      rev = "3aa71bcb848caf4ea2a9187ab3aab19f4c39fd24";
-      sha256 = "1jfz2kz1j33lgjifxsryfp6q9ka3ppbcfnxfsyjcvkfmr00pb83f";
+      rev = "f5f6fb7da690813d9f8605ded133de7e41e095d5";
+      sha256 = "02d9mvp7c0g1gmlr7l0ia73hbr0j08azm94kyx54jqcljd50z3hd";
     };
 
-    # patches = lib.init oldAttrs.patches;
+  #   # patches = lib.init oldAttrs.patches;
     patches = [
       ./pkgs/factor-lang/staging-command-line-0.98-pre.patch
-      ./pkgs/factor-lang/fuel-dir.patch
+      # ./pkgs/factor-lang/fuel-dir.patch
     ] ;
 
     postUnpack = ''
