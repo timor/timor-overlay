@@ -50,10 +50,10 @@ in
   # /bin/<my-cool-factor-program> -> /lib/factor/<my-cool-factor-program>/<my-cool-factor-program>
   # /lib/factor/<my-cool-factor-program>/ : Directory (may contain other used resources)
   deployFactor = callPackage ./pkgs/deployFactor { };
-  factor-lang = callPackage ./pkgs/factor-lang/scope.nix { stdenv = self.clangStdenv; };
+  factor-lang-new = callPackage ./pkgs/factor-lang/scope.nix { stdenv = self.clangStdenv; };
 
   # FIXME Depends on pdconfig definition at the moment
-  factor-lang-live = (self.factor-lang.extend (self': super': {interpreter = super'.interpreter.overrideAttrs (oldAttrs:
+  factor-lang-live = (self.factor-lang-new.extend (self': super': {interpreter = super'.interpreter.overrideAttrs (oldAttrs:
   rec {
     version = "0.99-pre5";
     name = "factor-lang-${version}";
