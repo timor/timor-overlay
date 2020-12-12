@@ -6,6 +6,7 @@ runCommand "spacemacs-elpa-packages" rec {
   # dotfilePath = builtins.path { path = dotfile; name = "dot_spacemacs"; recursive=false;};
   dotfilePath = writeText "imported-dotfile" (builtins.readFile dotfile);
   elispScript = writeText "make-packages" ''
+  (setq debug-on-error t)
   (load "${spacemacs}/core/core-versions.el")
   (load "${spacemacs}/core/core-load-paths.el")
   (load "${dotfilePath}")
@@ -20,11 +21,11 @@ runCommand "spacemacs-elpa-packages" rec {
   (message "Used layers: %s" configuration-layer--used-layers)
   (configuration-layer//declare-used-packages configuration-layer--used-layers)
   (message "Used packages: %s" configuration-layer--used-packages)
+  (setq nix-build-spacemacs-packages configuration-layer--used-packages)
 '';
 } ''
   export HOME=$TMPDIR/fakehome
   mkdir -p $HOME/.emacs.d/.cache
-  mkdir -p $out
   ${lib.getBin emacs}/bin/emacs --batch \
     --script "$elispScript" --eval "(nix-spacemacs-generate-expression \"$out\")"
 ''

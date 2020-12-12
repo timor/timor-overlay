@@ -76,10 +76,11 @@ let checked = n:
     else p';
 in [\n")
     (insert (with-output-to-string
-              (dolist (pkg (nix-spacemacs-packages))
-                (princ (format "    (checked \"%s\") # %s\n"
-                               (oref pkg :name)
-                               (oref pkg :owners))))))
+              (let ((packages (or
+                               nix-build-spacemacs-packages ; set by packages-from-dotfile.nix
+                               (mapcar (lambda (x) (oref x :name)) (nix-spacemacs-packages)))))
+                (dolist (pkg packages)
+                 (princ (format "    (checked \"%s\") \n" pkg))))))
     (insert "]\n")))
 
 (defun nix-spacemacs-update-nix-env ()
