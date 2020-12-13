@@ -76,9 +76,10 @@ let checked = n:
     else p';
 in [\n")
     (insert (with-output-to-string
-              (let ((packages (or
-                               nix-build-spacemacs-packages ; set by packages-from-dotfile.nix
-                               (mapcar (lambda (x) (oref x :name)) (nix-spacemacs-packages)))))
+              (let ((packages (if (boundp 'nix-build-spacemacs-packages)
+                                  (configuration-layer//filter-distant-packages
+                                   nix-build-spacemacs-packages nil) ; set by packages-from-dotfile.nix
+                                (mapcar (lambda (x) (oref x :name)) (nix-spacemacs-packages)))))
                 (dolist (pkg packages)
                  (princ (format "    (checked \"%s\") \n" pkg))))))
     (insert "]\n")))
@@ -94,10 +95,11 @@ in [\n")
                           ".extend(import (builtins.fetchTarball { url = https://github.com/nix-community/emacs-overlay/archive/master.tar.gz; }))"
                         ""))
          (commands (list "nix-build" "-E"
-                         (format "with (import %s {})%s; (spacemacs.override{dotfile = %s; extraPackages = (import %s);}).overrideAttrs (oa: %s)"
+                         (format "with (import %s {})%s; (spacemacs.override{dotfile = %s;}).overrideAttrs (oa: %s)"
                                  nix-spacemacs-nix-expression
                                  pkgs-extend
-                                 (dotspacemacs/location) expr-file
+                                 (dotspacemacs/location)
+                                 ;; expr-file
                                  (if nix-spacemacs-custom-source
                                      (format "{src=%s;}" nix-spacemacs-custom-source)
                                    "{}"))

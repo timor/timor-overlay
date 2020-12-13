@@ -1,0 +1,72 @@
+* Declarative Spacemacs
+
+** ~dotfile~ argument
+If given:
+- ~customized~ is set
+- ~dotfile~ is copied into the store
+- ~NIX_DOTSPACEMACS~ is set to that.  During loading, this file is loaded.
+- ~NIX_SPACEMACS_SUFFIX~ is set to a store-path dependent string.  This is used
+  to set the location of the user-editable ~.spacemacs~ file into something like
+  ~/.spacemacs.d/.spacemacs-FOO~.  On first invocation, this
+- additional packages are determined using ~packagesFromDotfile~
+
+** ~extraPackages~ argument
+If given (emacs packages function)
+- ~customized~ is set
+- additional packages are added
+
+** Difference between declarative usage and stateful usage
+~packagesFromDotfile~ does not evaluate toggles, thus more packages are included
+in the generated package set than necessary.  If ~nix-spacemacs-update-nix-env~
+is used from inside spacemacs, on the other hand, the currently loaded and
+configured layers' packages are "baked" instead.  This is more precise, but care
+must be taken to call that after configuration has been reloaded. (TODO: this
+could be made better by either re-evaluating the layers without installing, or
+calling spacemacs from an external process?)
+
+* Customization
+When a spacemacs with ~dotfile~ is used, ~custom-file~ is set to something
+store-path-dependent.  Intended semantics:
+- Any customize settings after that only go to the ~custom-file~
+- This also disables Spacemacs' ~custom-file~ sync mechanism
+
+NOTE: Spacemacs doc indicates that setting and loading ~custom-file~ is best
+done in ~dotspacemacs/user-init~ context.  We could modify the template(or
+better core-custom-settings.el?) such that the first time spacemacs is loaded, ~custom-file~ is set
+
+* Notes to self
+Spacemacs internal loading procedure (init.el)
+- load core-version.el
+- load core-load-paths.el
+  - modified ~spacemacs-start-directory~ to work from cwd
+  - define ~spacemacs-nix-declared-p~ and ~spacemacs-nix-suffix~ here based on ~NIX_SPACEMACS_SUFFIX~
+  - define ~spacemacs-nix-dotfile-path~ based on ~NIX_DOTSPACEMACS~
+- load core-dumper.el
+- require 'core-spacemacs (set up in core-load-paths.el)
+  - requires pretty much all the core-* packages:
+    - ...
+    - core-configuration-layer
+    - core-dotspacemacs
+    - core-custom-settings
+    - ...
+- load lock-file
+- call spacemacs/init
+  - This currently performs a check whether the ~NIX_DOTSPACEMACS~ file is the
+    same as ~dotspacemacs-filepath~
+  - calls dotspacemacs/init from dotfile
+  - calls dotspacemacs/user-init from dotfile
+  - calls spacemacs/initialize-nix-custom-file, which overrides default behavior
+    if ~spacemacs-nix-declared-p~ is set
+    - installs the dot-file if it does not exist
+  - calls configuration-layer/initialize
+    - calls configuration-layer/elpa-directory, which sets the subdir to
+      ~NIX_SPACEMACS_SUFFIX~ if ~spacemacs-nix-declared-p~ is set
+- configuration-layer/stable-elpa-init (unused)
+- configuration-layer/load
+  - This is where the package loading heavy-lifting stuff happens
+- calls spacemacs/setup-startup-hook
+  - this sets 'emacs-startup-hook, which, among other things:
+    - dotspacemacs/user-config
+    - dotspacemacs/emacs-custom-settings
+    - sync custom file (if applicable)
+- ...

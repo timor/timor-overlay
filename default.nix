@@ -129,15 +129,12 @@ in
     });
   };
 
-  spacemacs = callPackage ./pkgs/spacemacs/default.nix { emacs = self.emacs26; };
+  spacemacs = callPackage ./pkgs/spacemacs/default.nix { emacsPackages = self.emacs26Packages; };
 
-  spacemacs-default = let
-    extraPackagesFile = self.spacemacs.packagesFromDotfile "${self.spacemacs}/core/templates/.spacemacs.template";
-    in
+  spacemacs-default =
     self.spacemacs.override {
-      extraPackages = (import "${extraPackagesFile}");
-    };
-
+      dotfile = "${self.spacemacs}/core/templates/.spacemacs.template";
+    } ;
 
   totala = callPackage ./pkgs/totala { };
 }

@@ -1,4 +1,4 @@
-{lib, emacs, writeText, spacemacs, runCommand }:
+{lib, emacsPackages, writeText, spacemacs, runCommand }:
 
 dotfile:
 
@@ -6,7 +6,6 @@ runCommand "spacemacs-elpa-packages" rec {
   # dotfilePath = builtins.path { path = dotfile; name = "dot_spacemacs"; recursive=false;};
   dotfilePath = writeText "imported-dotfile" (builtins.readFile dotfile);
   elispScript = writeText "make-packages" ''
-  (setq debug-on-error t)
   (load "${spacemacs}/core/core-versions.el")
   (load "${spacemacs}/core/core-load-paths.el")
   (load "${dotfilePath}")
@@ -26,6 +25,6 @@ runCommand "spacemacs-elpa-packages" rec {
 } ''
   export HOME=$TMPDIR/fakehome
   mkdir -p $HOME/.emacs.d/.cache
-  ${lib.getBin emacs}/bin/emacs --batch \
+  ${lib.getBin emacsPackages.emacs}/bin/emacs --batch \
     --script "$elispScript" --eval "(nix-spacemacs-generate-expression \"$out\")"
 ''

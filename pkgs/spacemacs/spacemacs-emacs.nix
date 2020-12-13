@@ -1,13 +1,13 @@
-{emacs, emacsPackagesNgGen, lib, fetchFromGitHub, fetchurl, texinfo
+{emacsPackages, emacsPackagesFor, lib, fetchFromGitHub, fetchurl, texinfo
 , extraPackages ? (p: [])}:
-let patched-emacs = emacs.overrideAttrs(oldAttrs: rec {
+let patched-emacs = emacsPackages.emacs.overrideAttrs(oldAttrs: rec {
       # patches = oldAttrs.patches ++ [ ./spacemacs.d.patch ];
       buildInputs = oldAttrs.buildInputs ++ [ texinfo ];
       patches = oldAttrs.patches ++ [ ./emacs-user-directory.patch ];
       versionModifier = "spacemacs";
       name = "emacs-${oldAttrs.version}-${versionModifier}";
     });
-    spacemacsPackages = emacsPackagesNgGen patched-emacs;
+    spacemacsPackages = emacsPackagesFor patched-emacs;
 in
 spacemacsPackages.emacsWithPackages (epkgs: [
   # epkgs.ht                      #  bundled with spacemacs
