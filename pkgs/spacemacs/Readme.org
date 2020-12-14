@@ -11,17 +11,13 @@ If given:
 
 ** ~extraPackages~ argument
 If given (emacs packages function)
-- additional packages are added
+- additional packages are added to the site-wide load path
 
 ** Difference between declarative usage and stateful usage
 ~packagesFromDotfile~ does not evaluate toggles, thus more packages are included
 in the generated package set than necessary.  If ~nix-spacemacs-update-nix-env~
 is used from inside spacemacs, on the other hand, the currently loaded and
-configured layers' packages are "baked" instead.  This is more precise, but care
-must be taken to call that after configuration has been reloaded. (TODO: this
-could be made better by either re-evaluating the layers without installing, or
-calling spacemacs from an external process?)
-
+configured layers' packages are "baked" instead.  This is more precise
 * Customization
 Syncing custom settings to dotfile is disabled, ~spacemacs--custom-file~ is
 used for storing customization, and is loaded during ~emacs-startup-hook~.
@@ -56,7 +52,7 @@ Spacemacs internal loading procedure (init.el)
     if ~spacemacs-nix-declared-p~ is set
     - installs the dot-file if it does not exist
   - calls ~configuration-layer/initialize~
-    - calls ~configuration~-layer/elpa-directory, which sets the subdir to
+    - calls ~configuration-layer/elpa-directory~, which sets the subdir to
       ~NIX_SPACEMACS_SUFFIX~ if ~spacemacs-nix-declared-p~ is set
 - ~configuration-layer/stable-elpa-init~ (unused)
 - ~configuration-layer/load~

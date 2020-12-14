@@ -87,6 +87,7 @@ in [\n")
 (defun nix-spacemacs-update-nix-env ()
   "Build a spacemacs based on currently loaded configuration"
   (interactive)
+  (dotspacemacs/sync-configuration-layers)
   (let* ((buffer (get-buffer-create "*Nix-Spacemacs-Update-Env*"))
          (expr-file (make-temp-file "spacemacs-emacs-packages" nil ".nix"))
          (result-link (expand-file-name (make-temp-name "nix-spacemacs-update-env-result")
