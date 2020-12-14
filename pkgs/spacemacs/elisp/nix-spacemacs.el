@@ -85,7 +85,7 @@ in [\n")
     (insert "]\n")))
 
 (defun nix-spacemacs-update-nix-env ()
-  "Build a spacemacs with fixed dotfile and package set based on currently loaded configuration"
+  "Build a spacemacs based on currently loaded configuration"
   (interactive)
   (let* ((buffer (get-buffer-create "*Nix-Spacemacs-Update-Env*"))
          (expr-file (make-temp-file "spacemacs-emacs-packages" nil ".nix"))
@@ -95,11 +95,11 @@ in [\n")
                           ".extend(import (builtins.fetchTarball { url = https://github.com/nix-community/emacs-overlay/archive/master.tar.gz; }))"
                         ""))
          (commands (list "nix-build" "-E"
-                         (format "with (import %s {})%s; (spacemacs.override{dotfile = %s;}).overrideAttrs (oa: %s)"
+                         (format "with (import %s {})%s; (spacemacs.override{extraPackages = (import %s);}).overrideAttrs (oa: %s)"
                                  nix-spacemacs-nix-expression
                                  pkgs-extend
-                                 (dotspacemacs/location)
-                                 ;; expr-file
+                                 ;; (dotspacemacs/location)
+                                 expr-file
                                  (if nix-spacemacs-custom-source
                                      (format "{src=%s;}" nix-spacemacs-custom-source)
                                    "{}"))
