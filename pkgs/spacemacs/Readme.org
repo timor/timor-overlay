@@ -2,7 +2,6 @@
 
 ** ~dotfile~ argument
 If given:
-- ~customized~ is set
 - ~dotfile~ is copied into the store
 - ~NIX_DOTSPACEMACS~ is set to that.  During loading, this file is loaded.
 - ~NIX_SPACEMACS_SUFFIX~ is set to a store-path dependent string.  This is used
@@ -12,7 +11,6 @@ If given:
 
 ** ~extraPackages~ argument
 If given (emacs packages function)
-- ~customized~ is set
 - additional packages are added
 
 ** Difference between declarative usage and stateful usage
@@ -25,14 +23,12 @@ could be made better by either re-evaluating the layers without installing, or
 calling spacemacs from an external process?)
 
 * Customization
-When a spacemacs with ~dotfile~ is used, ~custom-file~ is set to something
-store-path-dependent.  Intended semantics:
-- Any customize settings after that only go to the ~custom-file~
-- This also disables Spacemacs' ~custom-file~ sync mechanism
+Syncing custom settings to dotfile is disabled, ~spacemacs--custom-file~ is
+used for storing customization, and is loaded during ~emacs-startup-hook~.
 
 NOTE: Spacemacs doc indicates that setting and loading ~custom-file~ is best
-done in ~dotspacemacs/user-init~ context.  We could modify the template(or
-better core-custom-settings.el?) such that the first time spacemacs is loaded, ~custom-file~ is set
+done in ~dotspacemacs/user-init~ context.  This is not run during
+~emacs-startup-hook~, so we should be safe loading this during ~spacemacs/init~.
 
 * Notes to self
 Spacemacs internal loading procedure (init.el)
@@ -53,20 +49,22 @@ Spacemacs internal loading procedure (init.el)
 - call spacemacs/init
   - This currently performs a check whether the ~NIX_DOTSPACEMACS~ file is the
     same as ~dotspacemacs-filepath~
-  - calls dotspacemacs/init from dotfile
-  - calls dotspacemacs/user-init from dotfile
-  - calls spacemacs/initialize-nix-custom-file, which overrides default behavior
+  - calls ~dotspacemacs/init~ from dotfile
+  - calls ~dotspacemacs/user-init~ from dotfile
+  - calls ~spacemacs/initialize-nix-custom-file~, which is set to always use
+    separate custom-settings file
     if ~spacemacs-nix-declared-p~ is set
     - installs the dot-file if it does not exist
-  - calls configuration-layer/initialize
-    - calls configuration-layer/elpa-directory, which sets the subdir to
+  - calls ~configuration-layer/initialize~
+    - calls ~configuration~-layer/elpa-directory, which sets the subdir to
       ~NIX_SPACEMACS_SUFFIX~ if ~spacemacs-nix-declared-p~ is set
-- configuration-layer/stable-elpa-init (unused)
-- configuration-layer/load
+- ~configuration-layer/stable-elpa-init~ (unused)
+- ~configuration-layer/load~
   - This is where the package loading heavy-lifting stuff happens
-- calls spacemacs/setup-startup-hook
+- calls ~spacemacs/setup-startup-hook~
   - this sets 'emacs-startup-hook, which, among other things:
-    - dotspacemacs/user-config
-    - dotspacemacs/emacs-custom-settings
-    - sync custom file (if applicable)
+    - ~dotspacemacs/user-config~
+    - ~dotspacemacs/emacs-custom-settings~ -- replaced by loading ~custom-file~
+      directly if it exists
+    - sync custom file (commented out)
 - ...

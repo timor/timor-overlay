@@ -6,7 +6,6 @@ let
   packagesFromDotfile = callPackage ./packages-from-dotfile.nix { inherit emacsPackages; };
   haveDotfile = (dotfile != null);
   haveExtraPackages = (extraPackages != null);
-  customized = (haveExtraPackages || haveDotfile);
   extraPackages' = if haveExtraPackages then extraPackages else p: [];
   dotfilePath = if haveDotfile then
     writeText "imported-dotfile" (builtins.readFile dotfile)
