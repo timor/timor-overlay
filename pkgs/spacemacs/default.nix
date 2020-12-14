@@ -41,12 +41,6 @@ stdenv.mkDerivation rec{
     sha256 = "1fr96zk1zwdgaw0ibn5dy5k7jafvvcf9y4rr5n0m04a1cbv6yi65";
   };
 
-  patches = [
-
-    # preempt outshine/outorg layer PR
-    # ../../patches/spacemacs-outorg.diff
-  ];
-
   postPatch = ''
     for i in core/info/release-notes/*; do
       substituteInPlace $i --replace ".emacs.d" ".spacemacs.d"
