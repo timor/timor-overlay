@@ -14,7 +14,7 @@ let
     else p: [];
   finalPackages = p: (extraPackages' p) ++ (dotfilePackages p) ;
   name = "spacemacs-${version}";
-  version = "0.300-rc6";
+  version = "0.300-rc7";
   desktopItem = makeDesktopItem {
     name = "spacemacs";
     genericName = "Text Editor";
@@ -38,7 +38,7 @@ stdenv.mkDerivation rec{
     owner = "timor";
     repo = "spacemacs";
     rev = "nix-adjustments-${version}";
-    sha256 = "1fr96zk1zwdgaw0ibn5dy5k7jafvvcf9y4rr5n0m04a1cbv6yi65";
+    sha256 = "0jsyax1mxh8i5ni2s23niq70n85si7mp4yhih46vay8qdanqf1z4";
   };
 
   postPatch = ''
