@@ -2,6 +2,8 @@
 
 with lib;
 
+# NOTE: expects exwm-enabled spacemacs in the user's path!
+
 let
   cfg = config.services.xserver.windowManager.spacemacsOS;
 in
@@ -26,7 +28,7 @@ in
       start = ''
         export _JAVA_AWT_WM_NONREPARENTING=1
         systemctl --user start exwm.target
-        ${pkgs.spacemacs}/bin/spacemacs -fs --eval "${cfg.startExpression}"
+        spacemacs -fs --eval "${cfg.startExpression}"
         systemctl --user stop exwm.target
       '';
     };
