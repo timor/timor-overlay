@@ -109,7 +109,7 @@ stdenv.mkDerivation rec {
 
   installPhase = ''
     mkdir -p $out/bin $out/lib/factor
-    cp -r factor factor.image LICENSE.txt README.md basis core extra misc $out/lib/factor
+    cp -r factor factor.image boot*.image LICENSE.txt README.md basis core extra misc $out/lib/factor
 
     # Create a wrapper in bin/
     wrapProgram $out/lib/factor/factor --prefix LD_LIBRARY_PATH : \
