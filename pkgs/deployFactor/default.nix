@@ -3,7 +3,7 @@
 {name, source, extraPath}:
 let
   deployedVocab = runCommand "${name}-vocab" {
-    factorCmd = "${factor-lang}/bin/factor " + ./deploy-me.factor;
+    factorCmd = "${factor-lang.interpreter}/bin/factor " + ./deploy-me.factor;
     SRC = source;
     NAME = name;
   } ''
