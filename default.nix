@@ -136,4 +136,6 @@ in
     } ;
 
   totala = callPackage ./pkgs/totala { };
+
+  zfs-linux-tools = callPackage ./pkgs/zfs-linux-tools { };
 }
