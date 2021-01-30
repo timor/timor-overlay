@@ -127,8 +127,10 @@ in
       patches = oldAttrs.patches ++ [ ./patches/plasma-lockscreen-suspend-20.03.patch ];
     });
   };
+  spacemacsPackages = callPackage ./pkgs/spacemacs/spacemacs-packages.nix
+    { emacsPackages = self.emacs26Packages; };
 
-  spacemacs = callPackage ./pkgs/spacemacs/default.nix { emacsPackages = self.emacs26Packages; };
+  spacemacs = callPackage ./pkgs/spacemacs/default.nix { emacsPackages = self.spacemacsPackages; };
 
   spacemacs-default =
     self.spacemacs.override {

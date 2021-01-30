@@ -99,7 +99,9 @@ stdenv.mkDerivation rec{
   '';
 
   passthru = {
+    inherit emacsPackages;
     inherit spacemacs-emacs;
-    inherit packagesFromDotfile ;
+    inherit packagesFromDotfile;
+    inherit finalPackages;
   };
 }
