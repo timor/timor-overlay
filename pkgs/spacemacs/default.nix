@@ -1,9 +1,10 @@
-{lib, stdenv, fetchFromGitHub, writeScriptBin, callPackage, makeDesktopItem
+{lib, stdenv, fetchFromGitHub, writeScriptBin, callPackage, makeDesktopItem, emacsWithUserDir
 , fetchurl, git, writeText, emacsPackages, extraPackages ? null, dotfile ? null }:
 
 
 let
-  packagesFromDotfile = callPackage ./packages-from-dotfile.nix { inherit emacsPackages; };
+  emacsPackages' = emacsWithUserDir "spacemacs.d" "spacemacs" emacsPackages;
+  packagesFromDotfile = callPackage ./packages-from-dotfile.nix { emacsPackages = emacsPackages'; };
   haveDotfile = (dotfile != null);
   haveExtraPackages = (extraPackages != null);
   extraPackages' = if haveExtraPackages then extraPackages else p: [];
@@ -25,7 +26,7 @@ let
     categories = "Development;TextEditor;";
   };
   spacemacs-emacs = callPackage ./spacemacs-emacs.nix {
-    inherit emacsPackages;
+    emacsPackages = emacsPackages';
     extraPackages = finalPackages;
   };
   spacemacs-emacs-bin = "${lib.getBin spacemacs-emacs}/bin";
@@ -71,7 +72,7 @@ stdenv.mkDerivation rec{
 
     cat > $out/bin/spacemacs <<EOF
     #!/bin/sh
-    export EMACS_USER_DIRECTORY="\$HOME/.spacemacs.d/"
+    export EMACS_USER_DIRECTORY="\${spacemacs-emacs.emacs.envVars.EMACS_USER_DIRECTORY}"
     ${lib.optionalString haveDotfile ''
       export NIX_DOTSPACEMACS="${dotfilePath}"
       export NIX_SPACEMACS_SUFFIX=$(echo $out | cut -d'/' -f4 | cut -d'-' -f1)
@@ -99,7 +100,7 @@ stdenv.mkDerivation rec{
   '';
 
   passthru = {
-    inherit emacsPackages;
+    emacsPackages = emacsPackages';
     inherit spacemacs-emacs;
     inherit packagesFromDotfile;
     inherit finalPackages;

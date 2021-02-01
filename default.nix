@@ -57,8 +57,11 @@ in
     stdenv = self.clangStdenv;
     inherit (self.llvmPackages) openmp;
     };
+  doom-emacs = callPackage ./pkgs/doom-emacs {emacsPackages = self.emacs26Packages; };
 
   colmap = self.libsForQt5.callPackage ./pkgs/colmap { };
+
+  emacsWithUserDir = callPackage ./pkgs/emacs-with-user-dir { };
 
   emacs26Packages = super.emacs26Packages.overrideScope' (eself: esuper:
     { auctex = auctexFun esuper; }
@@ -114,6 +117,8 @@ in
     patchShebangs $out/bin/git-rebase-all
     '';
 
+  callStraightEnv = callPackage (builtins.fetchTarball {url = "https://github.com/vlaci/nix-straight.el/archive/v2.1.0.tar.gz";});
+
   spnav = callPackage ./pkgs/spnav { };
 
   spacenavd = callPackage ./pkgs/spacenavd { };
@@ -149,10 +154,10 @@ in
       patches = oldAttrs.patches ++ [ ./patches/plasma-lockscreen-suspend-20.03.patch ];
     });
   };
-  spacemacsPackages = callPackage ./pkgs/spacemacs/spacemacs-packages.nix
-    { emacsPackages = self.emacs26Packages; };
+  # spacemacsPackages = self.emacsWithUserDir "spacemacs.d" "spacemacs" (callPackage ./pkgs/spacemacs/spacemacs-packages.nix
+  #   { emacsPackages = self.emacs26Packages; });
 
-  spacemacs = callPackage ./pkgs/spacemacs/default.nix { emacsPackages = self.spacemacsPackages; };
+  spacemacs = callPackage ./pkgs/spacemacs/default.nix { emacsPackages = self.emacs26Packages; };
 
   spacemacs-default =
     self.spacemacs.override {

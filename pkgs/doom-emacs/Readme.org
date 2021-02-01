@@ -1,0 +1,48 @@
+* Definitions:
+- doom-private-dir :: "~/.doom.d", user-configuration, contains the three magic
+  files.  Overridden with =DOOMDIR=.  This is probably the thing we would either
+  generate from scratch or copy from directory into the store, basically baking
+  that config?
+- doom-emacs-dir :: "~/.emacs.d" equivalent, normally writable, will be in
+  store.  This is the result of nix-straight.el?
+- doom-{core,modules,...}-dir :: "~/.emacs.d/doom", which are all the doom
+  source components.  Definitely in the store
+- doom-local-dir :: Default is doom-emacs-dir/.local, overridden by
+  =DOOMLOCALDIR=.  This is where doom-emacs will write stuff, the cache directory
+  for example.
+- straight-base-dir :: base definition for package subdirs, defaults to
+  doom-local-dir.  Looks like this can not be configured.  Sets variables for
+  =straight.el= like =straight-build-dir=.
+* Doom binary 
+Shell script which loads the doom libraries to configure the installation.  If I
+understand correctly, package management is done using this and is completely
+separate from actual doom emacs usage.  Uses =emacs= binary supplied by =EMACS=
+env-var,
+
+TODO: substitute paths here correctly
+
+The doom utility reads: =EMACSDIR=, =DOOMDIR=, =DOOMLOCALDIR=, (and =DEBUG=)
+=EMACSDIR= is where the cli tool expects the doom repo.  This should be
+equivalent to =doom-emacs-dir= from the distribution.
+* TODO: What happens with nix-doom-emacs
+  
+* Final layout
+Store paths:
+- Doom distribution, =/bin= contains util binary
+- Patched user-directory emacs, should be used in all calls
+- ? Baked =DOOMDIR= with the corresponding three magic files
+- =~/.doom.d=, which is what the patched emacs takes as =~/.emacs.d=, and should
+  probably also be the basis of userland-env installation-time three-magic-files
+  
+* Tasks
+
+** TODO Build a custom-user-dir emacs
+** TODO Get the doom tools to run correctly
+These probably have to work correctly to use =nix-straight.el=.  Should
+correctly identify all the paths.  Could also be used for =doom install= maybe?
+** TODO Bake DOOMDIR
+** TODO Get nix-straight.el to correctly pull out needed packages from DOOMDIR, build environment
+This will be copied from =nix-doom-emacs= basically.
+** TODO Teach doom-emacs to use straight.el packages from Store.
+According to FAQ, they usually reside in =~/.emacs.d/.local.straight/build/PACKAGE-NAME=
+Actually, that whole point should be unproblematic, since we simply don't call =straight.el=?
