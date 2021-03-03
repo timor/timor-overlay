@@ -1,0 +1,77 @@
+diff --git a/spnavd_ctl b/spnavd_ctl
+index 793f96d..f8d95f6 100755
+--- a/spnavd_ctl
++++ b/spnavd_ctl
+@@ -15,8 +15,7 @@ fi
+ 
+ if [ "$2" = 'start' ]; then
+ 	# check to see there is a local X server running.
+-	DISPLAY=":0"
+-	xdpyinfo >/dev/null 2>/dev/null
++	@xdpyinfo@ >/dev/null 2>/dev/null
+ 	if [ $? != 0 ]; then
+ 		echo "You must have an X server running before starting up spacenavd-X11 events."
+ 		exit 1
+diff --git a/src/spnavd.c b/src/spnavd.c
+index cbea191..0289bd1 100644
+--- a/src/spnavd.c
++++ b/src/spnavd.c
+@@ -48,6 +48,7 @@ static char *fix_path(char *str);
+ 
+ static char *cfgfile = DEF_CFGFILE;
+ static char *logfile = DEF_LOGFILE;
++static char *pidfile = PIDFILE;
+ 
+ int main(int argc, char **argv)
+ {
+@@ -84,6 +85,15 @@ int main(int argc, char **argv)
+ 					}
+ 					break;
+ 
++        case 'p':
++          if(!argv[++i]) {
++            fprintf(stderr, "-p must be followed by a pidfile name\n");
++            return 1;
++          } else {
++            pidfile = fix_path(argv[i]);
++          }
++
++
+ 				case 'v':
+ 					verbose = 1;
+ 					break;
+@@ -247,6 +257,7 @@ static void print_usage(const char *argv0)
+ 	printf(" -d: do not daemonize\n");
+ 	printf(" -c <file>: config file path (default: " DEF_CFGFILE ")\n");
+ 	printf(" -l <file>|syslog: log file path or log to syslog (default: " DEF_LOGFILE ")\n");
++	printf(" -p <file>: PID file path (default: " PIDFILE ")\n");
+ 	printf(" -v: verbose output\n");
+ 	printf(" -V,-version: print version number and exit\n");
+ 	printf(" -h,-help: print usage information and exit\n");
+@@ -270,7 +281,7 @@ static void cleanup(void)
+ 		remove_device(tmp);
+ 	}
+ 
+-	remove(PIDFILE);
++	remove(pidfile);
+ }
+ 
+ static void daemonize(void)
+@@ -314,7 +325,7 @@ static int write_pid_file(void)
+ 	FILE *fp;
+ 	int pid = getpid();
+ 
+-	if(!(fp = fopen(PIDFILE, "w"))) {
++	if(!(fp = fopen(pidfile, "w"))) {
+ 		return -1;
+ 	}
+ 	fprintf(fp, "%d\n", pid);
+@@ -329,7 +340,7 @@ static int find_running_daemon(void)
+ 	struct sockaddr_un addr;
+ 
+ 	/* try to open the pid-file */
+-	if(!(fp = fopen(PIDFILE, "r"))) {
++	if(!(fp = fopen(pidfile, "r"))) {
+ 		return -1;
+ 	}
+ 	if(fscanf(fp, "%d\n", &pid) != 1) {
