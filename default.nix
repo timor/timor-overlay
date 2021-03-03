@@ -120,6 +120,8 @@ in
 
   spnavcfg = callPackage ./pkgs/spnavcfg { };
 
+  solvespace = super.solvespace.overrideAttrs (oa: {buildInputs = oa.buildInputs ++ [ self.spnav ];});
+
   freecad = (super.freecad.overrideAttrs (oldAttrs: {
       buildInputs = oldAttrs.buildInputs ++ [ self.spnav ];
   }));
