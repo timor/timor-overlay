@@ -114,6 +114,8 @@ in
     patchShebangs $out/bin/git-rebase-all
     '';
 
+  libsslkeylog = callPackage ./pkgs/libsslkeylog { };
+
   spnav = callPackage ./pkgs/spnav { };
 
   spacenavd = callPackage ./pkgs/spacenavd { };
