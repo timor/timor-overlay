@@ -80,6 +80,8 @@ stdenv.mkDerivation rec{
       --eval '(setq invocation-name "spacemacs")' \
       --eval '(setq invocation-directory "$out/bin")' \
       --eval '(setq user-init-file "$out/init.el")' \
+      --eval '(setq process-environment (copy-sequence process-environment))' \
+      --eval '(setenv "GDK_PIXBUF_MODULE_FILE" (getenv "PARENT_GDK_PIXBUF_MODULE_FILE"))' \
       -l '${./elisp/nix-spacemacs.el}' \
       --load $out/init.el "\$@"
     EOF
