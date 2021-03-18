@@ -156,7 +156,7 @@ in
     });
   };
   spacemacsPackages = callPackage ./pkgs/spacemacs/spacemacs-packages.nix
-    { emacsPackages = self.emacs26Packages; };
+    { emacsPackages = self.emacs27Packages; };
 
   spacemacs = callPackage ./pkgs/spacemacs/default.nix { emacsPackages = self.spacemacsPackages; };
 

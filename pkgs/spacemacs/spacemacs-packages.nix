@@ -11,7 +11,7 @@
 
 emacsPackages.overrideScope' (self: super: {
   emacs = super.emacs.overrideAttrs(oa: {
-    patches = oa.patches ++ [./emacs-user-directory.patch ];
+    patches = oa.patches ++ [./emacs-user-directory-27.patch ];
     buildInputs = oa.buildInputs ++ [ texinfo ];
     preFixup = (oa.preFixup or "") + ''
       gappsWrapperArgs=(--run export\ PARENT_GDK_PIXBUF_MODULE_FILE=\"\$GDK_PIXBUF_MODULE_FILE\" "''${gappsWrapperArgs[@]}")

@@ -1,0 +1,100 @@
+From cfc976b8ce05242a15a3c2eb7f8cdf4903a4154d Mon Sep 17 00:00:00 2001
+From: timor <timor.dd@googlemail.com>
+Date: Thu, 18 Mar 2021 16:52:59 +0100
+Subject: [PATCH] Port EMACS_USER_DIRECTORY patch to Emacs 27
+
+---
+ doc/emacs/cmdargs.texi |  9 ++++++++-
+ doc/emacs/custom.texi  |  8 ++++++++
+ lisp/startup.el        | 14 +++++++++++---
+ 3 files changed, 27 insertions(+), 4 deletions(-)
+
+diff --git a/doc/emacs/cmdargs.texi b/doc/emacs/cmdargs.texi
+index 850a802753..ce28a46872 100644
+--- a/doc/emacs/cmdargs.texi
++++ b/doc/emacs/cmdargs.texi
+@@ -369,7 +369,9 @@ Do not reload any saved desktop.  @xref{Saving Emacs Sessions}.
+ @opindex --user
+ @cindex load init file of another user
+ Load @var{user}'s initialization file instead of your
+-own@footnote{This option has no effect on MS-Windows.}.
++own@footnote{This option has no effect on MS-Windows, nor when the
++@env{EMACS_USER_DIRECTORY} environment variable is set (@pxref{General
++Variables}).}.
+ 
+ @item --debug-init
+ @opindex --debug-init
+@@ -694,6 +696,11 @@ does not use @env{TZ} at all.
+ @vindex USER@r{, environment variable}
+ The user's login name.  See also @env{LOGNAME}.  On MS-DOS, this
+ defaults to @samp{root}.
++@item EMACS_USER_DIRECTORY
++This specifies a directory in which the initialization file will be
++looked for; @xref{Find Init}. This directory will also be used as the
++default place where user-specific configuration data will be stored;
++@xref{Standard File Names,,, elisp}.
+ @item VERSION_CONTROL
+ @vindex VERSION_CONTROL@r{, environment variable}
+ Used to initialize the @code{version-control} variable (@pxref{Backup
+diff --git a/doc/emacs/custom.texi b/doc/emacs/custom.texi
+index 00c8ee4f98..1b22106a6b 100644
+--- a/doc/emacs/custom.texi
++++ b/doc/emacs/custom.texi
+@@ -2717,6 +2717,14 @@ the current default location @file{~/.emacs.d/init.el} for the
+ init file.
+ @c  LocalWords:  backtab
+ 
++  The whole mechanism described above is bypassed if the
++@env{EMACS_USER_DIRECTORY} environment variable is specified, in which
++case Emacs directly looks for @file{init.el} inside the directory
++specified by @env{EMACS_USER_DIRECTORY} (@pxref{General Variables}).
++This directory is also used to hold user-specific configuration
++(@pxref{Standard File Names,,, elisp}).
++
++
+ @node Init Non-ASCII
+ @subsection Non-@acronym{ASCII} Characters in Init Files
+ @cindex international characters in @file{.emacs}
+diff --git a/lisp/startup.el b/lisp/startup.el
+index bff10003f8..0455f64122 100644
+--- a/lisp/startup.el
++++ b/lisp/startup.el
+@@ -534,8 +534,12 @@ It is the default value of the variable `top-level'."
+ 	    (if xdg-config-home
+ 		(concat xdg-config-home "/emacs/")
+ 	      startup--xdg-config-default)))
++
++    (setq user-emacs-directory-from-env (getenv "EMACS_USER_DIRECTORY"))
++
+     (setq user-emacs-directory
+-	  (startup--xdg-or-homedot startup--xdg-config-home-emacs nil))
++	  (or user-emacs-directory-from-env
++              (startup--xdg-or-homedot startup--xdg-config-home-emacs nil)))
+ 
+     ;; Look in each dir in load-path for a subdirs.el file.  If we
+     ;; find one, load it, which will add the appropriate subdirs of
+@@ -1016,7 +1020,7 @@ the `--debug-init' option to view a complete error backtrace."
+ (defun command-line ()
+   "A subroutine of `normal-top-level'.
+ Amongst another things, it parses the command-line arguments."
+- (let (xdg-dir startup-init-directory)
++ (let (xdg-dir startup-init-directory user-emacs-directory-from-env)
+   (setq before-init-time (current-time)
+ 	after-init-time nil
+         command-line-default-directory default-directory)
+@@ -1210,7 +1214,11 @@ please check its value")
+   ;; is following the ~INIT-FILE-USER/.emacs.d convention.
+   (setq xdg-dir startup--xdg-config-home-emacs)
+   (setq startup-init-directory
+-	(if (or (zerop (length init-file-user))
++	(if (or user-emacs-directory-from-env ; If this is non-nil,
++                                              ; user-emacs-directory
++                                              ; has already been set
++                                              ; to its value
++                (zerop (length init-file-user))
+ 		(and (eq xdg-dir user-emacs-directory)
+ 		     (not (eq xdg-dir startup--xdg-config-default))))
+ 	    user-emacs-directory
+-- 
+2.25.4
+
