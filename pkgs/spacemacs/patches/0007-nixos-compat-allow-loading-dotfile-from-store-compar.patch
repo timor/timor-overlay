@@ -1,0 +1,45 @@
+From c295639750d9b8f5c8c86f39c6ab234cc330368d Mon Sep 17 00:00:00 2001
+From: timor <timor.dd@googlemail.com>
+Date: Thu, 25 Jun 2020 10:10:32 +0200
+Subject: [PATCH 07/11] nixos-compat: allow loading dotfile from store, compare
+ against current
+
+Introduces environment variable "NIX_DOTSPACEMACS", which when set will be
+loaded instead of `.spacemacs`.  If so, a warning will be shown if the files
+differ.
+---
+ core/core-spacemacs.el | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
+
+diff --git a/core/core-spacemacs.el b/core/core-spacemacs.el
+index c096a7a12..0fca03830 100644
+--- a/core/core-spacemacs.el
++++ b/core/core-spacemacs.el
+@@ -73,7 +73,23 @@ the final step of executing code in `emacs-startup-hook'.")
+                 ;; overlapped in terminal mode. The GUI specific `<C-i>' is used
+                 ;; instead.
+                 evil-want-C-i-jump nil)
+-  (dotspacemacs/load-file)
++  ;; Nixos adjustment, allows loading a different dotfile then the default one,
++  ;; but only during initialization. Subsequent uses of the dotfile location
++  ;; should point to the one the user is supposed to edit.
++  (let* ((dotspacemacs-filepath-orig dotspacemacs-filepath)
++         (dotspacemacs-filepath
++          (cond ((getenv "NIX_DOTSPACEMACS"))
++                (t dotspacemacs-filepath))))
++    (when (not (string= dotspacemacs-filepath-orig
++                      dotspacemacs-filepath))
++      (let ((buf1 (find-file-noselect dotspacemacs-filepath nil t))
++            (buf2 (find-file-noselect dotspacemacs-filepath-orig nil t)))
++        (when (not (= 0 (compare-buffer-substrings buf1 nil nil buf2 nil nil)))
++          (warn "Custom dotfile %s differs from loaded dotfile %s.
++          Rebuild spacemacs with nix to resolve." dotspacemacs-filepath-orig dotspacemacs-filepath))
++        (kill-buffer buf1)
++        (kill-buffer buf2)))
++    (dotspacemacs/load-file))
+   (dotspacemacs|call-func dotspacemacs/init "Calling dotfile init...")
+   (when dotspacemacs-undecorated-at-startup
+     ;; this should be called before toggle-frame-maximized
+-- 
+2.25.4
+

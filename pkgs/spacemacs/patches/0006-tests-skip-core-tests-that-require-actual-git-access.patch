@@ -1,0 +1,31 @@
+From a5b432d4c10031b95b226d87405ff884374a5785 Mon Sep 17 00:00:00 2001
+From: timor <timor.dd@googlemail.com>
+Date: Fri, 22 Mar 2019 17:01:02 +0100
+Subject: [PATCH 06/11] tests: skip core tests that require actual git access
+
+---
+ tests/core/core-release-management-ftest.el | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/tests/core/core-release-management-ftest.el b/tests/core/core-release-management-ftest.el
+index a74a614dc..0ed507e29 100644
+--- a/tests/core/core-release-management-ftest.el
++++ b/tests/core/core-release-management-ftest.el
+@@ -23,9 +23,14 @@
+ ;; ---------------------------------------------------------------------------
+ ;; spacemacs//git-fetch-tags
+ ;; ---------------------------------------------------------------------------
++(defun test-git-fetch-check-online-helper ()
++  (= 0
++     (call-process-shell-command "git fetch --dry-run")))
+ 
+ (ert-deftest test-git-fetch-tags--command-is-working ()
++  (skip-unless test-git-fetch-check-online-helper)
+   (should (equal t (spacemacs//git-fetch-tags "origin" "master"))))
+ 
+ (ert-deftest test-git-fetch-tags--input-is-not-a-remote ()
++  (skip-unless test-git-fetch-check-online-helper)
+   (should (equal nil (spacemacs//git-fetch-tags "qwerty" "master"))))
+-- 
+2.25.4
+

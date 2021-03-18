@@ -1,0 +1,56 @@
+From ff7f7b3048d95d88278dcce3ac17b82e19142220 Mon Sep 17 00:00:00 2001
+From: timor <timor.dd@googlemail.com>
+Date: Mon, 14 Dec 2020 16:50:13 +0100
+Subject: [PATCH 10/11] disable custom-file syncing
+
+---
+ core/core-custom-settings.el | 12 +-----------
+ core/core-spacemacs.el       |  7 ++++---
+ 2 files changed, 5 insertions(+), 14 deletions(-)
+
+diff --git a/core/core-custom-settings.el b/core/core-custom-settings.el
+index ec15dff6e..eb0e6c470 100644
+--- a/core/core-custom-settings.el
++++ b/core/core-custom-settings.el
+@@ -20,17 +20,7 @@ complete that part see `spacemacs/initialize-custom-file-sync'."
+   ;; setup auto-rewrite of custom settings only if custom-file
+   ;; has not been set by the user
+   (when (null custom-file)
+-    (setq custom-file spacemacs--custom-file))
+-  ;; initialize the cache file contents
+-  (unless (or (not (string-equal custom-file spacemacs--custom-file))
+-              (file-exists-p spacemacs--custom-file))
+-    (with-temp-file spacemacs--custom-file
+-      (let ((standard-output (current-buffer)))
+-        (princ ";; -*- mode: emacs-lisp -*-\n")
+-        (princ ";; This file is where Emacs writes custom variables.
+-;; Spacemacs will copy its content to your dotfile automatically in the
+-;; function `dotspacemacs/emacs-custom-settings'.
+-;; Do not alter this file, use Emacs customize interface instead.\n\n")))))
++    (setq custom-file spacemacs--custom-file)))
+ 
+ (defun spacemacs/initialize-custom-file-sync ()
+   "Initialize syncing of the custom file to the dotfile."
+diff --git a/core/core-spacemacs.el b/core/core-spacemacs.el
+index acccfc90b..1d9fa4ed7 100644
+--- a/core/core-spacemacs.el
++++ b/core/core-spacemacs.el
+@@ -251,11 +251,12 @@ Note: the hooked function is not executed when in dumped mode."
+      ;; them in his/her ~/.spacemacs file
+      (dotspacemacs|call-func dotspacemacs/user-config
+                              "Calling dotfile user config...")
+-     (dotspacemacs|call-func dotspacemacs/emacs-custom-settings
+-                             "Calling dotfile Emacs custom settings...")
++     (when (file-exists-p custom-file) (load custom-file))
++     ;; (dotspacemacs|call-func dotspacemacs/emacs-custom-settings
++     ;;                         "Calling dotfile Emacs custom settings...")
+      ;; don't write custom settings into the dotfile before loading them,
+      ;; otherwise https://github.com/syl20bnr/spacemacs/issues/10504 happens
+-     (spacemacs/initialize-custom-file-sync)
++     ;; Deactivated under nix (spacemacs/initialize-custom-file-sync)
+      (run-hooks 'spacemacs-post-user-config-hook)
+      (setq spacemacs-post-user-config-hook-run t)
+      (when (fboundp dotspacemacs-scratch-mode)
+-- 
+2.25.4
+

@@ -1,0 +1,26 @@
+From 3db2af5e5c42c6deff09a8b63c77ae7549e82721 Mon Sep 17 00:00:00 2001
+From: timor <timor.dd@googlemail.com>
+Date: Sat, 26 Jan 2019 18:48:21 +0100
+Subject: [PATCH 03/11] core-configuration-layer: derive package archive path
+ from user-emacs-directory
+
+---
+ core/core-configuration-layer.el | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/core-configuration-layer.el b/core/core-configuration-layer.el
+index f01cf282d..2f9cdf715 100644
+--- a/core/core-configuration-layer.el
++++ b/core/core-configuration-layer.el
+@@ -124,7 +124,7 @@ subdirectory of ROOT is used."
+   "Hook executed at the end of configuration loading.")
+ 
+ (defconst configuration-layer--elpa-root-directory
+-  (concat spacemacs-start-directory "elpa/")
++  (concat user-emacs-directory "elpa/")
+   "Spacemacs ELPA root directory.")
+ 
+ (defconst configuration-layer--rollback-root-directory
+-- 
+2.25.4
+

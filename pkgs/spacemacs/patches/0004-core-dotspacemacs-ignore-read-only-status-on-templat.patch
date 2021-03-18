@@ -1,0 +1,53 @@
+From fad187b4a9aca9d8525f11de71a94caa0d99fbc6 Mon Sep 17 00:00:00 2001
+From: timor <timor.dd@googlemail.com>
+Date: Sat, 26 Jan 2019 18:50:41 +0100
+Subject: [PATCH 04/11] core-dotspacemacs: ignore read-only status on template
+ file
+
+otherwise first-time installation will fail when template file is opened from
+read-only location
+---
+ core/core-dotspacemacs.el | 27 ++++++++++++++-------------
+ 1 file changed, 14 insertions(+), 13 deletions(-)
+
+diff --git a/core/core-dotspacemacs.el b/core/core-dotspacemacs.el
+index 73edb370f..d0c6600ba 100644
+--- a/core/core-dotspacemacs.el
++++ b/core/core-dotspacemacs.el
+@@ -704,19 +704,20 @@ If ARG is non nil then ask questions to the user before installing the dotfile."
+     (with-current-buffer (find-file-noselect
+                           (concat dotspacemacs-template-directory
+                                   ".spacemacs.template"))
+-      (dolist (p preferences)
+-        (goto-char (point-min))
+-        (re-search-forward (car p))
+-        (replace-match (cadr p)))
+-      (let ((install
+-             (if (file-exists-p dotspacemacs-filepath)
+-                 (y-or-n-p
+-                  (format "%s already exists. Do you want to overwrite it ? "
+-                          dotspacemacs-filepath)) t)))
+-        (when install
+-          (write-file dotspacemacs-filepath)
+-          (message "%s has been installed." dotspacemacs-filepath)
+-          t))))
++      (let ((inhibit-read-only t))
++        (dolist (p preferences)
++          (goto-char (point-min))
++          (re-search-forward (car p))
++          (replace-match (cadr p)))
++        (let ((install
++               (if (file-exists-p dotspacemacs-filepath)
++                   (y-or-n-p
++                    (format "%s already exists. Do you want to overwrite it ? "
++                            dotspacemacs-filepath)) t)))
++          (when install
++            (write-file dotspacemacs-filepath)
++            (message "%s has been installed." dotspacemacs-filepath)
++            t)))))
+   (dotspacemacs/load-file)
+   ;; force new wizard values to be applied
+   (dotspacemacs/init))
+-- 
+2.25.4
+

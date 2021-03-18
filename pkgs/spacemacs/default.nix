@@ -14,7 +14,7 @@ let
     else p: [];
   finalPackages = p: (extraPackages' p) ++ (dotfilePackages p) ;
   name = "spacemacs-${version}";
-  version = "0.300-rc7";
+  version = "2021-03-16";
   desktopItem = makeDesktopItem {
     name = "spacemacs";
     genericName = "Text Editor";
@@ -34,13 +34,10 @@ in
 stdenv.mkDerivation rec{
   inherit name version;
 
-  src = fetchFromGitHub {
-    owner = "timor";
-    repo = "spacemacs";
-    rev = "nix-adjustments-${version}";
-    sha256 = "0jsyax1mxh8i5ni2s23niq70n85si7mp4yhih46vay8qdanqf1z4";
-  };
+  src = fetchFromGitHub (import ./src.nix);
 
+  # Patches are generated from origin/develop..nixos-adjustments
+  patches =  map (p: ./. + "/patches/${p}") (builtins.attrNames (builtins.readDir ./patches));
   postPatch = ''
     for i in core/info/release-notes/*; do
       substituteInPlace $i --replace ".emacs.d" ".spacemacs.d"

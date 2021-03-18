@@ -1,0 +1,26 @@
+From 0cae99e1e6e77b6b4d45b12c0dbba4e3117aa47a Mon Sep 17 00:00:00 2001
+From: timor <timor.dd@googlemail.com>
+Date: Thu, 17 Dec 2020 13:49:38 +0100
+Subject: [PATCH 11/11] change location of custom-file to spacemacs dir, not
+ cache dir
+
+---
+ core/core-custom-settings.el | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/core-custom-settings.el b/core/core-custom-settings.el
+index eb0e6c470..36d1286fa 100644
+--- a/core/core-custom-settings.el
++++ b/core/core-custom-settings.el
+@@ -10,7 +10,7 @@
+ ;;; License: GPLv3
+ (require 'core-dotspacemacs)
+ 
+-(defvar spacemacs--custom-file (concat spacemacs-cache-directory
++(defvar spacemacs--custom-file (concat user-emacs-directory
+                                        ".custom-settings"))
+ 
+ (defun spacemacs/initialize-custom-file ()
+-- 
+2.25.4
+

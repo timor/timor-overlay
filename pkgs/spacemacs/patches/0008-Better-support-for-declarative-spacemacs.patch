@@ -1,0 +1,169 @@
+From 746148acdf6e2583d73bef6bc10e5cd58c3c1809 Mon Sep 17 00:00:00 2001
+From: timor <timor.dd@googlemail.com>
+Date: Sun, 13 Dec 2020 18:46:19 +0100
+Subject: [PATCH 08/11] Better support for declarative spacemacs
+
+Sets a bunch of variables based on env vars in `core-load-paths.el`, which are
+used in several places to change loading of dotfiles, custom-files and elpa
+build directories. (see Readme in overlay for details)
+---
+ core/core-configuration-layer.el | 14 +++++++------
+ core/core-custom-settings.el     | 11 ++++++++++-
+ core/core-dotspacemacs.el        |  5 ++++-
+ core/core-load-paths.el          |  3 +++
+ core/core-spacemacs.el           | 34 ++++++++++++++++++--------------
+ 5 files changed, 44 insertions(+), 23 deletions(-)
+
+diff --git a/core/core-configuration-layer.el b/core/core-configuration-layer.el
+index 2f9cdf715..edeb07d98 100644
+--- a/core/core-configuration-layer.el
++++ b/core/core-configuration-layer.el
+@@ -101,12 +101,14 @@ subdirectory of ROOT is used."
+     configuration-layer-elpa-subdirectory
+     (if (not dotspacemacs-elpa-subdirectory)
+         root
+-      (let ((subdir (if (eq 'emacs-version dotspacemacs-elpa-subdirectory)
+-                        (format "%d%s%d"
+-                                emacs-major-version
+-                                version-separator
+-                                emacs-minor-version)
+-                      (eval dotspacemacs-elpa-subdirectory))))
++      (let ((subdir (if spacemacs-nix-declared-p
++                        spacemacs-nix-suffix
++                      (if (eq 'emacs-version dotspacemacs-elpa-subdirectory)
++                          (format "%d%s%d"
++                                  emacs-major-version
++                                  version-separator
++                                  emacs-minor-version)
++                        (eval dotspacemacs-elpa-subdirectory)))))
+         (expand-file-name subdir root))))))
+ 
+ (defun configuration-layer/get-elpa-package-install-directory (pkg)
+diff --git a/core/core-custom-settings.el b/core/core-custom-settings.el
+index ec15dff6e..732840a77 100644
+--- a/core/core-custom-settings.el
++++ b/core/core-custom-settings.el
+@@ -11,7 +11,7 @@
+ (require 'core-dotspacemacs)
+ 
+ (defvar spacemacs--custom-file (concat spacemacs-cache-directory
+-                                       ".custom-settings"))
++                                       ".custom-settings" spacemacs-nix-suffix))
+ 
+ (defun spacemacs/initialize-custom-file ()
+   "Initialize the custom file.
+@@ -32,6 +32,15 @@ complete that part see `spacemacs/initialize-custom-file-sync'."
+ ;; function `dotspacemacs/emacs-custom-settings'.
+ ;; Do not alter this file, use Emacs customize interface instead.\n\n")))))
+ 
++(defun spacemacs/initialize-nix-custom-file ()
++  "If declarative nix Spacemacs is used, set up custom value of
++  `custom-file', bypassing regular behavior."
++  (if spacemacs-nix-declared-p
++      (progn
++        (setq custom-file (concat spacemacs--custom-file "-" spacemacs-nix-suffix))
++        (when (file-exists-p custom-file) (load custom-file)))
++    (spacemacs/initialize-custom-file)))
++
+ (defun spacemacs/initialize-custom-file-sync ()
+   "Initialize syncing of the custom file to the dotfile."
+   (when (string-equal custom-file spacemacs--custom-file)
+diff --git a/core/core-dotspacemacs.el b/core/core-dotspacemacs.el
+index d0c6600ba..afd789eb3 100644
+--- a/core/core-dotspacemacs.el
++++ b/core/core-dotspacemacs.el
+@@ -26,7 +26,9 @@ their configuration.")
+        (no-env-dir-default (expand-file-name
+                             (concat user-home-directory
+                                     ".spacemacs.d/")))
+-       (default-init (expand-file-name ".spacemacs" user-home-directory)))
++       (default-init (expand-file-name ".spacemacs" user-home-directory))
++       (default-nix-init (when spacemacs-nix-declared-p
++                           (concat no-env-dir-default ".spacemacs-" (getenv "NIX_SPACEMACS_SUFFIX")))))
+   (defconst dotspacemacs-directory
+     (cond
+      ((and env (file-exists-p env-dir)) env-dir)
+@@ -43,6 +45,7 @@ directories exist, this variable will be nil.")
+                                         "init.el"))))
+       (cond
+        (env-init)
++       (default-nix-init)
+        ((file-exists-p default-init) default-init)
+        ((and dotspacemacs-directory (file-exists-p spacemacs-dir-init))
+         spacemacs-dir-init)
+diff --git a/core/core-load-paths.el b/core/core-load-paths.el
+index 3963f3d57..8d8e058a2 100644
+--- a/core/core-load-paths.el
++++ b/core/core-load-paths.el
+@@ -19,6 +19,9 @@
+ (defvar spacemacs-start-directory
+   (concat (file-name-directory (or load-file-name (buffer-file-name))) "../")
+   "Spacemacs start directory.")
++(defconst spacemacs-nix-declared-p (getenv "NIX_SPACEMACS_SUFFIX"))
++(defconst spacemacs-nix-suffix (or (getenv "NIX_SPACEMACS_SUFFIX") ""))
++(defconst spacemacs-nix-dotfile-path (getenv "NIX_DOTSPACEMACS"))
+ (defconst spacemacs-core-directory
+   (expand-file-name (concat spacemacs-start-directory "core/"))
+   "Spacemacs core directory.")
+diff --git a/core/core-spacemacs.el b/core/core-spacemacs.el
+index 0fca03830..27c8f6fa6 100644
+--- a/core/core-spacemacs.el
++++ b/core/core-spacemacs.el
+@@ -53,6 +53,22 @@
+   "Whether or not spacemacs has finished initializing by completing
+ the final step of executing code in `emacs-startup-hook'.")
+ 
++(defun spacemacs//init-nix-dotfile ()
++  "Custom dotfile handling if provided by declarative nix build."
++
++  (when spacemacs-nix-declared-p
++    ;; dotspacemacs-filepath is store-path dependent location in this case
++    (if (file-exists-p dotspacemacs-filepath)
++        (let ((buf1 (find-file-noselect dotspacemacs-filepath nil t))
++              (buf2 (find-file-noselect spacemacs-nix-dotfile-path nil t)))
++          (when (not (= 0 (compare-buffer-substrings buf1 nil nil buf2 nil nil)))
++            (warn "Eval-time dotfile %s differs from loaded dotfile %s.
++          Rebuild spacemacs with nix to resolve." spacemacs-nix-dotfile-path dotspacemacs-filepath))
++          (kill-buffer buf1)
++          (kill-buffer buf2))
++      (copy-file spacemacs-nix-dotfile-path dotspacemacs-filepath)
++      (set-file-modes dotspacemacs-filepath #o644))))
++
+ (defun spacemacs/init ()
+   "Perform startup initialization."
+   (setq command-line-args (spacemacs//parse-command-line command-line-args))
+@@ -76,20 +92,8 @@ the final step of executing code in `emacs-startup-hook'.")
+   ;; Nixos adjustment, allows loading a different dotfile then the default one,
+   ;; but only during initialization. Subsequent uses of the dotfile location
+   ;; should point to the one the user is supposed to edit.
+-  (let* ((dotspacemacs-filepath-orig dotspacemacs-filepath)
+-         (dotspacemacs-filepath
+-          (cond ((getenv "NIX_DOTSPACEMACS"))
+-                (t dotspacemacs-filepath))))
+-    (when (not (string= dotspacemacs-filepath-orig
+-                      dotspacemacs-filepath))
+-      (let ((buf1 (find-file-noselect dotspacemacs-filepath nil t))
+-            (buf2 (find-file-noselect dotspacemacs-filepath-orig nil t)))
+-        (when (not (= 0 (compare-buffer-substrings buf1 nil nil buf2 nil nil)))
+-          (warn "Custom dotfile %s differs from loaded dotfile %s.
+-          Rebuild spacemacs with nix to resolve." dotspacemacs-filepath-orig dotspacemacs-filepath))
+-        (kill-buffer buf1)
+-        (kill-buffer buf2)))
+-    (dotspacemacs/load-file))
++  (spacemacs//init-nix-dotfile)
++  (dotspacemacs/load-file)
+   (dotspacemacs|call-func dotspacemacs/init "Calling dotfile init...")
+   (when dotspacemacs-undecorated-at-startup
+     ;; this should be called before toggle-frame-maximized
+@@ -113,7 +117,7 @@ the final step of executing code in `emacs-startup-hook'.")
+   ;; effective ones.
+   ;; Note: Loading custom-settings twice is not ideal since they can have side
+   ;; effects! Maybe an inhibit variable in Emacs can suppress these side effects?
+-  (spacemacs/initialize-custom-file)
++  (spacemacs/initialize-nix-custom-file)
+   ;; Commenting the first load although it is mentioned above that we must do it
+   ;; I don't recall why we must load the custom settings twice and my experiment
+   ;; seems to show that we don't need this double loading process anymore.
+-- 
+2.25.4
+

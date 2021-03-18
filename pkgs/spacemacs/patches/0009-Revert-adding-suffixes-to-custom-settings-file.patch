@@ -1,0 +1,55 @@
+From 4163a3c9b10e5ba33a793865d1d9c0c5e55cba7c Mon Sep 17 00:00:00 2001
+From: timor <timor.dd@googlemail.com>
+Date: Mon, 14 Dec 2020 15:10:27 +0100
+Subject: [PATCH 09/11] Revert adding suffixes to custom-settings file
+
+---
+ core/core-custom-settings.el | 11 +----------
+ core/core-spacemacs.el       |  2 +-
+ 2 files changed, 2 insertions(+), 11 deletions(-)
+
+diff --git a/core/core-custom-settings.el b/core/core-custom-settings.el
+index 732840a77..ec15dff6e 100644
+--- a/core/core-custom-settings.el
++++ b/core/core-custom-settings.el
+@@ -11,7 +11,7 @@
+ (require 'core-dotspacemacs)
+ 
+ (defvar spacemacs--custom-file (concat spacemacs-cache-directory
+-                                       ".custom-settings" spacemacs-nix-suffix))
++                                       ".custom-settings"))
+ 
+ (defun spacemacs/initialize-custom-file ()
+   "Initialize the custom file.
+@@ -32,15 +32,6 @@ complete that part see `spacemacs/initialize-custom-file-sync'."
+ ;; function `dotspacemacs/emacs-custom-settings'.
+ ;; Do not alter this file, use Emacs customize interface instead.\n\n")))))
+ 
+-(defun spacemacs/initialize-nix-custom-file ()
+-  "If declarative nix Spacemacs is used, set up custom value of
+-  `custom-file', bypassing regular behavior."
+-  (if spacemacs-nix-declared-p
+-      (progn
+-        (setq custom-file (concat spacemacs--custom-file "-" spacemacs-nix-suffix))
+-        (when (file-exists-p custom-file) (load custom-file)))
+-    (spacemacs/initialize-custom-file)))
+-
+ (defun spacemacs/initialize-custom-file-sync ()
+   "Initialize syncing of the custom file to the dotfile."
+   (when (string-equal custom-file spacemacs--custom-file)
+diff --git a/core/core-spacemacs.el b/core/core-spacemacs.el
+index 27c8f6fa6..acccfc90b 100644
+--- a/core/core-spacemacs.el
++++ b/core/core-spacemacs.el
+@@ -117,7 +117,7 @@ the final step of executing code in `emacs-startup-hook'.")
+   ;; effective ones.
+   ;; Note: Loading custom-settings twice is not ideal since they can have side
+   ;; effects! Maybe an inhibit variable in Emacs can suppress these side effects?
+-  (spacemacs/initialize-nix-custom-file)
++  (spacemacs/initialize-custom-file)
+   ;; Commenting the first load although it is mentioned above that we must do it
+   ;; I don't recall why we must load the custom settings twice and my experiment
+   ;; seems to show that we don't need this double loading process anymore.
+-- 
+2.25.4
+
