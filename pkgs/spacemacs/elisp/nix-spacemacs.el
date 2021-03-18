@@ -35,7 +35,8 @@
   "Rebuild Spacemacs using nix.")
 
 (defcustom nix-spacemacs-nix-expression "<nixpkgs>"
-  "Shell argument passed to nix-env -f.  Will be single-quoted on invocation.")
+  "Shell argument passed to \"with import(<expr>)\" to determine package set."
+  :type 'string)
 
 (defcustom nix-spacemacs-custom-source nil
   "If set, override the src attribute of the spacemacs derication during rebuild.")
