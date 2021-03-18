@@ -8,7 +8,7 @@ index 793f96d..f8d95f6 100755
  	# check to see there is a local X server running.
 -	DISPLAY=":0"
 -	xdpyinfo >/dev/null 2>/dev/null
-+	@xdpyinfo@ >/dev/null 2>/dev/null
++	@xdpyinfo@/bin/xdpyinfo >/dev/null 2>/dev/null
  	if [ $? != 0 ]; then
  		echo "You must have an X server running before starting up spacenavd-X11 events."
  		exit 1
