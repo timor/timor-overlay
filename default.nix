@@ -128,6 +128,8 @@ in
       buildInputs = oldAttrs.buildInputs ++ [ self.spnav ];
   }));
 
+  gatotray = callPackage ./pkgs/gatotray {};
+
   hachoir = callPackage ./pkgs/hachoir {};
 
   kerneldocs = callPackage ./pkgs/kerneldocs {};
