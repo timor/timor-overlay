@@ -1,25 +1,34 @@
 {stdenv, pkgconfig, gdk_pixbuf, gtk2, fetchFromGitHub }:
 
+let version = "3.3"; in
+
 stdenv.mkDerivation {
   pname = "gatotray";
-  version = "2017-05-08";
+  inherit version ;
 
   src = fetchFromGitHub {
-    owner = "kafene";
+    owner = "gatopeich";
     repo = "gatotray";
-    rev = "4d8e78ca0b7c2eeefd33d2d2b80068862d6c54ed";
-    sha256 = "1rv9gd63s3zj43708w6fydfvf37sl5ir3s03lzkvry7fhar66ywc";
+    rev = "v${version}";
+    sha256 = "08hy1zyq0nkrhmp599x6k0sn93a4484yi2lfgl0xf25lwdsrsyr5";
   };
+
+  patches = [ ./0001-index-on-fix-g-free-806f364-gatotray-3.3-with-memory.patch ];
+
+  postPatch = ''
+    substituteInPlace Makefile --replace /usr/local/bin $out/bin --replace /usr/share/ $out/share/
+    sed -i "/strip/d" Makefile
+  '';
 
   nativeBuildInputs = [pkgconfig];
   buildInputs = [gdk_pixbuf gtk2];
 
   dontConfigure = true;
 
-  installPhase = ''
+  preInstall = ''
     mkdir -p $out/bin
+    mkdir -p $out/share/applications
     mkdir -p $out/share/icons
-    install gatotray $out/bin
-    install gatotray.xpm $out/share/icons
+
   '';
 }
