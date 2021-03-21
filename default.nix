@@ -169,5 +169,7 @@ in
 
   totala = callPackage ./pkgs/totala { };
 
+  wine = self.wineWowPackages.full ;
+
   zfs-linux-tools = callPackage ./pkgs/zfs-linux-tools { };
 }
