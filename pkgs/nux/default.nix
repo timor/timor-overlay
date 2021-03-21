@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub }:
+{ stdenv, lib, fetchFromGitHub }:
 
 stdenv.mkDerivation rec {
   name = "nux-${version}";
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
   chmod +x $out/bin/nux
 '';
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "Imperative-Declarative alternative to nix-env";
     longDescription = ''
       Used to maintain a set of packages in the user environment, the main

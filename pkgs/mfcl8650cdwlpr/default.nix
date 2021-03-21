@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, pkgsi686Linux, dpkg, makeWrapper, coreutils, gnused, gawk, file, cups, patchelf, ghostscript, a2ps, bsdiff }:
+{ stdenv, lib, fetchurl, pkgsi686Linux, dpkg, makeWrapper, coreutils, gnused, gawk, file, cups, patchelf, ghostscript, a2ps, bsdiff }:
 
 let model = "mfcl8650cdw";
 in
@@ -77,16 +77,16 @@ stdenv.mkDerivation rec {
     substituteInPlace $out/bin/brprintconf_${model} --replace @out@ $out
 
     wrapProgram $out/opt/brother/Printers/${model}/lpd/psconvertij2 \
-      --prefix PATH ":" ${ stdenv.lib.makeBinPath [ coreutils gnused gawk ] }
+      --prefix PATH ":" ${ lib.makeBinPath [ coreutils gnused gawk ] }
     wrapProgram $out/opt/brother/Printers/${model}/lpd/filter${model} \
-      --prefix PATH ":" ${ stdenv.lib.makeBinPath [ coreutils gnused file ghostscript a2ps ] }
+      --prefix PATH ":" ${ lib.makeBinPath [ coreutils gnused file ghostscript a2ps ] }
   '';
 
   meta = {
     homepage = http://www.brother.com/;
     description = "Brother MFC-L8650CDW LPR driver";
-    license = stdenv.lib.licenses.unfree;
-    platforms = stdenv.lib.platforms.linux;
+    license = lib.licenses.unfree;
+    platforms = lib.platforms.linux;
     downloadPage = http://support.brother.com/g/b/downloadtop.aspx?c=eu_ot&lang=en&prod=mfcl8650cdw_eu_cn;
     maintainers = [ ];
   };

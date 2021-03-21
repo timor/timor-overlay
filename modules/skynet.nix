@@ -52,8 +52,8 @@ nextcloud-drv = {stdenv, fetchurl, fetchpatch, php }: pkgs.stdenv.mkDerivation r
   meta = {
     description = "Sharing solution for files, calendars, contacts and more";
     homepage = https://nextcloud.com;
-    license = stdenv.lib.licenses.agpl3Plus;
-    platforms = with stdenv.lib.platforms; unix;
+    license = lib.licenses.agpl3Plus;
+    platforms = with lib.platforms; unix;
   };
 };
 nextcloud = pkgs.callPackage nextcloud-drv { };

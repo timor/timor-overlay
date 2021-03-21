@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, xorg}:
+{ stdenv, lib, fetchurl, xorg}:
 
 stdenv.mkDerivation rec {
   name = "spnav-${version}";
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ xorg.libX11 ];
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "Spacenav SDK development libraries";
     homepage = "http://spacenav.sourceforge.net";
     license = licenses.gpl3Plus;

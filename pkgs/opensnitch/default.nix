@@ -20,7 +20,7 @@ let
       propagatedBuildInputs = with python3Packages; [
         six unidecode
       ];
-      meta = with pkgs.stdenv.lib; {
+      meta = with lib; {
         homepage = "http://github.com/mozilla/unicode-slugify";
         license = licenses.bsdOriginal;
         description = "A slug generator that turns strings into unicode slugs.";

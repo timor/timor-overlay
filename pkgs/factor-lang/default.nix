@@ -5,7 +5,7 @@
   blas, zlib, freealut, libogg, libvorbis }:
 
 let
-  inherit (stdenv.lib) optional;
+  inherit (lib) optional;
   wrapFactor = runtimeLibs:
     runCommand (lib.appendToName "with-libs" interpreter).name {
       buildInputs = [ makeWrapper ];} ''
@@ -81,7 +81,7 @@ stdenv.mkDerivation rec {
     unzip
   ] ++ runtimeLibs;
 
-  runtimeLibPath = "/run/opengl-driver/lib:" + stdenv.lib.makeLibraryPath runtimeLibs;
+  runtimeLibPath = "/run/opengl-driver/lib:" + lib.makeLibraryPath runtimeLibs;
 
   configurePhase = "true";
 
@@ -129,7 +129,7 @@ stdenv.mkDerivation rec {
     ln -s $out/lib/factor/misc/fuel/*.el $out/share/emacs/site-lisp/
   '';
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     homepage = http://factorcode.org;
     license = licenses.bsd2;
     description = "A concatenative, stack-based programming language";

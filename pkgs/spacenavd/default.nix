@@ -30,7 +30,7 @@ stdenv.mkDerivation rec {
     substituteInPlace $out/bin/spnavd_ctl --replace /var/run /run/spacenavd
   '';
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "Open Source driver for 3DConnexion Space Navigator devices";
     homepage = "http://spacenav.sourceforge.net";
     license = licenses.gpl3Plus;
