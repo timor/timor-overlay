@@ -134,6 +134,14 @@ in
 
   kerneldocs = callPackage ./pkgs/kerneldocs {};
 
+  circt = callPackage ./pkgs/circt {};
+
+  llhd = callPackage ./pkgs/llhd {};
+
+  llvm-mlir = callPackage ./pkgs/llvm-mlir {};
+
+  moore = callPackage ./pkgs/moore {};
+
   open-zwave = callPackage ./pkgs/open-zwave {};
 
   esp32 = callPackage ./pkgs/esp32 { };
