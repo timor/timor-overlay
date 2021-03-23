@@ -81,7 +81,7 @@ in
     name = "factor-lang-${version}";
     bootImage = self.fetchurl {
       url = "https://downloads.factorcode.org/images/build/boot.unix-x86.64.image.e511080c91c884c117edc585e61a9979e11731a8";
-      sha256 = "1bgvlssrfgybvm3zs4sx86yzx0hfzk8957brdcs6zhy4igxkjdc7";
+      sha256 = "043nrf2m3bcs6hhc4knnhkjqwy9g3l1x9bygfqpdn6j6kmpbjxzm";
     };
 
     src = self.fetchFromGitHub {
