@@ -14,7 +14,7 @@ let
     else p: [];
   finalPackages = p: (extraPackages' p) ++ (dotfilePackages p) ;
   name = "spacemacs-${version}";
-  version = "2021-03-16";
+  version = "2021-03-28";
   desktopItem = makeDesktopItem {
     name = "spacemacs";
     genericName = "Text Editor";

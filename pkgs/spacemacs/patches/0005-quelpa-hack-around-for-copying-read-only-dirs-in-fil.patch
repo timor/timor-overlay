@@ -1,7 +1,7 @@
-From cf2a660f6264a2cde8ed4fd99256aa9d1763d16c Mon Sep 17 00:00:00 2001
+From ef2890bf60b5bc59a90d518569ce3c7798125457 Mon Sep 17 00:00:00 2001
 From: timor <timor.dd@googlemail.com>
 Date: Sat, 26 Jan 2019 23:48:26 +0100
-Subject: [PATCH 05/11] quelpa: hack-around for copying read-only dirs in file
+Subject: [PATCH 05/12] quelpa: hack-around for copying read-only dirs in file
  recipes
 
 Does not work on windows.
@@ -10,10 +10,10 @@ Does not work on windows.
  1 file changed, 8 insertions(+), 2 deletions(-)
 
 diff --git a/core/libs/quelpa.el b/core/libs/quelpa.el
-index ef59a1cce..9b1be36b7 100644
+index f348af333..496c8ea06 100644
 --- a/core/libs/quelpa.el
 +++ b/core/libs/quelpa.el
-@@ -355,6 +355,12 @@ file exists."
+@@ -362,6 +362,12 @@ file exists."
        (insert-file-contents-literally file)
        (buffer-substring-no-properties (point-min) (point-max)))))
  
@@ -26,7 +26,7 @@ index ef59a1cce..9b1be36b7 100644
  (defun quelpa-check-hash (name config file-path dir &optional fetcher)
    "Check if hash of FILE-PATH is different as in STAMP-FILE.
  If it is different save the new hash and timestamp to STAMP-FILE
-@@ -394,7 +400,7 @@ and return TIME-STAMP, otherwise return OLD-TIME-STAMP."
+@@ -401,7 +407,7 @@ and return TIME-STAMP, otherwise return OLD-TIME-STAMP."
          (make-directory dir)
          (if (eq type 'file)
              (copy-file file-path dir t t t t)
@@ -35,7 +35,7 @@ index ef59a1cce..9b1be36b7 100644
        (quelpa-build--dump new-stamp-info stamp-file)
        (quelpa-file-version file-path type version time-stamp))))
  
-@@ -1448,7 +1454,7 @@ FILES is a list of (SOURCE . DEST) relative filepath pairs."
+@@ -1459,7 +1465,7 @@ FILES is a list of (SOURCE . DEST) relative filepath pairs."
      (copy-file file newname))
     ((file-directory-p file)
      (quelpa-build--message "%s => %s" file newname)

@@ -1,7 +1,7 @@
-From 186dcb6ab9aaabfed53c35c708a7f567fbdc5b24 Mon Sep 17 00:00:00 2001
+From 88702890862f7612ebd4b4ab71ec3f581c05b320 Mon Sep 17 00:00:00 2001
 From: timor <timor.dd@googlemail.com>
 Date: Sat, 26 Jan 2019 16:45:50 +0100
-Subject: [PATCH 01/11] core-load-paths: distinguish between spacemacs source
+Subject: [PATCH 01/12] core-load-paths: distinguish between spacemacs source
  and user directory
 
 ---
@@ -9,10 +9,10 @@ Subject: [PATCH 01/11] core-load-paths: distinguish between spacemacs source
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/core/core-load-paths.el b/core/core-load-paths.el
-index 43afe7289..3963f3d57 100644
+index 56e6f6dd9..f4fb6053c 100644
 --- a/core/core-load-paths.el
 +++ b/core/core-load-paths.el
-@@ -17,13 +17,13 @@
+@@ -29,13 +29,13 @@
  
  ;; paths
  (defvar spacemacs-start-directory

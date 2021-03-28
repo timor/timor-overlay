@@ -1,22 +1,21 @@
-From ff7f7b3048d95d88278dcce3ac17b82e19142220 Mon Sep 17 00:00:00 2001
+From 392b3e680187d8d467006e85980dc371d7600d9b Mon Sep 17 00:00:00 2001
 From: timor <timor.dd@googlemail.com>
 Date: Mon, 14 Dec 2020 16:50:13 +0100
-Subject: [PATCH 10/11] disable custom-file syncing
+Subject: [PATCH 10/12] disable custom-file syncing
 
 ---
- core/core-custom-settings.el | 12 +-----------
- core/core-spacemacs.el       |  7 ++++---
- 2 files changed, 5 insertions(+), 14 deletions(-)
+ core/core-custom-settings.el | 16 ++++++----------
+ core/core-spacemacs.el       | 10 +++++++---
+ 2 files changed, 13 insertions(+), 13 deletions(-)
 
 diff --git a/core/core-custom-settings.el b/core/core-custom-settings.el
-index ec15dff6e..eb0e6c470 100644
+index 45e5ba75c..e431d1745 100644
 --- a/core/core-custom-settings.el
 +++ b/core/core-custom-settings.el
-@@ -20,17 +20,7 @@ complete that part see `spacemacs/initialize-custom-file-sync'."
-   ;; setup auto-rewrite of custom settings only if custom-file
+@@ -33,16 +33,12 @@ complete that part see `spacemacs/initialize-custom-file-sync'."
    ;; has not been set by the user
    (when (null custom-file)
--    (setq custom-file spacemacs--custom-file))
+     (setq custom-file spacemacs--custom-file))
 -  ;; initialize the cache file contents
 -  (unless (or (not (string-equal custom-file spacemacs--custom-file))
 -              (file-exists-p spacemacs--custom-file))
@@ -27,21 +26,29 @@ index ec15dff6e..eb0e6c470 100644
 -;; Spacemacs will copy its content to your dotfile automatically in the
 -;; function `dotspacemacs/emacs-custom-settings'.
 -;; Do not alter this file, use Emacs customize interface instead.\n\n")))))
-+    (setq custom-file spacemacs--custom-file)))
++  ;; Actually load the file, or we are going to loose all customization if some
++  ;; clown touches customize-set-variable before the startup hook...
++  ;; Which seems to happen after package updates...
++  (when (and (stringp custom-file)
++             (file-exists-p custom-file))
++    (load custom-file)))
  
  (defun spacemacs/initialize-custom-file-sync ()
    "Initialize syncing of the custom file to the dotfile."
 diff --git a/core/core-spacemacs.el b/core/core-spacemacs.el
-index acccfc90b..1d9fa4ed7 100644
+index c3102a992..afde1b364 100644
 --- a/core/core-spacemacs.el
 +++ b/core/core-spacemacs.el
-@@ -251,11 +251,12 @@ Note: the hooked function is not executed when in dumped mode."
+@@ -263,11 +263,15 @@ Note: the hooked function is not executed when in dumped mode."
       ;; them in his/her ~/.spacemacs file
       (dotspacemacs|call-func dotspacemacs/user-config
                               "Calling dotfile user config...")
 -     (dotspacemacs|call-func dotspacemacs/emacs-custom-settings
 -                             "Calling dotfile Emacs custom settings...")
-+     (when (file-exists-p custom-file) (load custom-file))
++     ;; Restore original behavior that will set anything that has been changed
++     ;; with setq as changed outside of customize.  We deactivated the writeback
++     ;; sync hook, so there shouldn't have been any changes here anyways.
++     ;; (when (file-exists-p custom-file) (load custom-file))
 +     ;; (dotspacemacs|call-func dotspacemacs/emacs-custom-settings
 +     ;;                         "Calling dotfile Emacs custom settings...")
       ;; don't write custom settings into the dotfile before loading them,

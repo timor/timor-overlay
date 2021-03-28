@@ -1,7 +1,7 @@
-From c295639750d9b8f5c8c86f39c6ab234cc330368d Mon Sep 17 00:00:00 2001
+From 482afa5174876da1ae89f5db420c8ab93208ec0e Mon Sep 17 00:00:00 2001
 From: timor <timor.dd@googlemail.com>
 Date: Thu, 25 Jun 2020 10:10:32 +0200
-Subject: [PATCH 07/11] nixos-compat: allow loading dotfile from store, compare
+Subject: [PATCH 07/12] nixos-compat: allow loading dotfile from store, compare
  against current
 
 Introduces environment variable "NIX_DOTSPACEMACS", which when set will be
@@ -12,10 +12,10 @@ differ.
  1 file changed, 17 insertions(+), 1 deletion(-)
 
 diff --git a/core/core-spacemacs.el b/core/core-spacemacs.el
-index c096a7a12..0fca03830 100644
+index 44b96b02c..ddc2f5215 100644
 --- a/core/core-spacemacs.el
 +++ b/core/core-spacemacs.el
-@@ -73,7 +73,23 @@ the final step of executing code in `emacs-startup-hook'.")
+@@ -85,7 +85,23 @@ the final step of executing code in `emacs-startup-hook'.")
                  ;; overlapped in terminal mode. The GUI specific `<C-i>' is used
                  ;; instead.
                  evil-want-C-i-jump nil)

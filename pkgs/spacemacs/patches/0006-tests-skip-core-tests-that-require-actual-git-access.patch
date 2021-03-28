@@ -1,14 +1,14 @@
-From a5b432d4c10031b95b226d87405ff884374a5785 Mon Sep 17 00:00:00 2001
+From 4052e1b9ff28dc45944069a0d904be78ca730dd5 Mon Sep 17 00:00:00 2001
 From: timor <timor.dd@googlemail.com>
 Date: Fri, 22 Mar 2019 17:01:02 +0100
-Subject: [PATCH 06/11] tests: skip core tests that require actual git access
+Subject: [PATCH 06/12] tests: skip core tests that require actual git access
 
 ---
  tests/core/core-release-management-ftest.el | 5 +++++
  1 file changed, 5 insertions(+)
 
 diff --git a/tests/core/core-release-management-ftest.el b/tests/core/core-release-management-ftest.el
-index a74a614dc..0ed507e29 100644
+index e4c83b5b5..a0dcbda31 100644
 --- a/tests/core/core-release-management-ftest.el
 +++ b/tests/core/core-release-management-ftest.el
 @@ -23,9 +23,14 @@
