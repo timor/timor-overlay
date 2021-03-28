@@ -13,30 +13,15 @@ stdenv.mkDerivation {
     sha256 = "08hy1zyq0nkrhmp599x6k0sn93a4484yi2lfgl0xf25lwdsrsyr5";
   };
 
+  # Fix #4 for latest stable version
+  patches = [ ./0001-Fix-issue-4-free-invalid-pointer.patch ];
+
   postPatch = ''
     # Substitute hard-coded install destinations
     substituteInPlace Makefile --replace /usr/local/bin $out/bin --replace /usr/share/ $out/share/
 
     # Leave stripping to fixup phase
     sed -i "/strip/d" Makefile
-
-    # fix #4 for latest stable version
-    patch -p1 <<EOF
---- a/settings.c
-+++ b/settings.c
-@@ -144,9 +144,9 @@
-     for(PrefString* s=pref_strings; s < pref_strings+G_N_ELEMENTS(pref_strings); s++)
-     {
-         GError* gerror = NULL;
--        *s->value = s->default_value;
-         gchar* value = g_key_file_get_string(pref_file, "Options", s->description, &gerror);
--        if(!gerror) *s->value = value;
-+        if (!gerror) *s->value = value;
-+        else *s->value = g_strdup(s->default_value);
-     }
-     preferences_changed();
- }
-EOF
   '';
 
   nativeBuildInputs = [ pkgconfig ];
