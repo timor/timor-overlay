@@ -64,6 +64,10 @@ in
     { auctex = auctexFun esuper; }
   );
 
+  emacs27Packages = super.emacs27Packages.overrideScope' (eself: esuper:
+    { auctex = auctexFun esuper; }
+  );
+
   # Usage:
   # deployFactor "my-cool-factor-program" /factor/program/sources
   #
@@ -134,6 +138,8 @@ in
 
   kerneldocs = callPackage ./pkgs/kerneldocs {};
 
+  lsb-shell = callPackage ./pkgs/lsb-shell {};
+
   circt = callPackage ./pkgs/circt {};
 
   llhd = callPackage ./pkgs/llhd {};
@@ -160,11 +166,11 @@ in
   inherit (callPackage ./pkgs/opensnitch {})
     opensnitchd opensnitch-ui;
 
-  plasma5 = super.plasma5 // {
-    plasma-workspace = super.plasma5.plasma-workspace.overrideAttrs (oldAttrs: {
-      patches = oldAttrs.patches ++ [ ./patches/plasma-lockscreen-suspend-20.03.patch ];
-    });
-  };
+#  plasma5 = super.plasma5 // {
+#    plasma-workspace = super.plasma5.plasma-workspace.overrideAttrs (oldAttrs: {
+#      patches = oldAttrs.patches ++ [ ./patches/plasma-lockscreen-suspend-20.03.patch ];
+#    });
+#  };
   spacemacsPackages = callPackage ./pkgs/spacemacs/spacemacs-packages.nix
     { emacsPackages = self.emacs27Packages; };
 

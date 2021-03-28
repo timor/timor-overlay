@@ -55,4 +55,8 @@
     url = "https://elpa.gnu.org/packages/auctex-13.0.3.tar.lz";
     sha256 = "0hclqnsd9bhiyrah92idc3wj2j9hk1h6dw90a0yhyrlxkgwk1pb1";
     };
+    "13.0.4" = {
+    url = "https://elpa.gnu.org/packages/auctex-13.0.4.tar.lz";
+    sha256 = "0sqhjq18wb7pilnwvznizyh1a6838jx9v63kh8zsyjwlkzy8bi3w";
+    };
 }
