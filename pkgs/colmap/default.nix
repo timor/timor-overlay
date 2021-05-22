@@ -24,6 +24,8 @@ stdenv.mkDerivation rec {
       --replace "DESTINATION include" "DESTINATION \''${CMAKE_INSTALL_INCLUDEDIR}"
   '';
 
+  enableParallelBuilding = true ;
+
   checkPhase = ''
     QT_PLUGIN_PATH=${qtbase}/${qtbase.qtPluginPrefix} make test
   '';

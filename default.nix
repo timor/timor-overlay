@@ -53,16 +53,13 @@ in
   gdbForPackages = callPackage ./pkgs/gdbForPackages { };
   gdbForPackage = (pkg: self.gdbForPackages [pkg]);
 
-  colmap-clang = self.libsForQt5.callPackage ./pkgs/colmap {
-    stdenv = self.clangStdenv;
-    inherit (self.llvmPackages) openmp;
-    };
-
-  colmap = self.libsForQt5.callPackage ./pkgs/colmap { };
-
   emacs26Packages = super.emacs26Packages.overrideScope' (eself: esuper:
     { auctex = auctexFun esuper; }
   );
+  # colmap-clang = self.libsForQt5.callPackage ./pkgs/colmap {
+  #   stdenv = self.clangStdenv;
+  #   inherit (self.llvmPackages) openmp;
+  #   };
 
   emacs27Packages = super.emacs27Packages.overrideScope' (eself: esuper:
     { auctex = auctexFun esuper; }
@@ -75,6 +72,15 @@ in
   # Derivation whose build product has the following structure:
   # /bin/<my-cool-factor-program> -> /lib/factor/<my-cool-factor-program>/<my-cool-factor-program>
   # /lib/factor/<my-cool-factor-program>/ : Directory (may contain other used resources)
+  colmapCudaWrapped = (let colmap = self.colmapWithCuda;
+                           cuda = lib.findFirst (d: (d.pname or "INVALID") == "cudatoolkit") null colmap.buildInputs ;
+                       in
+                       self.wrapBins colmap ''
+                        --set CUDA_PATH ${cuda} \
+                        --set EXTRA_LDFLAGS "-L${self.linuxPackages.nvidia_x11}/lib"
+                       ''
+  );
+
   deployFactor = callPackage ./pkgs/deployFactor { factor-lang = self.factor-lang-live; };
   factor-lang-new = callPackage ./pkgs/factor-lang/scope.nix { stdenv = self.clangStdenv; };
 
