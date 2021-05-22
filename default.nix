@@ -53,9 +53,6 @@ in
   gdbForPackages = callPackage ./pkgs/gdbForPackages { };
   gdbForPackage = (pkg: self.gdbForPackages [pkg]);
 
-  emacs26Packages = super.emacs26Packages.overrideScope' (eself: esuper:
-    { auctex = auctexFun esuper; }
-  );
   # colmap-clang = self.libsForQt5.callPackage ./pkgs/colmap {
   #   stdenv = self.clangStdenv;
   #   inherit (self.llvmPackages) openmp;
