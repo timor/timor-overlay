@@ -123,6 +123,14 @@ in
 
   libsslkeylog = callPackage ./pkgs/libsslkeylog { };
 
+  sniffedFirefox = self.runCommand self.firefox.name { nativeBuildInputs = [ self.makeWrapper ];} ''
+    mkdir -p $out
+    ln -s ${self.firefox}/share $out
+    makeWrapper ${lib.getBin self.firefox}/bin/firefox $out/bin/firefox \
+      --set SSLKEYLOGFILE /tmp/.sslkeylog \
+      --set LD_PRELOAD ${self.libsslkeylog}/lib/libsslkeylog.so
+  '';
+
   spnav = callPackage ./pkgs/spnav { };
 
   spacenavd = callPackage ./pkgs/spacenavd { };
