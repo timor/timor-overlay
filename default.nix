@@ -189,5 +189,7 @@ in
 
   wine = self.wineWowPackages.full ;
 
+  wrapBins = callPackage ./pkgs/wrapBin { };
+
   zfs-linux-tools = callPackage ./pkgs/zfs-linux-tools { };
 }
