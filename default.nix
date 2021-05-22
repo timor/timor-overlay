@@ -126,7 +126,11 @@ in
 
   spnavcfg = callPackage ./pkgs/spnavcfg { };
 
+  spoof_vendorid = callPackage ./pkgs/spoof_vendorid { };
+
   solvespace = super.solvespace.overrideAttrs (oa: {buildInputs = oa.buildInputs ++ [ self.spnav ];});
+
+  wine-spoofed = callPackage ./pkgs/spoof_vendorid/wrapper.nix { };
 
   freecad = (super.freecad.overrideAttrs (oldAttrs: {
       buildInputs = oldAttrs.buildInputs ++ [ self.spnav ];
