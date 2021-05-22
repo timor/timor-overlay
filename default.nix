@@ -174,7 +174,7 @@ in
 
   exwm-ns = callPackage ./pkgs/exwm-ns { };
 
-  frame3dd = callPackage ./pkgs/frame3dd {};
+  frame3dd = self.libsForQt5.callPackage ./pkgs/frame3dd {};
 
   nux = callPackage ./pkgs/nux {};
 
