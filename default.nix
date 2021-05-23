@@ -188,6 +188,8 @@ in
 #      patches = oldAttrs.patches ++ [ ./patches/plasma-lockscreen-suspend-20.03.patch ];
 #    });
 #  };
+
+  raygui = callPackage ./pkgs/raygui { };
   spacemacsPackages = callPackage ./pkgs/spacemacs/spacemacs-packages.nix
     { emacsPackages = self.emacs27Packages; };
 
