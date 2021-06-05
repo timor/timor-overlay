@@ -203,6 +203,8 @@ in
       dotfile = "${self.spacemacs}/core/templates/.spacemacs.template";
     } ;
 
+  typemaster = callPackage ./pkgs/typemaster { };
+
   totala = callPackage ./pkgs/totala { };
 
   wine = self.wineWowPackages.full ;
