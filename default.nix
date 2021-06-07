@@ -190,6 +190,9 @@ in
 #  };
 
   raygui = callPackage ./pkgs/raygui { };
+
+  shader-slang = callPackage ./pkgs/shader-slang { };
+
   spacemacsPackages = callPackage ./pkgs/spacemacs/spacemacs-packages.nix
     { emacsPackages = self.emacs27Packages; };
 
