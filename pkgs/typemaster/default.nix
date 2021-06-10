@@ -3,13 +3,13 @@
 let
   typemaster = emacs.pkgs.melpaBuild rec {
     pname = "typemaster";
-    version = "0.5";
+    version = "0.6";
 
     src = fetchFromGitHub {
       owner = "timor";
       repo = "typemaster.el";
       rev = "v${version}";
-      sha256 = "1p25nfdyaqs4c4j8kibkjhq2krxaqj1gx6v1ja1hzb2vhr5qp5n8";
+      sha256 = "12byhsdzx1vf5n1xia39088413pqv0dxgwmxwj9vg6d8f4mfh459";
     };
     recipe = writeText "recipe" "(typemaster :fetcher github :repo \"\" :files (\"*.el\" \"*.gz\"))";
     packageRequires = [ emacs.pkgs.request ];
