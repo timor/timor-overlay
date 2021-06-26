@@ -3,13 +3,13 @@
 let
   typemaster = emacs.pkgs.melpaBuild rec {
     pname = "typemaster";
-    version = "0.7.1";
+    version = "0.9";
 
     src = fetchFromGitHub {
       owner = "timor";
       repo = "typemaster.el";
       rev = "v${version}";
-      sha256 = "0zl2d1d1ds2vjh7kknmf8ii049m0s9wpr0r2q2997g9vjpj79ifh";
+      sha256 = "16m2ag2aq88ryp77vhv92b1vs8anjssjqysdk71lpka6lqr75x2g";
     };
     recipe = writeText "recipe" "(typemaster :fetcher github :repo \"\" :files (\"*.el\" \"*.gz\"))";
     packageRequires = [ emacs.pkgs.request ];
@@ -31,11 +31,30 @@ let
     desktopName = "Typemaster2000 (german,de)";
     categories = "Education;";
   };
+
+  run-en = writeShellScriptBin "typemaster-en" ''
+    ${lib.getBin typemasterEmacs}/bin/emacs -q -mm \
+       --eval "(require 'typemaster)" \
+       --eval "(load-theme 'tango-dark t)" \
+       -f typemaster-practice-english
+  '';
+  item-en = makeDesktopItem {
+    name = "typemaster2000-en";
+    exec = "typemaster-en";
+    icon = "tools-check-spelling";
+    genericName = "Typing Practice (english)";
+    desktopName = "Typemaster2000 (english,en)";
+    categories = "Education;";
+  };
 in
 
 {
   de = buildEnv {
     name = "typemaster-practice-german-de";
     paths = [ run-de item-de ];
+  };
+  en = buildEnv {
+    name = "typemaster-practice-english-de";
+    paths = [ run-en item-en ];
   };
 }
