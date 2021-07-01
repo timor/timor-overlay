@@ -1,0 +1,40 @@
+From ad2c0e15c370beadd2e39b5b26e481d9ca4bed99 Mon Sep 17 00:00:00 2001
+From: timor <timor.dd@googlemail.com>
+Date: Sat, 26 Jun 2021 17:33:52 +0200
+Subject: [PATCH] Display application/pkcs7 mime parts (smime decryption)
+
+---
+ emacs/notmuch-show.el | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+diff --git a/emacs/notmuch-show.el b/emacs/notmuch-show.el
+index b08ceb97..d14c0ba1 100644
+--- a/emacs/notmuch-show.el
++++ b/emacs/notmuch-show.el
+@@ -697,6 +697,23 @@ will return nil if the CID is unknown or cannot be retrieved."
+ (defun notmuch-show-insert-part-application/pgp-encrypted (msg part content-type nth depth button)
+   t)
+ 
++(defun notmuch-show-insert-part-application/pkcs7-mime (msg part content-type
++							    nth depth button)
++  (let* ((encstatus-plist (car (plist-get part :encstatus)))
++         (encstatus (plist-get encstatus-plist :status)))
++    (notmuch-crypto-insert-encstatus-button encstatus-plist)
++    (if (not (string= encstatus "bad"))
++        (notmuch-show-insert-part-multipart/signed msg
++                                                   (car (plist-get part
++								   :content))
++                                                   content-type
++                                                   nth
++                                                   depth
++                                                   button))))
++
++(fset 'notmuch-show-insert-part-application/x-pkcs7-mime
++      'notmuch-show-insert-part-application/pkcs7-mime)
++
+ (defun notmuch-show-insert-part-multipart/* (msg part content-type nth depth button)
+   (let ((inner-parts (plist-get part :content))
+ 	(start (point)))
+-- 
+2.29.3
+
