@@ -9,7 +9,7 @@ let
       owner = "timor";
       repo = "typemaster.el";
       rev = "v${version}";
-      sha256 = "16m2ag3aq88ryp77vhv92b1vs8anjssjqysdk71lpka6lqr75x2g";
+      sha256 = "04gbq9kch1zfgbpf0qgpc942qqy99iwpb8y3yrn586bwcf0ldrb8";
     };
     recipe = writeText "recipe" "(typemaster :fetcher github :repo \"\" :files (\"*.el\" \"*.gz\"))";
     packageRequires = [ emacs.pkgs.request ];
