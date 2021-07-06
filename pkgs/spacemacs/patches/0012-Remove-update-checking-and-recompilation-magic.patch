@@ -1,4 +1,4 @@
-From d6e9232a751d5ea04019cc09a2bbe0e1e3d04f07 Mon Sep 17 00:00:00 2001
+From 2ff3cae05076f5cb0dc0c0275176ce72f00cfc7b Mon Sep 17 00:00:00 2001
 From: timor <timor.dd@googlemail.com>
 Date: Sun, 28 Mar 2021 18:18:45 +0200
 Subject: [PATCH 12/12] Remove update-checking and recompilation magic
@@ -10,10 +10,10 @@ This tries to delete compiled files which are in the store.
  2 files changed, 2 insertions(+), 15 deletions(-)
 
 diff --git a/core/core-spacemacs.el b/core/core-spacemacs.el
-index afde1b364..24fb285ce 100644
+index a569e53a1..307edfe58 100644
 --- a/core/core-spacemacs.el
 +++ b/core/core-spacemacs.el
-@@ -291,9 +291,8 @@ Note: the hooked function is not executed when in dumped mode."
+@@ -278,9 +278,8 @@ Note: the hooked function is not executed when in dumped mode."
         (setq read-process-output-max dotspacemacs-read-process-output-max))))
  
    (let ((default-directory spacemacs-start-directory))
@@ -49,5 +49,5 @@ index 7f2526cb6..141256730 100644
      (error (concat "Your version of Emacs (%s) is too old. "
                     "Spacemacs requires Emacs version %s or above.")
 -- 
-2.25.4
+2.29.3
 

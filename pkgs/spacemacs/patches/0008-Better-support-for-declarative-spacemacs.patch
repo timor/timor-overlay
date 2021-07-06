@@ -1,4 +1,4 @@
-From 88de1cb908909bf2dd93019435f3b58658dd8b30 Mon Sep 17 00:00:00 2001
+From 8bfdbc57d1e9fd76e3631b6163902099372be563 Mon Sep 17 00:00:00 2001
 From: timor <timor.dd@googlemail.com>
 Date: Sun, 13 Dec 2020 18:46:19 +0100
 Subject: [PATCH 08/12] Better support for declarative spacemacs
@@ -10,12 +10,12 @@ build directories. (see Readme in overlay for details)
  core/core-configuration-layer.el | 14 +++++++------
  core/core-custom-settings.el     | 11 ++++++++++-
  core/core-dotspacemacs.el        |  5 ++++-
- core/core-load-paths.el          |  3 +++
+ core/core-load-paths.el          |  5 ++++-
  core/core-spacemacs.el           | 34 ++++++++++++++++++--------------
- 5 files changed, 44 insertions(+), 23 deletions(-)
+ 5 files changed, 45 insertions(+), 24 deletions(-)
 
 diff --git a/core/core-configuration-layer.el b/core/core-configuration-layer.el
-index bdfb02061..4bf7dcaef 100644
+index 106257a87..94b79f8af 100644
 --- a/core/core-configuration-layer.el
 +++ b/core/core-configuration-layer.el
 @@ -113,12 +113,14 @@ subdirectory of ROOT is used."
@@ -69,7 +69,7 @@ index 45e5ba75c..90698bd3a 100644
    "Initialize syncing of the custom file to the dotfile."
    (when (string-equal custom-file spacemacs--custom-file)
 diff --git a/core/core-dotspacemacs.el b/core/core-dotspacemacs.el
-index 66d2b3c84..d0b85d61e 100644
+index acd002286..aa1756cfb 100644
 --- a/core/core-dotspacemacs.el
 +++ b/core/core-dotspacemacs.el
 @@ -41,7 +41,9 @@ their configuration.")
@@ -92,24 +92,30 @@ index 66d2b3c84..d0b85d61e 100644
         ((and dotspacemacs-directory (file-exists-p spacemacs-dir-init))
          spacemacs-dir-init)
 diff --git a/core/core-load-paths.el b/core/core-load-paths.el
-index f4fb6053c..12a9fd77b 100644
+index 845adcabb..d1a7e5dc4 100644
 --- a/core/core-load-paths.el
 +++ b/core/core-load-paths.el
-@@ -31,6 +31,9 @@
- (defvar spacemacs-start-directory
+@@ -37,11 +37,14 @@
    (concat (file-name-directory (or load-file-name (buffer-file-name))) "../")
    "Spacemacs start directory.")
+ 
+-;; ~/.emacs.d/assets
+ (defconst spacemacs-assets-directory
+   (concat spacemacs-start-directory "assets/")
+   "Spacemacs assets directory.")
+ 
 +(defconst spacemacs-nix-declared-p (getenv "NIX_SPACEMACS_SUFFIX"))
 +(defconst spacemacs-nix-suffix (or (getenv "NIX_SPACEMACS_SUFFIX") ""))
 +(defconst spacemacs-nix-dotfile-path (getenv "NIX_DOTSPACEMACS"))
++
+ ;; ~/.emacs.d/core
  (defconst spacemacs-core-directory
-   (expand-file-name (concat spacemacs-start-directory "core/"))
-   "Spacemacs core directory.")
+   (concat spacemacs-start-directory "core/")
 diff --git a/core/core-spacemacs.el b/core/core-spacemacs.el
-index ddc2f5215..7845dd68b 100644
+index 11a1a74ed..3f1556f05 100644
 --- a/core/core-spacemacs.el
 +++ b/core/core-spacemacs.el
-@@ -65,6 +65,22 @@
+@@ -66,6 +66,22 @@
    "Whether or not spacemacs has finished initializing by completing
  the final step of executing code in `emacs-startup-hook'.")
  
@@ -132,7 +138,7 @@ index ddc2f5215..7845dd68b 100644
  (defun spacemacs/init ()
    "Perform startup initialization."
    (setq command-line-args (spacemacs//parse-command-line command-line-args))
-@@ -88,20 +104,8 @@ the final step of executing code in `emacs-startup-hook'.")
+@@ -89,20 +105,8 @@ the final step of executing code in `emacs-startup-hook'.")
    ;; Nixos adjustment, allows loading a different dotfile then the default one,
    ;; but only during initialization. Subsequent uses of the dotfile location
    ;; should point to the one the user is supposed to edit.
@@ -155,7 +161,7 @@ index ddc2f5215..7845dd68b 100644
    (dotspacemacs|call-func dotspacemacs/init "Calling dotfile init...")
    (when dotspacemacs-undecorated-at-startup
      ;; this should be called before toggle-frame-maximized
-@@ -125,7 +129,7 @@ the final step of executing code in `emacs-startup-hook'.")
+@@ -126,7 +130,7 @@ the final step of executing code in `emacs-startup-hook'.")
    ;; effective ones.
    ;; Note: Loading custom-settings twice is not ideal since they can have side
    ;; effects! Maybe an inhibit variable in Emacs can suppress these side effects?
@@ -165,5 +171,5 @@ index ddc2f5215..7845dd68b 100644
    ;; I don't recall why we must load the custom settings twice and my experiment
    ;; seems to show that we don't need this double loading process anymore.
 -- 
-2.25.4
+2.29.3
 

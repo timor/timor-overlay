@@ -1,4 +1,4 @@
-From ef2890bf60b5bc59a90d518569ce3c7798125457 Mon Sep 17 00:00:00 2001
+From 984074593c4633fabbb3b5f08799e87212b4b7e9 Mon Sep 17 00:00:00 2001
 From: timor <timor.dd@googlemail.com>
 Date: Sat, 26 Jan 2019 23:48:26 +0100
 Subject: [PATCH 05/12] quelpa: hack-around for copying read-only dirs in file
@@ -10,7 +10,7 @@ Does not work on windows.
  1 file changed, 8 insertions(+), 2 deletions(-)
 
 diff --git a/core/libs/quelpa.el b/core/libs/quelpa.el
-index f348af333..496c8ea06 100644
+index 637aa9257..7a53c3fe7 100644
 --- a/core/libs/quelpa.el
 +++ b/core/libs/quelpa.el
 @@ -362,6 +362,12 @@ file exists."
@@ -35,7 +35,7 @@ index f348af333..496c8ea06 100644
        (quelpa-build--dump new-stamp-info stamp-file)
        (quelpa-file-version file-path type version time-stamp))))
  
-@@ -1459,7 +1465,7 @@ FILES is a list of (SOURCE . DEST) relative filepath pairs."
+@@ -1469,7 +1475,7 @@ FILES is a list of (SOURCE . DEST) relative filepath pairs."
      (copy-file file newname))
     ((file-directory-p file)
      (quelpa-build--message "%s => %s" file newname)
@@ -45,5 +45,5 @@ index f348af333..496c8ea06 100644
  (defun quelpa-build--find-source-file (target files)
    "Search for source of TARGET in FILES."
 -- 
-2.25.4
+2.29.3
 

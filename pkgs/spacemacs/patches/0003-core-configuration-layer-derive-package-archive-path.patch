@@ -1,4 +1,4 @@
-From e2e1f77c89e76d7c7edda2f90e6be81f3315fd2e Mon Sep 17 00:00:00 2001
+From 46904fc1063bf8b222ccc2787eed26919de3714c Mon Sep 17 00:00:00 2001
 From: timor <timor.dd@googlemail.com>
 Date: Sat, 26 Jan 2019 18:48:21 +0100
 Subject: [PATCH 03/12] core-configuration-layer: derive package archive path
@@ -9,7 +9,7 @@ Subject: [PATCH 03/12] core-configuration-layer: derive package archive path
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/core/core-configuration-layer.el b/core/core-configuration-layer.el
-index 563504b55..bdfb02061 100644
+index daa4e30b2..106257a87 100644
 --- a/core/core-configuration-layer.el
 +++ b/core/core-configuration-layer.el
 @@ -136,7 +136,7 @@ subdirectory of ROOT is used."
@@ -22,5 +22,5 @@ index 563504b55..bdfb02061 100644
  
  (defconst configuration-layer--rollback-root-directory
 -- 
-2.25.4
+2.29.3
 
