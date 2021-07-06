@@ -1,4 +1,4 @@
-From 7bbb6db0a9729eaaf480eee03c1a48c97e0bb34f Mon Sep 17 00:00:00 2001
+From 8088eb44f344c906389045876e2e50e9bea8dd46 Mon Sep 17 00:00:00 2001
 From: timor <timor.dd@googlemail.com>
 Date: Sat, 26 Jan 2019 16:47:07 +0100
 Subject: [PATCH 02/12] core-spacemacs: remove loading environment by default
@@ -9,10 +9,10 @@ bad idea, see: https://github.com/syl20bnr/spacemacs/issues/11510
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/core/core-spacemacs.el b/core/core-spacemacs.el
-index 1fe34e82b..44b96b02c 100644
+index 4a1d19f26..25d3ec7da 100644
 --- a/core/core-spacemacs.el
 +++ b/core/core-spacemacs.el
-@@ -170,7 +170,8 @@ the final step of executing code in `emacs-startup-hook'.")
+@@ -171,7 +171,8 @@ the final step of executing code in `emacs-startup-hook'.")
    ;; load environment variables
    (if (fboundp 'dotspacemacs/user-env)
        (dotspacemacs/call-user-env)
@@ -23,5 +23,5 @@ index 1fe34e82b..44b96b02c 100644
    (dotspacemacs/maybe-install-dotfile))
  
 -- 
-2.25.4
+2.29.3
 

@@ -1,4 +1,4 @@
-From 88702890862f7612ebd4b4ab71ec3f581c05b320 Mon Sep 17 00:00:00 2001
+From 8e03fd9ad78385431be107e3f5f6c33685f874fe Mon Sep 17 00:00:00 2001
 From: timor <timor.dd@googlemail.com>
 Date: Sat, 26 Jan 2019 16:45:50 +0100
 Subject: [PATCH 01/12] core-load-paths: distinguish between spacemacs source
@@ -9,25 +9,27 @@ Subject: [PATCH 01/12] core-load-paths: distinguish between spacemacs source
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/core/core-load-paths.el b/core/core-load-paths.el
-index 56e6f6dd9..f4fb6053c 100644
+index 48277f37b..845adcabb 100644
 --- a/core/core-load-paths.el
 +++ b/core/core-load-paths.el
-@@ -29,13 +29,13 @@
+@@ -34,7 +34,7 @@
  
- ;; paths
+ ;; ~/.emacs.d
  (defvar spacemacs-start-directory
--  user-emacs-directory
+-  (expand-file-name user-emacs-directory)
 +  (concat (file-name-directory (or load-file-name (buffer-file-name))) "../")
    "Spacemacs start directory.")
- (defconst spacemacs-core-directory
-   (expand-file-name (concat spacemacs-start-directory "core/"))
-   "Spacemacs core directory.")
+ 
+ ;; ~/.emacs.d/assets
+@@ -90,7 +90,7 @@
+ 
+ ;; ~/.emacs.d/private
  (defconst spacemacs-private-directory
--  (expand-file-name (concat spacemacs-start-directory "private/"))
-+  (expand-file-name (concat user-emacs-directory "private/"))
+-  (concat spacemacs-start-directory "private/")
++  (concat user-emacs-directory "private/")
    "Spacemacs private directory.")
- (defconst spacemacs-info-directory
-   (expand-file-name (concat spacemacs-core-directory "info/"))
+ 
+ ;; ~/.emacs.d/tests
 -- 
-2.25.4
+2.29.3
 

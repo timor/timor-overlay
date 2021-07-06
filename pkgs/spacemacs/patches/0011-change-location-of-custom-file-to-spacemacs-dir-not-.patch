@@ -1,4 +1,4 @@
-From 810f8f872671db07ddfac795e71810d0d37eaaf3 Mon Sep 17 00:00:00 2001
+From 3c857ac929ed22dd5ad65119a40882bcbc1155f2 Mon Sep 17 00:00:00 2001
 From: timor <timor.dd@googlemail.com>
 Date: Thu, 17 Dec 2020 13:49:38 +0100
 Subject: [PATCH 11/12] change location of custom-file to spacemacs dir, not
@@ -22,5 +22,5 @@ index e431d1745..b1e2cdf7b 100644
  
  (defun spacemacs/initialize-custom-file ()
 -- 
-2.25.4
+2.29.3
 
