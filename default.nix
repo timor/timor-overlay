@@ -153,6 +153,11 @@ in
 
   gatotray = callPackage ./pkgs/gatotray {};
 
+  gmime_patched = self.gmime3.overrideAttrs(oa: {
+    patches = (oa.patches or []) ++ [ ./patches/0001-Normalize-x-variants-for-comparing-protocol-and-mime.patch ];
+    doCheck = true;
+  });
+
   hachoir = callPackage ./pkgs/hachoir {};
 
   kerneldocs = callPackage ./pkgs/kerneldocs {};
@@ -167,9 +172,9 @@ in
 
   moore = callPackage ./pkgs/moore {};
 
-  notmuch = super.notmuch.overrideAttrs (oa: {
+  notmuch = (super.notmuch.overrideAttrs (oa: {
     patches = (oa.patches or []) ++ [ ./patches/0001-Display-application-pkcs7-mime-parts-smime-decryptio.patch ];
-  });
+  })).override{ gmime = self.gmime_patched; };
 
   open-zwave = callPackage ./pkgs/open-zwave {};
 
