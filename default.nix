@@ -49,9 +49,11 @@ in
 
   # bgrep = callPackageUnlessProvided "bgrep" ./pkgs/bgrep { };
 
-  debugify = import ./pkgs/gdbForPackages/debugify.nix;
-  gdbForPackages = callPackage ./pkgs/gdbForPackages { };
-  gdbForPackage = (pkg: self.gdbForPackages [pkg]);
+  inherit (callPackage ./pkgs/gdbForPackages {})
+    debugify
+    gdbForDebugified
+    gdbForPakckages
+    gdbForPackage ;
 
   # colmap-clang = self.libsForQt5.callPackage ./pkgs/colmap {
   #   stdenv = self.clangStdenv;
