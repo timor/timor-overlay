@@ -204,7 +204,14 @@ in
   spacemacsPackages = callPackage ./pkgs/spacemacs/spacemacs-packages.nix
     { emacsPackages = self.emacs27Packages; };
 
-  spacemacs = callPackage ./pkgs/spacemacs/default.nix { emacsPackages = self.spacemacsPackages; };
+  spacemacs = callPackage ./pkgs/spacemacs/default.nix {
+    # emacsPackages = self.spacemacsPackages;
+    emacsPackages = self.spacemacsPackages.overrideScope'(eself: esuper: {
+      emacs = self.debugify esuper.emacs;
+    }) ;
+  };
+
+  gdbForSpacemacs = self.gdbForDebugified [ self.spacemacs.emacsPackages.emacs ];
 
   spacemacs-default =
     self.spacemacs.override {
