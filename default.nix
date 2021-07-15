@@ -205,18 +205,30 @@ in
     { emacsPackages = self.emacs27Packages; };
 
   spacemacs = callPackage ./pkgs/spacemacs/default.nix {
-    # emacsPackages = self.spacemacsPackages;
-    emacsPackages = self.spacemacsPackages.overrideScope'(eself: esuper: {
-      emacs = self.debugify esuper.emacs;
-    }) ;
+    emacsPackages = self.spacemacsPackages;
   };
 
-  gdbForSpacemacs = self.gdbForDebugified [ self.spacemacs.emacsPackages.emacs ];
+  myEmacsPackages =
+    self.emacs27Packages.overrideScope' (eself: esuper: {
+        emacs = self.debugify esuper.emacs;
+      }) ;
+  myEmacs = self.myEmacsPackages.emacsWithPackages (p: [p.notmuch]) ;
+  gdbForMyEmacs = self.gdbForDebugified [self.myEmacs.emacs];
 
   spacemacs-default =
     self.spacemacs.override {
       dotfile = "${self.spacemacs}/core/templates/.spacemacs.template";
     } ;
+
+  spacemacs-default-debug =
+    self.spacemacs.override {
+      emacsPackages = self.spacemacsPackages.overrideScope'(eself: esuper: {
+        emacs = self.debugify esuper.emacs;
+      }) ;
+      dotfile = "${self.spacemacs}/core/templates/.spacemacs.template";
+    } ;
+
+  gdbForDefaultSpacemacs = self.gdbForDebugified [ self.spacemacs-default-debug.emacsPackages.emacs ];
 
   typemaster = callPackage ./pkgs/typemaster { };
 
