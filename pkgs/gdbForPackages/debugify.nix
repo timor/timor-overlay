@@ -29,6 +29,7 @@ let
         separateDebugInfo = true;
         outputs = (oldAttrs.outputs or [ "out" ]) ++ [ "source" ];
         hardeningDisable = (oldAttrs.hardeningDisable or []) ++ [ "fortify" ];
+        NIX_CFLAGS_COMPILE = "-O0";
       } // (
         if (oldAttrs ? buildPhase) then {
           buildPhase = saveSource + oldAttrs.buildPhase;
