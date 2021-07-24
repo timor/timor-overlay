@@ -1,7 +1,7 @@
 { lib, stdenv, buildEnv, writeShellScriptBin, writeText, emacs, fetchFromGitHub, makeDesktopItem }:
 
 let
-  typemaster = emacs.pkgs.melpaBuild rec {
+  typemaster = emacs.pkgs.trivialBuild rec {
     pname = "typemaster";
     version = "1.0";
 
@@ -11,9 +11,10 @@ let
       rev = "v${version}";
       sha256 = "04gbq9kch1zfgbpf0qgpc942qqy99iwpb8y3yrn586bwcf0ldrb8";
     };
-    recipe = writeText "recipe" "(typemaster :fetcher github :repo \"\" :files (\"*.el\" \"*.gz\"))";
     packageRequires = [ emacs.pkgs.request ];
-    fileSpecs = [ "*.el" "*.gz" ];
+    postInstall = ''
+      install *.gz $LISPDIR
+    '';
   };
   typemasterEmacs = emacs.pkgs.withPackages (epkgs: [typemaster # epkgs.color-theme-solarized
                                                     ]) ;
