@@ -52,7 +52,7 @@ in
   inherit (callPackage ./pkgs/gdbForPackages {})
     debugify
     gdbForDebugified
-    gdbForPakckages
+    gdbForPackages
     gdbForPackage ;
 
   # colmap-clang = self.libsForQt5.callPackage ./pkgs/colmap {
