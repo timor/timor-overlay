@@ -6,6 +6,25 @@ with lib;
 
 let
   cfg = config.services.xserver.windowManager.spacemacsOS;
+
+  desktopApplicationFile = pkgs.writeTextFile {
+    name = "emacsclient.desktop";
+    destination = "/share/applications/emacsclient.desktop";
+    text = ''
+      [Desktop Entry]
+      Name=Emacsclient(SpacemacsOS)
+      GenericName=Text Editor
+      Comment=Open in Spacemacs(server needed)
+      MimeType=text/english;text/plain;inode/directory;
+      Exec=emacsclient -n %F
+      Icon=spacemacs
+      Type=Application
+      Terminal=false
+      Categories=Development;TextEditor;
+      StartupWMClass=SpacemacsClient
+      Keywords=Text;Editor;
+    '';
+  };
 in
 {
   options = {
@@ -52,6 +71,7 @@ in
       pkgs.ripgrep
       pkgs.silver-searcher
       pkgs.git
+      desktopApplicationFile
     ];
   };
 }
