@@ -26,15 +26,14 @@ index a569e53a1..307edfe58 100644
    (spacemacs//revision-check))
  
 diff --git a/init.el b/init.el
-index 7f2526cb6..141256730 100644
 --- a/init.el
 +++ b/init.el
 @@ -37,18 +37,6 @@
- (load (concat spacemacs-core-directory "core-dumper.el")
+ (load (concat spacemacs-core-directory "core-dumper")
        nil (not init-file-debug))
  
 -;; Remove compiled core files if they become stale or Emacs version has changed.
--(load (concat spacemacs-core-directory "core-compilation.el")
+-(load (concat spacemacs-core-directory "core-compilation")
 -      nil (not init-file-debug))
 -(load spacemacs--last-emacs-version-file t (not init-file-debug))
 -(when (or (not (string= spacemacs--last-emacs-version emacs-version))
@@ -48,6 +47,3 @@ index 7f2526cb6..141256730 100644
  (if (not (version<= spacemacs-emacs-min-version emacs-version))
      (error (concat "Your version of Emacs (%s) is too old. "
                     "Spacemacs requires Emacs version %s or above.")
--- 
-2.29.3
-
