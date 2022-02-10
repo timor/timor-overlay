@@ -43,7 +43,6 @@ in
 
   options = {
     services.opensnitch = with lib; {
-      enable = mkEnableOption "opensnitch";
 
       uiConfig = mkOption {
         type = types.attrs;
