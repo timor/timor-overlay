@@ -173,7 +173,7 @@ in
   moore = callPackage ./pkgs/moore {};
 
   notmuch = (super.notmuch.overrideAttrs (oa: {
-    patches = (oa.patches or []) ++ [ ./patches/0001-Display-application-pkcs7-mime-parts-smime-decryptio.patch ];
+    #patches = (oa.patches or []) ++ [ ./patches/0001-Display-application-pkcs7-mime-parts-smime-decryptio.patch ];
   })).override{ gmime = self.gmime_patched; };
 
   open-zwave = callPackage ./pkgs/open-zwave {};
