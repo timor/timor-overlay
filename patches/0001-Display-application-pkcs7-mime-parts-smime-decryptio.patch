@@ -12,7 +12,7 @@ index b08ceb97..d14c0ba1 100644
 --- a/emacs/notmuch-show.el
 +++ b/emacs/notmuch-show.el
 @@ -697,6 +697,23 @@ will return nil if the CID is unknown or cannot be retrieved."
- (defun notmuch-show-insert-part-application/pgp-encrypted (msg part content-type nth depth button)
+ (defun notmuch-show-insert-part-application/pgp-encrypted (_msg _part _content-type _nth _depth _button)
    t)
  
 +(defun notmuch-show-insert-part-application/pkcs7-mime (msg part content-type
@@ -32,7 +32,7 @@ index b08ceb97..d14c0ba1 100644
 +(fset 'notmuch-show-insert-part-application/x-pkcs7-mime
 +      'notmuch-show-insert-part-application/pkcs7-mime)
 +
- (defun notmuch-show-insert-part-multipart/* (msg part content-type nth depth button)
+ (defun notmuch-show-insert-part-multipart/* (msg part _content-type _nth depth _button)
    (let ((inner-parts (plist-get part :content))
  	(start (point)))
 -- 
