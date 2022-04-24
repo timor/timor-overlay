@@ -26,10 +26,9 @@ stdenv.mkDerivation rec {
 
   patches = [
     ./staging-command-line-0.98-pre.patch
-    ./0001-pathnames-redirect-work-prefix-to-.local-share-facto.patch
-    ./0002-adjust-unit-test-for-finding-executables-in-path-for.patch
-    # preempt https://github.com/factor/factor/pull/2139
-    ./fuel-dont-jump-to-using.patch
+    # FIXME: doesn't apply cleanly
+    # ./0001-pathnames-redirect-work-prefix-to-.local-share-facto.patch
+    # ./0002-adjust-unit-test-for-finding-executables-in-path-for.patch
   ];
 
   postPatch = ''

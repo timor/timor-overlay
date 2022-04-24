@@ -86,25 +86,25 @@ in
   # FIXME Depends on pdconfig definition at the moment
   factor-lang-live = (self.factor-lang-new.extend (self': super': {interpreter = super'.interpreter.overrideAttrs (oldAttrs:
   rec {
-    version = "0.99-pre6";
+    version = "2021-05-24";
     name = "factor-lang-${version}";
     bootImage = self.fetchurl {
-      url = "https://downloads.factorcode.org/images/build/boot.unix-x86.64.image.e511080c91c884c117edc585e61a9979e11731a8";
-      sha256 = "043nrf2m3bcs6hhc4knnhkjqwy9g3l1x9bygfqpdn6j6kmpbjxzm";
+      url = "https://downloads.factorcode.org/images/build/boot.unix-x86.64.image.bfc423e43beeebcb14774054c9685fbded456faf";
+      sha256 = "042gwrvk9hvpc49zc3hzscr54kxmd86pykyhp8xjpix5ljknhg7g";
     };
 
     src = self.fetchFromGitHub {
       owner = "factor";
       repo = "factor";
-      rev = "6996415cd0e0ba3c4a081b561015bd3c4349013b";
-      sha256 = "1gc99rsa0dzy44lrp3jwbcb5g139zw2rbz39ralxa37dfi43phhc";
+      rev = "25e5b51689a03cbd7e8b652c9e879a14f5e4326f";
+      sha256 = "0sawhjm2n91j1ribp6npyrjflv7756cslc0l2z7qq4ikma7dlc7v";
     };
 
     # patches = lib.init oldAttrs.patches;
-    patches = [
-      ./pkgs/factor-lang/staging-command-line-0.98-pre.patch
-      # ./pkgs/factor-lang/fuel-dir.patch
-    ] ;
+    # patches = [
+    #   ./pkgs/factor-lang/staging-command-line-0.98-pre.patch
+    #   # ./pkgs/factor-lang/fuel-dir.patch
+    # ] ;
 
     postUnpack = ''
       cp ${bootImage} $sourceRoot/boot.unix-x86.64.image
