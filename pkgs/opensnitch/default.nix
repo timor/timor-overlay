@@ -38,7 +38,7 @@ let
     desktopName = "OpenSnitch";
     icon = "preferences-system-firewall";
     genericName = "OpenSnitch Firewall";
-    categories = "System;Filesystem;Network;";
+    categories = [ "System" "Filesystem" "Network" ];
   };
 in
 

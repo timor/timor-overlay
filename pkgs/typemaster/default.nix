@@ -30,7 +30,7 @@ let
     icon = "tools-check-spelling";
     genericName = "Typing Practice (german)";
     desktopName = "Typemaster2000 (german,de)";
-    categories = "Education;";
+    categories = [ "Education" ];
   };
 
   run-en = writeShellScriptBin "typemaster-en" ''
@@ -45,7 +45,7 @@ let
     icon = "tools-check-spelling";
     genericName = "Typing Practice (english)";
     desktopName = "Typemaster2000 (english,en)";
-    categories = "Education;";
+    categories = [ "Education" ];
   };
 in
 

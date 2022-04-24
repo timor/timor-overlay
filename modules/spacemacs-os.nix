@@ -7,6 +7,7 @@ with lib;
 let
   cfg = config.services.xserver.windowManager.spacemacsOS;
 
+  #FIXME: Use makeDesktopItem?
   desktopApplicationFile = pkgs.writeTextFile {
     name = "emacsclient.desktop";
     destination = "/share/applications/emacsclient.desktop";

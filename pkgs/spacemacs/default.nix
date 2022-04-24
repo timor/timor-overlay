@@ -22,7 +22,7 @@ let
     icon = "spacemacs";
     comment = "A community-driven Emacs distribution - The best editor is neither Emacs nor Vim, it's Emacs *and* Vim!";
     desktopName = "Spacemacs";
-    categories = "Development;TextEditor;";
+    categories = [ "Development" "TextEditor" ];
   };
   spacemacs-emacs = callPackage ./spacemacs-emacs.nix {
     inherit emacsPackages;
