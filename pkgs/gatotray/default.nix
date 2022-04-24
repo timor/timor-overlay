@@ -1,4 +1,4 @@
-{stdenv, lib, pkgconfig, gdk_pixbuf, gtk2, fetchFromGitHub }:
+{stdenv, lib, pkgconfig, gdk-pixbuf, gtk2, fetchFromGitHub }:
 
 let version = "3.3"; in
 
@@ -25,7 +25,7 @@ stdenv.mkDerivation {
   '';
 
   nativeBuildInputs = [ pkgconfig ];
-  buildInputs = [ gdk_pixbuf gtk2 ];
+  buildInputs = [ gdk-pixbuf gtk2 ];
 
   dontConfigure = true;
 

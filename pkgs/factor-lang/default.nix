@@ -1,6 +1,6 @@
 { stdenv, lib, fetchurl, glib, git,
   rlwrap, curl, pkgconfig, perl, makeWrapper, tzdata, ncurses,
-  pango, cairo, gtk2, gtk2-x11, gdk_pixbuf, gtkglext, pcre, openal,
+  pango, cairo, gtk2, gtk2-x11, gdk-pixbuf, gtkglext, pcre, openal,
   xorg, openssl, unzip, gnome2, libGL, libGLU, udis86, runCommand, interpreter,
   blas, zlib, freealut, libogg, libvorbis }:
 
@@ -61,7 +61,7 @@ stdenv.mkDerivation rec {
     glib
     pango cairo
     gtk2-x11
-    gdk_pixbuf
+    gdk-pixbuf
     gnome2.gtkglext
     pcre
     libGL
