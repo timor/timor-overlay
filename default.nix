@@ -24,24 +24,6 @@ let
       newPackage
   );
   callPackageUnlessProvided = (attribute: path: args: replaceUnlessProvided attribute (callPackage' path args));
-  auctexSrcs = import ./auctex-srcs.nix;
-  auctexFun = esuper:
-    let version = esuper.auctex.version; in
-    if isNull(auctexSrcs.${version} or null) then
-      esuper.auctex
-    else
-      let tarName = "auctex-${version}.tar"; in
-      esuper.elpaBuild rec {
-        inherit (esuper.auctex) ename pname version meta;
-        lzipsrc = self.fetchurl auctexSrcs.${version} ;
-        tarsrc = self.runCommand tarName {
-           nativeBuildInputs = [self.lzip];} ''
-             mkdir -p $out
-             cp ${lzipsrc} $out/${tarName}.lz
-             lzip -d $out/${tarName}.lz
-           '';
-         src="${tarsrc}/${tarName}";
-      };
 in
 
 {
@@ -59,10 +41,6 @@ in
   #   stdenv = self.clangStdenv;
   #   inherit (self.llvmPackages) openmp;
   #   };
-
-  emacs27Packages = super.emacs27Packages.overrideScope' (eself: esuper:
-    { auctex = auctexFun esuper; }
-  );
 
   # Usage:
   # deployFactor "my-cool-factor-program" /factor/program/sources
@@ -208,7 +186,7 @@ in
   shader-slang = callPackage ./pkgs/shader-slang { };
 
   spacemacsPackages = callPackage ./pkgs/spacemacs/spacemacs-packages.nix
-    { emacsPackages = self.emacs27Packages; };
+    { emacsPackages = self.emacsPackages; };
 
   spacemacs = callPackage ./pkgs/spacemacs/default.nix { emacsPackages = self.spacemacsPackages; };
 
