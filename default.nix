@@ -111,12 +111,6 @@ in
       --set LD_PRELOAD ${self.libsslkeylog}/lib/libsslkeylog.so
   '';
 
-  spnav = callPackage ./pkgs/spnav { };
-
-  spacenavd = callPackage ./pkgs/spacenavd { };
-
-  spnavcfg = callPackage ./pkgs/spnavcfg { };
-
   spoof_vendorid = callPackage ./pkgs/spoof_vendorid { };
 
   solvespace = super.solvespace.overrideAttrs (oa: {buildInputs = oa.buildInputs ++ [ self.spnav ];});
@@ -124,10 +118,6 @@ in
   wine-wrap-spoofed = callPackage ./pkgs/spoof_vendorid/wrapper.nix { };
 
   wine-spoofed = self.wine-wrap-spoofed self.wine ;
-
-  freecad = (super.freecad.overrideAttrs (oldAttrs: {
-      buildInputs = oldAttrs.buildInputs ++ [ self.spnav ];
-  }));
 
   gatotray = callPackage ./pkgs/gatotray {};
 
