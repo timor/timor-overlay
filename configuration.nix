@@ -5,7 +5,7 @@
     [
     ./modules/spacemacs-os.nix
     ./modules/mpd-user.nix
-    ./modules/opensnitch.nix
+    # ./modules/opensnitch.nix
     ./modules/nvidia-suspend.nix
     ./modules/xbox360-wireless.nix
     ./modules/zwave-js.nix
