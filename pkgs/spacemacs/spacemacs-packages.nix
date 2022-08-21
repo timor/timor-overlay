@@ -14,7 +14,7 @@ emacsPackages.overrideScope' (self: super: {
     patches = oa.patches ++ [./emacs-user-directory-27.patch ];
     buildInputs = oa.buildInputs ++ [ texinfo ];
     preFixup = (oa.preFixup or "") + ''
-      gappsWrapperArgs=(--run export\ PARENT_GDK_PIXBUF_MODULE_FILE=\"\$GDK_PIXBUF_MODULE_FILE\" "''${gappsWrapperArgs[@]}")
+      gappsWrapperArgs+=(--set PARENT_GDK_PIXBUF_MODULE_FILE \"\$GDK_PIXBUF_MODULE_FILE\")
     '';
     name = "emacs-${oa.version}-spacemacs";
   });
