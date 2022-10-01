@@ -1,12 +1,6 @@
 { pkgs, fetchFromGitHub, nodejs, stdenv, lib, ... }:
 
 let
-  src = fetchFromGitHub {
-    owner = "zwave-js";
-    repo = "zwave-js-server";
-    rev = "51d5b2dead65cf3c2d3dafd7232090c8ebafdc61";
-    sha256 = "bxXBgJke10HLKe40cag4HIFG5jh0VfNkCCRlspSkZKQ=";
-  };
 
   nodePackages = pkgs.callPackage ./node-composition.nix {
   inherit pkgs nodejs;
