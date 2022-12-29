@@ -196,4 +196,6 @@ in
   zfs-linux-tools = callPackage ./pkgs/zfs-linux-tools { };
 
   node-zwave-js = callPackage ./pkgs/zwave-js { nodejs=self."nodejs-14_x"; };
+
+  zwave-js-ui = callPackage ./pkgs/zwave-js-ui { nodejs=self."nodejs-14_x"; };
 }
