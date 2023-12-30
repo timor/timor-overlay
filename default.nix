@@ -111,6 +111,20 @@ in
       --set LD_PRELOAD ${self.libsslkeylog}/lib/libsslkeylog.so
   '';
 
+  libspnav = super.libspnav.overrideAttrs (oa: {
+    nativeBuildInputs = oa.nativeBuildInputs ++ [ self.libGL self.libGLU ];
+    postBuild = ''
+      (
+      cd examples/cube
+      make
+      )
+    '';
+    postInstall = ''
+      mkdir -p $out/bin
+      cp examples/cube/cube $out/bin/cube
+    '';
+  });
+
   spoof_vendorid = callPackage ./pkgs/spoof_vendorid { };
 
   solvespace = super.solvespace.overrideAttrs (oa: {buildInputs = oa.buildInputs ++ [ self.spnav ];});
