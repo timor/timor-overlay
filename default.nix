@@ -138,6 +138,10 @@ in
 
   llvm-mlir = callPackage ./pkgs/llvm-mlir {};
 
+  minecraft8 = super.minecraft.override {
+    jre=self.jre8;
+  };
+
   moore = callPackage ./pkgs/moore {};
 
   notmuch = (super.notmuch.overrideAttrs (oa: {
