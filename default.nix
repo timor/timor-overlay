@@ -193,6 +193,8 @@ in
 
   wrapBins = callPackage ./pkgs/wrapBin { };
 
+  wrapWine = callPackage ./pkgs/wrapWine { };
+
   zfs-linux-tools = callPackage ./pkgs/zfs-linux-tools { };
 
   node-zwave-js = callPackage ./pkgs/zwave-js { nodejs=self."nodejs-18_x"; };
