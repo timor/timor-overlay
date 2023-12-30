@@ -127,7 +127,7 @@ in
 
   spoof_vendorid = callPackage ./pkgs/spoof_vendorid { };
 
-  solvespace = super.solvespace.overrideAttrs (oa: {buildInputs = oa.buildInputs ++ [ self.spnav ];});
+  solvespace = super.solvespace.overrideAttrs (oa: {buildInputs = oa.buildInputs ++ [ self.libspnav ];});
 
   wine-wrap-spoofed = callPackage ./pkgs/spoof_vendorid/wrapper.nix { };
 
@@ -135,7 +135,7 @@ in
 
   gatotray = callPackage ./pkgs/gatotray {};
 
-  gmime_patched = self.gmime3.overrideAttrs(oa: {
+  gmime_patched = super.gmime3.overrideAttrs(oa: {
     patches = (oa.patches or []) ++ [ ./patches/0001-Normalize-x-variants-for-comparing-protocol-and-mime.patch ];
     doCheck = true;
   });
@@ -160,9 +160,7 @@ in
 
   notmuch = (super.notmuch.overrideAttrs (oa: {
     meta = oa.meta // { outputsToInstall = [ "out" "man" "emacs"]; };
-  })).override{ gmime = self.gmime_patched; };
-
-  open-zwave = callPackage ./pkgs/open-zwave {};
+  })).override{ gmime3 = self.gmime_patched; };
 
   esp32 = callPackage ./pkgs/esp32 { };
 
