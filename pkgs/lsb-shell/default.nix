@@ -22,6 +22,7 @@ let lsb-packages = p: with p; with p.xorg; [ # LSB Core/Common
     python perl
     # GTK3 (trial)
     # (lib.hiPrio gtk3)
+    atk
     ] ;
 
 in
