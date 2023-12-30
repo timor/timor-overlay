@@ -153,8 +153,6 @@ in
 
   esp32 = callPackage ./pkgs/esp32 { };
 
-  makemkv = self.libsForQt5.callPackage ./pkgs/makemkv { };
-
   mfcl8650cdwlpr = callPackage ./pkgs/mfcl8650cdwlpr { };
   mfcl8650cdwcupswrapper = callPackage ./pkgs/mfcl8650cdwcupswrapper {};
 
