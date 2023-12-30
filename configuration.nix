@@ -3,6 +3,7 @@
 {
   imports =
     [
+    ./modules/easyeffects.nix
     ./modules/spacemacs-os.nix
     ./modules/mpd-user.nix
     ./modules/opensnitch.nix
