@@ -1,7 +1,7 @@
-From 984074593c4633fabbb3b5f08799e87212b4b7e9 Mon Sep 17 00:00:00 2001
+From 017687360da42172ed9098e23651ad920e64e121 Mon Sep 17 00:00:00 2001
 From: timor <timor.dd@googlemail.com>
 Date: Sat, 26 Jan 2019 23:48:26 +0100
-Subject: [PATCH 05/12] quelpa: hack-around for copying read-only dirs in file
+Subject: [PATCH 05/11] quelpa: hack-around for copying read-only dirs in file
  recipes
 
 Does not work on windows.
@@ -10,10 +10,10 @@ Does not work on windows.
  1 file changed, 8 insertions(+), 2 deletions(-)
 
 diff --git a/core/libs/quelpa.el b/core/libs/quelpa.el
-index 637aa9257..7a53c3fe7 100644
+index 8029a4518..a7787d0e1 100644
 --- a/core/libs/quelpa.el
 +++ b/core/libs/quelpa.el
-@@ -362,6 +362,12 @@ file exists."
+@@ -376,6 +376,12 @@ file exists."
        (insert-file-contents-literally file)
        (buffer-substring-no-properties (point-min) (point-max)))))
  
@@ -26,7 +26,7 @@ index 637aa9257..7a53c3fe7 100644
  (defun quelpa-check-hash (name config file-path dir &optional fetcher)
    "Check if hash of FILE-PATH is different as in STAMP-FILE.
  If it is different save the new hash and timestamp to STAMP-FILE
-@@ -401,7 +407,7 @@ and return TIME-STAMP, otherwise return OLD-TIME-STAMP."
+@@ -415,7 +421,7 @@ and return TIME-STAMP, otherwise return OLD-TIME-STAMP."
          (make-directory dir)
          (if (eq type 'file)
              (copy-file file-path dir t t t t)
@@ -35,7 +35,7 @@ index 637aa9257..7a53c3fe7 100644
        (quelpa-build--dump new-stamp-info stamp-file)
        (quelpa-file-version file-path type version time-stamp))))
  
-@@ -1469,7 +1475,7 @@ FILES is a list of (SOURCE . DEST) relative filepath pairs."
+@@ -1501,7 +1507,7 @@ FILES is a list of (SOURCE . DEST) relative filepath pairs."
      (copy-file file newname))
     ((file-directory-p file)
      (quelpa-build--message "%s => %s" file newname)
@@ -45,5 +45,5 @@ index 637aa9257..7a53c3fe7 100644
  (defun quelpa-build--find-source-file (target files)
    "Search for source of TARGET in FILES."
 -- 
-2.29.3
+2.42.0
 

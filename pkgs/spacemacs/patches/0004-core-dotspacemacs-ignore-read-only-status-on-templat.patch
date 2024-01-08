@@ -1,7 +1,7 @@
-From 87706a29611306e3f9f050662243f22e0ea4c4e8 Mon Sep 17 00:00:00 2001
+From 3495df7c85a1a349599e92ba4da1dcbecf66c1d3 Mon Sep 17 00:00:00 2001
 From: timor <timor.dd@googlemail.com>
 Date: Sat, 26 Jan 2019 18:50:41 +0100
-Subject: [PATCH 04/12] core-dotspacemacs: ignore read-only status on template
+Subject: [PATCH 04/11] core-dotspacemacs: ignore read-only status on template
  file
 
 otherwise first-time installation will fail when template file is opened from
@@ -11,10 +11,10 @@ read-only location
  1 file changed, 14 insertions(+), 13 deletions(-)
 
 diff --git a/core/core-dotspacemacs.el b/core/core-dotspacemacs.el
-index e7507d561..acd002286 100644
+index 7e20f09f0..307d3cc4b 100644
 --- a/core/core-dotspacemacs.el
 +++ b/core/core-dotspacemacs.el
-@@ -945,19 +945,20 @@ If ARG is non nil then ask questions to the user before installing the dotfile."
+@@ -972,19 +972,20 @@ If ARG is non nil then ask questions to the user before installing the dotfile."
      (with-current-buffer (find-file-noselect
                            (concat dotspacemacs-template-directory
                                    ".spacemacs.template"))
@@ -49,5 +49,5 @@ index e7507d561..acd002286 100644
    ;; force new wizard values to be applied
    (dotspacemacs/init))
 -- 
-2.29.3
+2.42.0
 

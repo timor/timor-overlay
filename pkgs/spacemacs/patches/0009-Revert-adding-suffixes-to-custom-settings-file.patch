@@ -1,7 +1,7 @@
-From cc764386bed924e9c3fc0113c99051c1cddbeb03 Mon Sep 17 00:00:00 2001
+From ba397b38a4cf3b1ae2ce1a6259771c05f52f789c Mon Sep 17 00:00:00 2001
 From: timor <timor.dd@googlemail.com>
 Date: Mon, 14 Dec 2020 15:10:27 +0100
-Subject: [PATCH 09/12] Revert adding suffixes to custom-settings file
+Subject: [PATCH 09/11] Revert adding suffixes to custom-settings file
 
 ---
  core/core-custom-settings.el | 11 +----------
@@ -9,7 +9,7 @@ Subject: [PATCH 09/12] Revert adding suffixes to custom-settings file
  2 files changed, 2 insertions(+), 11 deletions(-)
 
 diff --git a/core/core-custom-settings.el b/core/core-custom-settings.el
-index 90698bd3a..45e5ba75c 100644
+index a0bd9a64f..98ae1b0ab 100644
 --- a/core/core-custom-settings.el
 +++ b/core/core-custom-settings.el
 @@ -23,7 +23,7 @@
@@ -38,10 +38,10 @@ index 90698bd3a..45e5ba75c 100644
    "Initialize syncing of the custom file to the dotfile."
    (when (string-equal custom-file spacemacs--custom-file)
 diff --git a/core/core-spacemacs.el b/core/core-spacemacs.el
-index 3f1556f05..20491440d 100644
+index 9f33991e9..353500897 100644
 --- a/core/core-spacemacs.el
 +++ b/core/core-spacemacs.el
-@@ -130,7 +130,7 @@ the final step of executing code in `emacs-startup-hook'.")
+@@ -138,7 +138,7 @@ the final step of executing code in `emacs-startup-hook'.")
    ;; effective ones.
    ;; Note: Loading custom-settings twice is not ideal since they can have side
    ;; effects! Maybe an inhibit variable in Emacs can suppress these side effects?
@@ -51,5 +51,5 @@ index 3f1556f05..20491440d 100644
    ;; I don't recall why we must load the custom settings twice and my experiment
    ;; seems to show that we don't need this double loading process anymore.
 -- 
-2.29.3
+2.42.0
 

@@ -1,5 +1,8 @@
 * Declarative Spacemacs
 
+** Spacemacs Source
+- github: timor/spacemacs, branch: nixos-adjustments
+
 ** ~dotfile~ argument
 If given:
 - ~dotfile~ is copied into the store

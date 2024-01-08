@@ -1,7 +1,7 @@
-From 46904fc1063bf8b222ccc2787eed26919de3714c Mon Sep 17 00:00:00 2001
+From bfb947e42e757e507a1fac26500cd370ac5688c1 Mon Sep 17 00:00:00 2001
 From: timor <timor.dd@googlemail.com>
 Date: Sat, 26 Jan 2019 18:48:21 +0100
-Subject: [PATCH 03/12] core-configuration-layer: derive package archive path
+Subject: [PATCH 03/11] core-configuration-layer: derive package archive path
  from user-emacs-directory
 
 ---
@@ -9,7 +9,7 @@ Subject: [PATCH 03/12] core-configuration-layer: derive package archive path
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/core/core-configuration-layer.el b/core/core-configuration-layer.el
-index daa4e30b2..106257a87 100644
+index 2a3afc475..f4014accc 100644
 --- a/core/core-configuration-layer.el
 +++ b/core/core-configuration-layer.el
 @@ -136,7 +136,7 @@ subdirectory of ROOT is used."
@@ -22,5 +22,5 @@ index daa4e30b2..106257a87 100644
  
  (defconst configuration-layer--rollback-root-directory
 -- 
-2.29.3
+2.42.0
 

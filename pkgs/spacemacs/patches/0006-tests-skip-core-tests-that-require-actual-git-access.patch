@@ -1,14 +1,14 @@
-From bcc570e699c83f23c57e235f7b652c2fbc13937e Mon Sep 17 00:00:00 2001
+From 30bc10f0b3da59e4f1fd03b102c3941df23cd6e3 Mon Sep 17 00:00:00 2001
 From: timor <timor.dd@googlemail.com>
 Date: Fri, 22 Mar 2019 17:01:02 +0100
-Subject: [PATCH 06/12] tests: skip core tests that require actual git access
+Subject: [PATCH 06/11] tests: skip core tests that require actual git access
 
 ---
  tests/core/core-release-management-ftest.el | 5 +++++
  1 file changed, 5 insertions(+)
 
 diff --git a/tests/core/core-release-management-ftest.el b/tests/core/core-release-management-ftest.el
-index f59c1584e..1f3028809 100644
+index 4b375e8ff..fbc5226b1 100644
 --- a/tests/core/core-release-management-ftest.el
 +++ b/tests/core/core-release-management-ftest.el
 @@ -35,9 +35,14 @@
@@ -27,5 +27,5 @@ index f59c1584e..1f3028809 100644
 +  (skip-unless test-git-fetch-check-online-helper)
    (should (equal nil (spacemacs//git-fetch-tags "qwerty" "master"))))
 -- 
-2.29.3
+2.42.0
 

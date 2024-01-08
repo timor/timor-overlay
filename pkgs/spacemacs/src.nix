@@ -1,6 +1,6 @@
 {
   owner = "syl20bnr";
   repo = "spacemacs";
-  rev = "efdfecbf8f72d3de4a410f9d653f8b91e569063c";
-  sha256 = "sha256-kLwTnGDqNHJxipqmv6qFe8zv+GK3P92vG9HTRhXxdJ0=";
+  rev = "b2511bba47aad1913f0080b6a11f3719dba32368";
+  hash = "sha256-Ha8lHOZkM3wNFVhoCaiNS3CJA2wJ/ko45ixQlkywKF8=";
 }

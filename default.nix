@@ -189,7 +189,7 @@ in
   shader-slang = callPackage ./pkgs/shader-slang { };
 
   spacemacsPackages = callPackage ./pkgs/spacemacs/spacemacs-packages.nix
-    { emacsPackages = self.emacsPackages; };
+    { emacsPackages = self.emacs29.pkgs; };
 
   spacemacs = callPackage ./pkgs/spacemacs/default.nix { emacsPackages = self.spacemacsPackages; };
 
