@@ -158,6 +158,8 @@ in
 
   moore = callPackage ./pkgs/moore {};
 
+  notify-send-all = callPackage ./pkgs/notify-send-all {};
+
   notmuch = (super.notmuch.overrideAttrs (oa: {
     meta = oa.meta // { outputsToInstall = [ "out" "man" "emacs"]; };
   })).override{ gmime3 = self.gmime_patched; };
