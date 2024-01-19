@@ -8,6 +8,7 @@
     ./modules/mpd-user.nix
     ./modules/opensnitch.nix
     ./modules/nvidia-suspend.nix
+    ./modules/systemd-notify.nix
     ./modules/xbox360-wireless.nix
     ./modules/zwave-js.nix
   ];

@@ -25,7 +25,8 @@ stdenv.mkDerivation {
 
     substituteInPlace notify-send-all \
       --replace /bin/test test \
-      --replace "notify-send " "${libnotify}/bin/notify-send "
+      --replace "notify-send " "${libnotify}/bin/notify-send " \
+      --replace "sudo " "/run/wrappers/bin/sudo "
     install -m 0755 notify-send-all $out/bin
     ln -s $out/bin/notify-send-all $out/bin/notify-send-to
   '';
