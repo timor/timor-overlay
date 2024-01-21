@@ -127,8 +127,6 @@ in
 
   spoof_vendorid = callPackage ./pkgs/spoof_vendorid { };
 
-  solvespace = super.solvespace.overrideAttrs (oa: {buildInputs = oa.buildInputs ++ [ self.libspnav ];});
-
   wine-wrap-spoofed = callPackage ./pkgs/spoof_vendorid/wrapper.nix { };
 
   wine-spoofed = self.wine-wrap-spoofed self.wine ;
@@ -175,12 +173,6 @@ in
 
   inherit (callPackage ./pkgs/opensnitch {})
     opensnitchd opensnitch-ui;
-
-#  plasma5 = super.plasma5 // {
-#    plasma-workspace = super.plasma5.plasma-workspace.overrideAttrs (oldAttrs: {
-#      patches = oldAttrs.patches ++ [ ./patches/plasma-lockscreen-suspend-20.03.patch ];
-#    });
-#  };
 
   raygui = callPackage ./pkgs/raygui { };
 
