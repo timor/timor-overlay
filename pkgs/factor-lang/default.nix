@@ -1,5 +1,5 @@
 { stdenv, lib, fetchurl, glib, git,
-  rlwrap, curl, pkgconfig, perl, makeWrapper, tzdata, ncurses,
+  rlwrap, curl, pkg-config, perl, makeWrapper, tzdata, ncurses,
   pango, cairo, gtk2, gtk2-x11, gdk-pixbuf, gtkglext, pcre, openal,
   xorg, openssl, unzip, gnome2, libGL, libGLU, udis86, runCommand, interpreter,
   blas, zlib, freealut, libogg, libvorbis }:
@@ -76,7 +76,7 @@ stdenv.mkDerivation rec {
   ];
 
   buildInputs = with xorg; [
-    git rlwrap curl pkgconfig perl makeWrapper
+    git rlwrap curl pkg-config perl makeWrapper
     unzip
   ] ++ runtimeLibs;
 
