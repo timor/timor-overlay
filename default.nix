@@ -111,7 +111,7 @@ in
       --set LD_PRELOAD ${self.libsslkeylog}/lib/libsslkeylog.so
   '';
 
-  libspnav = super.libspnav.overrideAttrs (oa: {
+  libspnav-with-examples = super.libspnav.overrideAttrs (oa: {
     nativeBuildInputs = oa.nativeBuildInputs ++ [ self.libGL self.libGLU ];
     postBuild = ''
       (
