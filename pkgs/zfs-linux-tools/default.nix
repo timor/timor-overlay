@@ -2,15 +2,16 @@
 
 stdenv.mkDerivation {
   pname = "zfs-linux-tools";
-  version = "2020-07-11";
+  version = "2022-05-05";
 
   buildInputs = [ python ];
 
   src = fetchFromGitHub {
     owner = "richardelling";
     repo = "zfs-linux-tools";
-    rev = "9e5c8c748a2d73c5cbf00b248e0730645f59d9b2";
-    sha256 = "1gbvsznr63559b3cim6lx46cx87wkyrs16snx9056ja8pyyvb6zh";
+    rev = "8e4f0818c188ebf4ecdfc12bb115a7866b67fc46";
+    sha256 = "sha256-yQQjqwtl4NnFuB6oC76rbQd3gysdkKcpPz0VSTzoe/Q=";
+    # sha256 = "1gbvsznr63559b3cim6lx47cx87wkyrs16snx9056ja8pyyvb6zh";
   };
 
   dontBuild = true;
