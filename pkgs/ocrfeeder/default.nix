@@ -1,6 +1,6 @@
 {stdenv, lib, fetchFromGitLab, python27, python27Packages, tesseract, ocrad, cuneiform, zbar
 , gobject-introspection, wrapGAppsHook, unpaper, gtkspell3, autoreconfHook
-, gnome-doc-utils, pkgconfig, gnome3, intltool, automake, autoconf, sane-backends
+, gnome-doc-utils, pkg-config, gnome3, intltool, automake, autoconf, sane-backends
 , goocanvas2, makeWrapper, isocodes }:
 
 let inherit (lib) makeBinPath;
@@ -33,7 +33,7 @@ python27Packages.buildPythonApplication rec {
 
   format = "other";
 
-  nativeBuildInputs = [ wrapGAppsHook pkgconfig gobject-introspection automake autoconf gnome3.gnome-common intltool gnome-doc-utils
+  nativeBuildInputs = [ wrapGAppsHook pkg-config gobject-introspection automake autoconf gnome3.gnome-common intltool gnome-doc-utils
     goocanvas2 makeWrapper];
 
   buildInputs = [ # tesseract ocrad gocr zbar

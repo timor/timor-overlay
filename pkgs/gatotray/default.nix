@@ -1,4 +1,4 @@
-{stdenv, lib, pkgconfig, gdk-pixbuf, gtk2, fetchFromGitHub }:
+{stdenv, lib, pkg-config, gdk-pixbuf, gtk2, fetchFromGitHub }:
 
 let version = "3.3"; in
 
@@ -24,7 +24,7 @@ stdenv.mkDerivation {
     sed -i "/strip/d" Makefile
   '';
 
-  nativeBuildInputs = [ pkgconfig ];
+  nativeBuildInputs = [ pkg-config ];
   buildInputs = [ gdk-pixbuf gtk2 ];
 
   dontConfigure = true;

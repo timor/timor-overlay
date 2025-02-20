@@ -1,4 +1,4 @@
-{ stdenv, cmake, fetchFromGitHub, pkgconfig, xorg } :
+{ stdenv, cmake, fetchFromGitHub, pkg-config, xorg } :
 
 stdenv.mkDerivation {
   pname = "spoof_vendorid" ;
@@ -12,7 +12,7 @@ stdenv.mkDerivation {
   };
 
   cmakeFlags = [ "-DBUILD_WSI_WAYLAND_SUPPORT=OFF"];
-  nativeBuildInputs = with xorg; [cmake pkgconfig libxcb libX11 libXrandr];
+  nativeBuildInputs = with xorg; [cmake pkg-config libxcb libX11 libXrandr];
 
   installPhase = ''
     mkdir -p $out/share/spoof_vendorid
