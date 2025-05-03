@@ -112,7 +112,7 @@ in
   '';
 
   libspnav-with-examples = super.libspnav.overrideAttrs (oa: {
-    nativeBuildInputs = oa.nativeBuildInputs ++ [ self.libGL self.libGLU ];
+    buildInputs = oa.buildInputs ++ [ self.libGL self.libGLU ];
     postBuild = ''
       (
       cd examples/cube
