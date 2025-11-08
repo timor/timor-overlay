@@ -245,7 +245,7 @@ in
 
   wrapWine = callPackage ./pkgs/wrapWine { };
 
-  zfs-linux-tools = callPackage ./pkgs/zfs-linux-tools { };
+  zfs-linux-tools = callPackage ./pkgs/zfs-linux-tools { python=self.python3; };
 
   node-zwave-js = callPackage ./pkgs/zwave-js { nodejs=self."nodejs-18_x"; };
 }
