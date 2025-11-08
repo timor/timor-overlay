@@ -37,6 +37,40 @@ in
     gdbForPackages
     gdbForPackage ;
 
+  cataclysm-fresh = let
+    myBuild =
+    (self.cataclysm-dda-git.override {
+
+      version = "2024-09-19";
+
+      # debug = true;
+      debug = false;
+
+    }).overrideDerivation(oa: {
+      src = import ./pkgs/cataclysm-fresh/src.nix;
+      # src =  lib.cleanSource /home/martin/src/Cataclysm-DDA;
+      patches = [
+        /home/martin/src/Cataclysm-DDA/gasoline-messkit.patch
+        # (self.fetchpatch {
+        #   url = "https://patch-diff.githubusercontent.com/raw/CleverRaven/Cataclysm-DDA/pull/75937.patch";
+        #   hash = "sha256-96HNA4J7bUlGE8hmbtkfYd71vmhdzG8UFeEacEQLIPE=";
+        # })
+      ];
+
+      stdenv = self.gcc12Stdenv;
+      # makeFlags = oa.makeFlags ++ [ "LTO=1" "SOUND=0" "TESTS=0" "BACKTRACE=1" ];
+      # buildInputs = oa.buildInputs ++ [ self.libbacktrace ];
+
+      makeFlags = oa.makeFlags ++ [ "LTO=1" "SOUND=0" "TESTS=0" "LINTJSON=0" ];
+      # makeFlags = oa.makeFlags ++ [ "LTO=1" "SOUND=0" "TESTS=0" ];
+
+      # postInstall = ''
+      #   wrapProgram $out/bin/cataclysm-tiles --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [ myenv.cc.cc.libc ] }"
+      # '';
+    }); in
+    myBuild ;
+
+
   # colmap-clang = self.libsForQt5.callPackage ./pkgs/colmap {
   #   stdenv = self.clangStdenv;
   #   inherit (self.llvmPackages) openmp;
@@ -159,6 +193,19 @@ in
   })).override{ gmime3 = self.gmime_patched; };
 
   esp32 = callPackage ./pkgs/esp32 { };
+
+  freecad-live = super.freecad.overrideAttrs (oa: {
+    src = self.fetchurl {
+      url = "https://github.com/FreeCAD/FreeCAD-Bundle/releases/download/weekly-builds/freecad_source.tar.gz";
+      sha256 = "sha256-OX4s9rbGsAhH7tLJkUJYyq3A2vCdkq/73iqYo9adogs=";
+    };
+    # src = self.fetchFromGitHub {
+    #   owner = "FreeCAD";
+    #   repo = "FreeCAD";
+    #   rev = finalAttrs.version;
+    #   hash = "sha256-OX4s9rbGsAhH7tLJkUJYyq2A2vCdkq/73iqYo9adogs=";
+    # }
+  });
 
   mfcl8650cdwlpr = callPackage ./pkgs/mfcl8650cdwlpr { };
   mfcl8650cdwcupswrapper = callPackage ./pkgs/mfcl8650cdwcupswrapper {};
