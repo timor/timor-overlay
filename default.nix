@@ -176,6 +176,20 @@ in
 
   kerneldocs = callPackage ./pkgs/kerneldocs {};
 
+  mscore464 = super.musescore.overrideAttrs(oa: rec {
+    version = "4.6.4";
+    patches = [];
+    src = self.fetchFromGitHub {
+      owner = "musescore";
+      repo = "MuseScore";
+      tag = "v${version}";
+      hash = "sha256-fBkokokyCJcwYRgdrtWQEqW1rcdlmVQu1OrMJeKA8Sc=";
+    };
+    # src = oa.src // {
+    #   outputHash = "sha256-WLzt/Ox6GrfWD0/l8/Ksc2ptg7LZSOXXnlsSnenfZtI=";
+    # };
+  });
+
   lsb-shell = callPackage ./pkgs/lsb-shell {};
 
   circt = callPackage ./pkgs/circt {};
