@@ -208,17 +208,37 @@ in
 
   esp32 = callPackage ./pkgs/esp32 { };
 
-  freecad-live = super.freecad.overrideAttrs (oa: {
-    src = self.fetchurl {
-      url = "https://github.com/FreeCAD/FreeCAD-Bundle/releases/download/weekly-builds/freecad_source.tar.gz";
-      sha256 = "sha256-OX4s9rbGsAhH7tLJkUJYyq3A2vCdkq/73iqYo9adogs=";
+  freecad =
+    let
+      fc = super.freecad ;
+    in
+    if lib.versionAtLeast (lib.getVersion fc) "1.1" then fc else
+    super.freecad.overrideAttrs (oa: {
+    # src = self.fetchurl {
+    #   url = "https://github.com/FreeCAD/FreeCAD-Bundle/releases/download/weekly-builds/freecad_source.tar.gz";
+    #   sha256 = "sha256-cVJMUTNBR4YgypZPLFCZw3W4mUhNZIdV/AjO5pgsJP0=";
+    # };
+    src = self.fetchFromGitHub {
+      owner = "FreeCAD";
+      repo = "FreeCAD";
+      tag = "1.1rc2";
+      hash = "sha256-LQ05vLAMJyxleGPQCKzpMMVab+fWUbbFzpNXAXuppvY=";
+      fetchSubmodules = true;
     };
-    # src = self.fetchFromGitHub {
-    #   owner = "FreeCAD";
-    #   repo = "FreeCAD";
-    #   rev = finalAttrs.version;
-    #   hash = "sha256-OX4s9rbGsAhH7tLJkUJYyq2A2vCdkq/73iqYo9adogs=";
-    # }
+    # sourceRoot = ".";
+    name = "freecad-1.1rc2";
+    version = "1.1-rc2";
+    patches = map (x: builtins.elemAt oa.patches x) [ 0 ];
+
+    postPatch =
+''
+substituteInPlace src/Mod/Fem/femmesh/gmshtools.py \
+        --replace-fail \
+'self.gmsh_bin = FreeCAD.ParamGet(
+            "User parameter:BaseApp/Preferences/Mod/Fem/Gmsh"
+        ).GetString("gmshBinaryPath", "")' \
+'self.gmsh_bin = "${lib.getExe self.gmsh}"'
+'';
   });
 
   mfcl8650cdwlpr = callPackage ./pkgs/mfcl8650cdwlpr { };
