@@ -208,6 +208,14 @@ in
 
   esp32 = callPackage ./pkgs/esp32 { };
 
+
+  firejail = (super.firejail.overrideAttrs (oa: {
+    postPatch = ''
+    substituteInPlace src/firejail/netfilter.c \
+      --replace '"/sbin/iptables' '"${self.iptables}/bin/iptables'
+    '';
+  }));
+
   freecad =
     let
       fc = super.freecad ;
