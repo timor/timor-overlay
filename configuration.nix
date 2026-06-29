@@ -12,6 +12,7 @@
     ./modules/systemd-notify.nix
     ./modules/xbox360-wireless.nix
     ./modules/zwave-js.nix
+    ./modules/hardware/memreserver.nix
   ];
 
   # example for activating mpd user:

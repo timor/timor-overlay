@@ -176,6 +176,8 @@ in
 
   kerneldocs = callPackage ./pkgs/kerneldocs {};
 
+  memreserver = callPackage ./pkgs/memreserver {};
+
   mscore464 = super.musescore.overrideAttrs(oa: rec {
     version = "4.6.4";
     patches = [];
